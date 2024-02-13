@@ -36,6 +36,7 @@ Spring 2024 Capstone
 | UserID      | Integer   | 10                      | UserID of the user providing feedback | 10003           |
 | Content     | Text      | 255                     | Content of the feedback    | Great service!       |
 | Timestamp   | Date/Time | 19                      | When the feedback was submitted | 2024-02-12 14:30:00|
+
 | Field Name   | Data Type  | Field Size for Display | Description                        | Example  |
 |--------------|------------|-------------------------|------------------------------------|----------|
 | UserID       | Integer    | 10                      | Unique ID of each user             | 10001    |
