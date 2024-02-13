@@ -59,3 +59,25 @@ Spring 2024 Capstone
 | ReportID    | Integer     | 10                      | Unique ID of each report    | 10001                   |
 | Type        | Text        | 50                      | Type of the report          | User Activity Report    |
 | Timestamp   | Date/Time   | 19                      | When the report was generated | 2024-02-16 12:00:00   |
+
+| Field Name | Data Type | Field Size for Display | Description                       | Example                 |
+|------------|-----------|-------------------------|-----------------------------------|-------------------------|
+| PostID     | Integer   | 10                      | Unique ID of each post            | 4001                    |
+| UserID     | Integer   | 10                      | UserID of the user who created the post | 10001               |
+| Content    | Text      | 255                     | Content of the post               | Today was a good day!  |
+| Timestamp  | Date/Time | 19                      | When the post was created         | 2024-02-11 12:00:00    |
+
+| Field Name  | Data Type | Field Size for Display | Description                       | Example                 |
+|-------------|-----------|-------------------------|-----------------------------------|-------------------------|
+| RequestID   | Integer   | 10                      | Unique ID of each friend request  | 3001                    |
+| SenderID    | Integer   | 10                      | UserID of the friend request sender | 10001                 |
+| ReceiverID  | Integer   | 10                      | UserID of the friend request receiver | 10002               |
+| Status      | Text      | 20                      | Status of the friend request (Accepted/Rejected/Pending) | Pending |
+| Timestamp   | Date/Time | 19                      | When the friend request was sent   | 2024-02-10 10:00:00    |
+
+| Field Name   | Data Type | Field Size for Display | Description                    | Example                 |
+|--------------|-----------|-------------------------|--------------------------------|-------------------------|
+| ConnectionID | Integer   | 10                      | Unique ID of each connection   | 2501                    |
+| UserID1      | Integer   | 10                      | UserID of one user in the connection | 10001               |
+| UserID2      | Integer   | 10                      | UserID of the other user in the connection | 10002           |
+| Timestamp    | Date/Time | 19                      | When the connection was made    | 2024-01-15 09:30:00    |
