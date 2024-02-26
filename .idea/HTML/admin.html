@@ -1,7 +1,112 @@
 <!-- Add this script to the head section of your HTML file -->
 <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore.js"></script>
+<script>
+  // Initialize Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+    authDomain: "connectability-6ee02.firebaseapp.com",
+    projectId: "connectability-6ee02",
+    storageBucket: "connectability-6ee02.appspot.com",
+    messagingSenderId: "908801065257",
+    appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+    measurementId: "G-N8HMEMRV16"
+  };
 
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+<script>
+  // Assuming you have already initialized Firebase and have a reference to the Firestore database
+
+  function fetchUsers() {
+    const userContainer = document.querySelector('.user-list');
+
+    db.collection('USER').get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const userData = doc.data();
+
+        const userCard = document.createElement('div');
+        userCard.classList.add('user-card');
+
+        const img = document.createElement('img');
+        img.src = userData.profileImage;
+        img.alt = userData.name;
+        userCard.appendChild(img);
+
+        const h3 = document.createElement('h3');
+        h3.textContent = userData.name;
+        userCard.appendChild(h3);
+
+        const button = document.createElement('button');
+        button.textContent = 'View Profile';
+        userCard.appendChild(button);
+
+        userContainer.appendChild(userCard);
+      });
+    });
+  }
+
+  // ... (previous code)
+
+  // Function to handle user search
+  function searchUsers(query) {
+    const userContainer = document.querySelector('.user-list');
+    userContainer.innerHTML = ''; // Clear previous results
+
+    // Use orderBy and startAt/endAt for better search functionality
+    db.collection('USER').orderBy('name').startAt(query).endAt(query + '\uf8ff')
+            .get().then((querySnapshot) => {
+      if (querySnapshot.empty) {
+        // Display error message if no users are found
+        displayErrorMessage('User not found.');
+      } else {
+        querySnapshot.forEach((doc) => {
+          const userData = doc.data();
+          // Display user card
+          displayUserCard(userData);
+        });
+      }
+    });
+  }
+
+  // Function to display an error message
+  function displayErrorMessage(message) {
+    const userContainer = document.querySelector('.user-list');
+    const errorMessage = document.createElement('div');
+    errorMessage.classList.add('error-message');
+    errorMessage.textContent = message;
+    userContainer.appendChild(errorMessage);
+  }
+
+  // Function to display a user card
+  function displayUserCard(userData) {
+    const userContainer = document.querySelector('.user-list');
+    const userCard = document.createElement('div');
+    userCard.classList.add('user-card');
+    // Customize the user card HTML structure and content based on your needs
+    userCard.innerHTML = `
+    <div>Name: ${userData.name}</div>
+    <div>Email: ${userData.email}</div>
+    <!-- Add more information as needed -->
+  `;
+    userContainer.appendChild(userCard);
+  }
+
+  // Event listener for the Enter key press in the search input field
+  // Example of using search functionality when the Enter key is pressed
+  const searchInput = document.querySelector('.search-box input[type="text"]');
+  searchInput.addEventListener('keyup', function (event) {
+    if (event.key === 'Enter') {
+      const query = searchInput.value.trim();
+      searchUsers(query);
+    }
+  });
+
+
+
+</script>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -140,3 +245,64 @@
 
 </body>
 </html>
+<!-- Firebase scripts -->
+<!-- Firebase scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore.js"></script>
+
+<script>
+  // Initialize Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+    authDomain: "connectability-6ee02.firebaseapp.com",
+    projectId: "connectability-6ee02",
+    storageBucket: "connectability-6ee02.appspot.com",
+    messagingSenderId: "908801065257",
+    appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+    measurementId: "G-N8HMEMRV16"
+  };
+
+  // Initialize Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const analytics = firebase.getAnalytics(app);
+  const db = firebase.firestore(); // Get a reference to the Firestore database
+
+
+
+  //Assuming you have already initialized Firebase and have a reference to the Firestore database
+
+  function fetchUsers() {
+    const userContainer = document.querySelector('.user-list');
+
+    db.collection('USER').get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const userData = doc.data();
+        // ... (rest of your code for displaying users)
+      });
+    });
+  }
+
+  function searchUsers(query) {
+    const userContainer = document.querySelector('.user-list');
+    userContainer.innerHTML = ''; // Clear previous results
+
+    // Use orderBy and startAt/endAt for better search functionality
+    db.collection('USER').orderBy('name').startAt(query).endAt(query + '\uf8ff')
+            .get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const userData = doc.data();
+        // ... (rest of your code for displaying search results)
+      });
+    });
+  }
+
+  // Call fetchUsers when the page loads
+  window.addEventListener('load', fetchUsers);
+
+  // Example of using search functionality when the search input changes
+  const searchInput = document.querySelector('.search-box input[type="text"]');
+  searchInput.addEventListener('input', function () {
+    const query = searchInput.value.trim();
+    searchUsers(query);
+  });
+</script>
