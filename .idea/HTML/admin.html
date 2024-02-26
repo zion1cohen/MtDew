@@ -1,0 +1,142 @@
+<!-- Add this script to the head section of your HTML file -->
+<script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore.js"></script>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - ConnectAbility</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f0f0;
+    }
+
+    .header {
+      background-color: #005A9C;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+    }
+
+    .sidebar {
+      background-color: #003366;
+      color: white;
+      padding: 20px;
+      position: fixed;
+      width: 250px;
+      height: 100%;
+      overflow-y: auto; /* Allow the sidebar to scroll if content exceeds height */
+      min-height: 100vh; /* Set a minimum height to avoid cutting off content */
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 10px;
+      margin: 5px 0;
+    }
+
+    .content {
+      margin-left: 250px;
+      padding: 20px;
+    }
+
+    .search-box {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+      background-color: white;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .search-box input[type='text'] {
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: calc(100% - 20px); /* Adjust the width to allow for padding */
+      border-radius: 5px;
+    }
+
+
+
+    .user-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .user-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .user-card img {
+      width: 100%;
+      height: auto;
+      border-bottom: 1px solid #eee;
+    }
+    .user-card h3 {
+      margin: 0;
+      padding: 15px;
+    }
+    .user-card button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      width: 100%;
+      display: block;
+      cursor: pointer;
+    }
+    .user-card button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>ConnectAbility</h1>
+</div>
+
+<div class="sidebar">
+  <a href="#">User Search</a>
+  <a href="#">Message Monitoring</a>
+  <a href="#">Announcements</a>
+  <a href="#">Admin Announcements</a>
+  <a href="#">Disability Report</a>
+</div>
+
+<div class="content">
+  <div class="search-box">
+    <input type="text" placeholder="Search for a User">
+  </div>
+  <div class="user-list">
+    <!-- This is a static example. You will populate this with data from Firebase -->
+    <div class="user-card">
+      <img src="data:image/jpeg;base64,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" alt="Admin Name">
+      <h3>Clement Allen</h3>
+      <button>View Profile</button>
+    </div>
+    <!-- Repeat the user card for each user -->
+  </div>
+</div>
+
+<script>
+  // Here you would add JavaScript to interact with Firebase.
+  // For example:
+  // - You would write a function to search through the users.
+  // - You would write a function to list all users when the page loads.
+</script>
+
+</body>
+</html>
