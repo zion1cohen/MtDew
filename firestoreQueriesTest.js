@@ -1,6 +1,7 @@
 const admin = require("firebase-admin");
 
-const serviceAccount = require("/Users/khamarit/Downloads/connectability-6ee02-firebase-adminsdk-mkpk7-4bc4d2f401.json");
+const serviceAccount = require('C:/Users/dtmtz/OneDrive/Documents/GitHub/MtDew/connectability-6ee02-firebase-adminsdk-mkpk7-4bc4d2f401.json');
+
 
 // Initialize Firebase Admin SDK
 admin.initializeApp({
