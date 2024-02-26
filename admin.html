@@ -1,126 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - ConnectAbility</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f0f0f0;
-    }
-    .header {
-      background-color: #005A9C;
-      color: white;
-      padding: 10px 20px;
-      text-align: center;
-    }
-    .sidebar {
-      background-color: #003366;
-      color: white;
-      padding: 20px;
-      position: fixed;
-      width: 250px;
-      height: 100%;
-    }
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      display: block;
-      padding: 10px;
-      margin: 5px 0;
-    }
-    .content {
-      margin-left: 250px;
-      padding: 20px;
-    }
-    .search-box {
-      display: flex;
-      justify-content: space-between;
-      padding: 20px;
-      background-color: white;
-      margin-bottom: 20px;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-    .search-box input[type='text'] {
-      border: 1px solid #ccc;
-      padding: 10px;
-      width: 100%;
-      border-radius: 5px;
-    }
-    .user-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    .user-card {
-      background-color: white;
-      border-radius: 10px;
-      overflow: hidden;
-      text-align: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-    .user-card img {
-      width: 100%;
-      height: auto;
-      border-bottom: 1px solid #eee;
-    }
-    .user-card h3 {
-      margin: 0;
-      padding: 15px;
-    }
-    .user-card button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      width: 100%;
-      display: block;
-      cursor: pointer;
-    }
-    .user-card button:hover {
-      background-color: #45a049;
-    }
-  </style>
-</head>
-<body>
-
-<div class="header">
-  <h1>ConnectAbility</h1>
-</div>
-
-<div class="sidebar">
-  <a href="#">User Search</a>
-  <a href="#">Message Monitoring</a>
-  <a href="#">Announcements</a>
-  <a href="#">Admin Announcements</a>
-  <a href="#">Disability Report</a>
-</div>
-
-<div class="content">
-  <div class="search-box">
-    <input type="text" placeholder="Search for a User">
-  </div>
-  <div class="user-list">
-    <!-- This is a static example. You will populate this with data from Firebase -->
-    <div class="user-card">
-      <img src="path_to_user_image.jpg" alt="User Image">
-      <h3>User Name</h3>
-      <button>View Profile</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - ConnectAbility</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f0f0f0;
+      }
+      .header {
+        background-color: #005a9c;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+      }
+      .sidebar {
+        background-color: #003366;
+        color: white;
+        padding: 20px;
+        position: fixed;
+        width: 250px;
+        height: 100%;
+      }
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 10px;
+        margin: 5px 0;
+      }
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+      }
+      .search-box {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+        background-color: white;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+      .search-box input[type="text"] {
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 80%;
+        border-radius: 5px;
+      }
+      .search-box button {
+        padding: 10px 20px;
+        border: none;
+        background-color: #4caf50;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+      .user-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      .user-card {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        width: calc(100% / 3 - 20px);
+      }
+      .user-card h3 {
+        margin: 0;
+        padding: 15px;
+      }
+      .user-card button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        width: 100%;
+        display: block;
+        cursor: pointer;
+      }
+      .user-card button:hover {
+        background-color: #45a049;
+      }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
+  </head>
+  <body>
+    <div class="header">
+      <h1>ConnectAbility</h1>
     </div>
-    <!-- Repeat the user card for each user -->
-  </div>
-</div>
 
-<script>
-  // Here you would add JavaScript to interact with Firebase.
-  // For example:
-  // - You would write a function to search through the users.
-  // - You would write a function to list all users when the page loads.
-</script>
+    <div class="sidebar">
+      <a href="#">User Search</a>
+      <a href="#">Message Monitoring</a>
+      <a href="#">Announcements</a>
+      <a href="#">Admin Announcements</a>
+      <a href="#">Disability Report</a>
+    </div>
 
-</body>
+    <div class="content">
+      <div class="search-box">
+        <input type="text" placeholder="Search for a User" id="searchInput" />
+        <button onclick="searchUser()">Search</button>
+      </div>
+      <div class="user-list" id="userList">
+        <!-- User list will be displayed here -->
+      </div>
+    </div>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+        authDomain: "connectability-6ee02.firebaseapp.com",
+        projectId: "connectability-6ee02",
+        storageBucket: "connectability-6ee02.appspot.com",
+        messagingSenderId: "908801065257",
+        appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+        measurementId: "G-N8HMEMRV16",
+      };
+      const app = firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+
+      function searchUser() {
+        const searchInput = document.getElementById("searchInput").value.trim();
+        const userList = document.getElementById("userList");
+        userList.innerHTML = ""; // Clear previous search results
+
+        console.log(`Searching for: ${searchInput}`); // Debugging line
+
+        db.collection("USER")
+          .where("Name", "==", searchInput)
+          .get()
+          .then((querySnapshot) => {
+            console.log(`Found ${querySnapshot.size} users`); // Debugging line
+            if (querySnapshot.empty) {
+              console.log("No matching users found.");
+            } else {
+              querySnapshot.forEach((doc) => {
+                const userData = doc.data();
+                const userCard = document.createElement("div");
+                userCard.classList.add("user-card");
+                userCard.innerHTML = `
+                          <h3>${userData.Name}</h3>
+                          <!-- Display other user details here -->
+                        `;
+                userList.appendChild(userCard);
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("Error searching for users: ", error);
+          });
+      }
+    </script>
+  </body>
 </html>
