@@ -4,6 +4,57 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard - ConnectAbility</title>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        query,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+        authDomain: "connectability-6ee02.firebaseapp.com",
+        projectId: "connectability-6ee02",
+        storageBucket: "connectability-6ee02.appspot.com",
+        messagingSenderId: "908801065257",
+        appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+        measurementId: "G-N8HMEMRV16",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      async function searchUser() {
+        const searchInput = document.getElementById("searchInput").value.trim();
+        const userList = document.getElementById("userList");
+        userList.innerHTML = ""; // Clear previous search results
+
+        // Debug: Fetch all documents from a collection to ensure connectivity
+        const usersRef = collection(db, "USER"); // Adjust "USER" if your collection name is different
+        const querySnapshot = await getDocs(usersRef);
+        console.log(`Total documents in collection: ${querySnapshot.size}`);
+        if (querySnapshot.empty) {
+          console.log("Collection is empty.");
+        } else {
+          querySnapshot.forEach((doc) => {
+            const userData = doc.data();
+            console.log(`Document found: `, userData); // Log each document's data
+            // Add your UI update logic here
+            const userCard = document.createElement("div");
+            userCard.classList.add("user-card");
+            userCard.innerHTML = `<h3>${userData.Name}</h3>`; // Example of UI update
+            userList.appendChild(userCard);
+          });
+        }
+      }
+      window.searchUser = searchUser;
+    </script>
+
     <style>
       body {
         font-family: "Arial", sans-serif;
@@ -85,19 +136,12 @@
         display: block;
         cursor: pointer;
       }
-      .user-card button:hover {
-        background-color: #45a049;
-      }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
   </head>
   <body>
     <div class="header">
       <h1>ConnectAbility</h1>
     </div>
-
     <div class="sidebar">
       <a href="#">User Search</a>
       <a href="#">Message Monitoring</a>
@@ -105,7 +149,6 @@
       <a href="#">Admin Announcements</a>
       <a href="#">Disability Report</a>
     </div>
-
     <div class="content">
       <div class="search-box">
         <input type="text" placeholder="Search for a User" id="searchInput" />
@@ -115,51 +158,5 @@
         <!-- User list will be displayed here -->
       </div>
     </div>
-
-    <script>
-      const firebaseConfig = {
-        apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
-        authDomain: "connectability-6ee02.firebaseapp.com",
-        projectId: "connectability-6ee02",
-        storageBucket: "connectability-6ee02.appspot.com",
-        messagingSenderId: "908801065257",
-        appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
-        measurementId: "G-N8HMEMRV16",
-      };
-      const app = firebase.initializeApp(firebaseConfig);
-      const db = firebase.firestore();
-
-      function searchUser() {
-        const searchInput = document.getElementById("searchInput").value.trim();
-        const userList = document.getElementById("userList");
-        userList.innerHTML = ""; // Clear previous search results
-
-        console.log(`Searching for: ${searchInput}`); // Debugging line
-
-        db.collection("USER")
-          .where("Name", "==", searchInput)
-          .get()
-          .then((querySnapshot) => {
-            console.log(`Found ${querySnapshot.size} users`); // Debugging line
-            if (querySnapshot.empty) {
-              console.log("No matching users found.");
-            } else {
-              querySnapshot.forEach((doc) => {
-                const userData = doc.data();
-                const userCard = document.createElement("div");
-                userCard.classList.add("user-card");
-                userCard.innerHTML = `
-                          <h3>${userData.Name}</h3>
-                          <!-- Display other user details here -->
-                        `;
-                userList.appendChild(userCard);
-              });
-            }
-          })
-          .catch((error) => {
-            console.error("Error searching for users: ", error);
-          });
-      }
-    </script>
   </body>
 </html>
