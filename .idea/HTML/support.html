@@ -1,111 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Support Role Announcements - ConnectAbility</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f4f4f4;
-    }
-    .header {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 20px;
-      text-align: center;
-    }
-    .sidebar {
-      background-color: #003366;
-      color: white;
-      padding: 10px;
-      position: fixed;
-      width: 200px;
-      height: 100%;
-    }
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      line-height: 2.5;
-    }
-    .main-content {
-      margin-left: 200px;
-      padding: 20px;
-    }
-    .announcement {
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-    }
-    .announcement h2 {
-      color: #003366;
-      border-left: 4px solid #007bff;
-      padding-left: 10px;
-    }
-    .search-box {
-      padding: 10px 0;
-    }
-    .search-box input[type="text"] {
-      padding: 10px;
-      width: calc(100% - 40px);
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      margin-right: 10px;
-    }
-    .search-box button {
-      padding: 10px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-    }
-    .add-btn {
-      background-color: #28a745;
-      color: white;
-      padding: 10px 20px;
-      text-align: center;
-      display: block;
-      width: 200px;
-      margin: 20px auto;
-      border-radius: 5px;
-      text-decoration: none;
-    }
-  </style>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Support Role Announcements - ConnectAbility</title>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        where, // Add this import statement
+        query,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-<div class="header">
-  <h1>ConnectAbility</h1>
-</div>
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+        authDomain: "connectability-6ee02.firebaseapp.com",
+        projectId: "connectability-6ee02",
+        storageBucket: "connectability-6ee02.appspot.com",
+        messagingSenderId: "908801065257",
+        appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+        measurementId: "G-N8HMEMRV16",
+      };
 
-<div class="sidebar">
-  <a href="#">Home</a>
-  <a href="#">Profile</a>
-  <a href="#">Resources</a>
-  <a href="#">Announcement Support</a>
-  <a href="#">Settings</a>
-  <a href="#">User Reports</a>
-</div>
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
 
-<div class="main-content">
-  <div class="search-box">
-    <input type="text" placeholder="Search...">
-    <button>Search</button>
-  </div>
+      async function searchUser() {
+        const searchInput = document.getElementById("searchInput").value.trim();
+        const userList = document.getElementById("userList");
+        userList.innerHTML = ""; // Clear previous search results
 
-  <a href="#" class="add-btn">Add Announcement</a>
+        // Query to search for the user based on the input
+        const usersRef = collection(db, "USER"); // Adjust "USER" if your collection name is different
+        const q = query(usersRef, where("Name", "==", searchInput)); // Filter users by name
 
-  <div class="announcement">
-    <h2>Support Role Announcements</h2>
-    <p><strong>Scheduled Maintenance - System Upgrade</strong></p>
-    <p>Date: 2/6/2024</p>
-    <p>Attention Admins! ConnectAbility will undergo scheduled maintenance on 2/15/24 for a system upgrade. The platform will be temporarily inaccessible during this time. We appreciate your understanding as we work to enhance your user experience.</p>
-    <!-- More announcements here -->
-  </div>
-</div>
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+          console.log("No matching user found.");
+          userList.innerHTML = "<p>No matching user found.</p>"; // Show a message if no user is found
+        } else {
+          querySnapshot.forEach((doc) => {
+            const userData = doc.data();
+            console.log(`Document found: `, userData); // Log each document's data
+            // Add your UI update logic here
+            const userCard = document.createElement("div");
+            userCard.classList.add("user-card");
+            userCard.innerHTML = `<h3>${userData.Name}</h3>`; // Example of UI update
+            userList.appendChild(userCard);
+          });
+        }
+      }
+      window.searchUser = searchUser;
+    </script>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f4f4f4;
+      }
+      .header {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+      }
+      .sidebar {
+        background-color: #003366;
+        color: white;
+        padding: 10px;
+        position: fixed;
+        width: 200px;
+        height: 100%;
+      }
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        line-height: 2.5;
+      }
+      .main-content {
+        margin-left: 200px;
+        padding: 20px;
+      }
+      .announcement {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+      .announcement h2 {
+        color: #003366;
+        border-left: 4px solid #007bff;
+        padding-left: 10px;
+      }
+      .search-box {
+        padding: 10px 0;
+      }
+      .search-box input[type="text"] {
+        padding: 10px;
+        width: calc(100% - 40px);
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        margin-right: 10px;
+      }
+      .search-box button {
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+      }
+      .add-btn {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        display: block;
+        width: 200px;
+        margin: 20px auto;
+        border-radius: 5px;
+        text-decoration: none;
+      }
+      .announcement-form {
+        margin-top: 20px;
+      }
+      .announcement-form input[type="text"],
+      .announcement-form textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+      .announcement-form button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .user-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      .user-card {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        width: calc(100% / 3 - 20px);
+      }
+      .user-card h3 {
+        margin: 0;
+        padding: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>ConnectAbility</h1>
+    </div>
 
-</body>
+    <div class="sidebar">
+      <a href="#">Home</a>
+      <a href="#">Profile</a>
+      <a href="#">Resources</a>
+      <a href="#">Announcement Support</a>
+      <a href="#">Settings</a>
+      <a href="#">User Reports</a>
+    </div>
+
+    <div class="main-content">
+      <div class="search-box">
+        <input type="text" placeholder="Search..." id="searchInput" />
+        <button onclick="searchUser()">Search</button>
+      </div>
+
+      <a href="#" class="add-btn" onclick="toggleAnnouncementForm()"
+        >Add Announcement</a
+      >
+
+      <!-- Announcement Form -->
+      <div class="announcement-form" style="display: none">
+        <input
+          type="text"
+          id="announcementTitle"
+          placeholder="Enter announcement title"
+        />
+        <textarea
+          id="announcementContent"
+          placeholder="Enter announcement content"
+        ></textarea>
+        <button onclick="addAnnouncement()">Submit Announcement</button>
+      </div>
+
+      <!-- Announcements Container -->
+      <div class="announcement" id="announcementContainer">
+        <h2>Support Role Announcements</h2>
+        <p><strong>Scheduled Maintenance - System Upgrade</strong></p>
+        <p>Date: 2/6/2024</p>
+        <p>
+          Attention Admins! ConnectAbility will undergo scheduled maintenance on
+          2/15/24 for a system upgrade. The platform will be temporarily
+          inaccessible during this time. We appreciate your understanding as we
+          work to enhance your user experience.
+        </p>
+        <!-- More announcements here -->
+      </div>
+
+      <!-- User Search Results -->
+      <div class="user-list" id="userList"></div>
+    </div>
+
+    /*
+    <script>
+      function toggleAnnouncementForm() {
+        const form = document.querySelector(".announcement-form");
+        form.style.display = form.style.display === "none" ? "block" : "none";
+      }
+
+      function addAnnouncement() {
+        const announcementTitle = document
+          .getElementById("announcementTitle")
+          .value.trim();
+        const announcementContent = document
+          .getElementById("announcementContent")
+          .value.trim();
+
+        if (announcementTitle && announcementContent) {
+          const announcementContainer = document.getElementById(
+            "announcementContainer"
+          );
+          const newAnnouncement = document.createElement("div");
+          newAnnouncement.classList.add("announcement");
+          newAnnouncement.innerHTML = `
+          <h2>${announcementTitle}</h2>
+          <p>${announcementContent}</p>
+        `;
+          announcementContainer.appendChild(newAnnouncement);
+          // Clear input fields after submission
+          document.getElementById("announcementTitle").value = "";
+          document.getElementById("announcementContent").value = "";
+          // Hide the form after submission
+          toggleAnnouncementForm();
+        } else {
+          console.error(
+            "Please enter both title and content for the announcement."
+          );
+        }
+      }
+
+      async function searchUser() {
+        const searchInput = document.getElementById("searchInput").value.trim();
+        const userList = document.getElementById("userList");
+        userList.innerHTML = ""; // Clear previous search results
+
+        if (searchInput) {
+          const q = firebase
+            .firestore()
+            .collection("USER")
+            .where("Name", "==", searchInput);
+
+          const querySnapshot = await q.get();
+          if (querySnapshot.empty) {
+            console.log("No matching user found.");
+            userList.innerHTML = "<p>No matching user found.</p>"; // Show a message if no user is found
+          } else {
+            querySnapshot.forEach((doc) => {
+              const userData = doc.data();
+              console.log(`Document found: `, userData); // Log each document's data
+              // Add your UI update logic here
+              const userCard = document.createElement("div");
+              userCard.classList.add("user-card");
+              userCard.innerHTML = `<h3>${userData.Name}</h3>`; // Example of UI update
+              userList.appendChild(userCard);
+            });
+          }
+        } else {
+          console.log("Please enter a name to search.");
+          userList.innerHTML = "<p>Please enter a name to search.</p>"; // Prompt user to enter a search term
+        }
+      }
+    </script>
+  </body>
 </html>
