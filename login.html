@@ -28,6 +28,7 @@
         border-radius: 10px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         width: 300px;
+        position: relative; /* Added position relative */
       }
 
       .login-container h2 {
@@ -71,6 +72,16 @@
         text-align: center;
         margin-top: 20px;
       }
+
+      /* Added Google logo styling */
+      .google-logo {
+        width: 30px;
+        height: 30px;
+        position: absolute;
+        top: 100%;
+        right: 10px;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -78,6 +89,8 @@
       <div class="login-container">
         <h2>ConnectAbility Sign In</h2>
         <form id="loginForm">
+          <!-- Your form fields go here -->
+
           <label for="role">I am a:</label>
           <select id="role" name="role">
             <option value="user">User</option>
@@ -91,18 +104,50 @@
           <input type="password" id="psw" name="psw" required />
 
           <button type="submit">Sign In</button>
-          <div class="register">
-            <p>Don't have an account? <a href="#">Register Now</a>.</p>
-          </div>
         </form>
+
+        <!-- Google sign-in button styled as an icon or text -->
+        <div style="text-align: center; margin-top: 20px">
+          Sign in with Google
+          <button
+            id="googleSignInButton"
+            style="background-color: transparent; border: none; cursor: pointer"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 488 512"
+              width="20"
+              height="20"
+            >
+              <!-- SVG Path for Google Icon -->
+              <path
+                d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div class="register">
+          <p>
+            Don't have an account? <a href="register.html">Register Now</a>.
+          </p>
+        </div>
       </div>
     </div>
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+    <script
+      type="module"
+      src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"
+    ></script>
+    <script
+      type="module"
+      src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"
+    ></script>
 
     <!-- Your Firebase configuration and login script -->
+
+    <script type="module" src="firebase-config.js"></script>
     <script type="module" src="login.js"></script>
   </body>
 </html>
