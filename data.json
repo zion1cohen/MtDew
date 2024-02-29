@@ -1,0 +1,279 @@
+{
+  "SUPPORT_ROLE": {
+    "supportRoleId1": {
+      "Name": "Accessibility Support"
+    },
+    "supportRoleId2": {
+      "Name": "Technical Assistance"
+    },
+    "supportRoleId3": {
+      "Name": "Community Engagement Coordinator"
+    }
+  },
+  "RESOURCE": {
+    "resourceId1": {
+      "Content": "How to Navigate Connectability with Screen Readers",
+      "Timestamp": "2024-02-18T12:00:00Z"
+    },
+    "resourceId2": {
+      "Content": "Guide to Customizing Your Profile for Maximum Accessibility",
+      "Timestamp": "2024-02-18T15:30:00Z"
+    },
+    "resourceId3": {
+      "Content": "Tips for Safe and Positive Interactions on Connectability",
+      "Timestamp": "2024-02-19T10:00:00Z"
+    }
+  },
+  "ANNOUNCEMENT": {
+    "announcementId1": {
+      "Content": "Upcoming Workshop: Enhancing Digital Accessibility",
+      "Timestamp": "2024-02-18T12:00:00Z"
+    },
+    "announcementId2": {
+      "Content": "New Feature Alert: Voice Commands for Easier Navigation",
+      "Timestamp": "2024-02-19T09:00:00Z"
+    },
+    "announcementId3": {
+      "Content": "Join Our Monthly Virtual Meetup for Wheelchair Users",
+      "Timestamp": "2024-02-20T08:00:00Z"
+    }
+  },
+  "ADMIN": {
+    "adminId1": {
+      "Name": "Alex Martinez"
+    },
+    "adminId2": {
+      "Name": "Jordan Kim"
+    },
+    "adminId3": {
+      "Name": "Sam Rivera"
+    }
+  },
+  "REPORT": {
+    "reportId1": {
+      "Type": "Accessibility Issue",
+      "Timestamp": "2024-02-18T12:00:00Z"
+    },
+    "reportId2": {
+      "Type": "Inappropriate Behavior",
+      "Timestamp": "2024-02-18T16:45:00Z"
+    },
+    "reportId3": {
+      "Type": "Technical Glitch",
+      "Timestamp": "2024-02-19T14:30:00Z"
+    }
+  },
+  "USER": {
+    "userId1": {
+      "Name": "Emily Carter",
+      "Status": "Active",
+      "Interests": "Accessible Travel, Adaptive Sports, Assistive Technology",
+      "AccountAction": ["create", "update", "login"],
+      "MatchAction": "automatic",
+      "Connections": {
+        "connectionId1": true,
+        "connectionId3": true
+      },
+      "Posts": {
+        "postId1": true,
+        "postId3": true
+      },
+      "SentMessages": {
+        "messageId1": true,
+        "messageId3": true
+      },
+      "ReceivedMessages": {
+        "messageId2": true
+      },
+      "SentFriendRequests": {
+        "friendRequestId1": true
+      },
+      "ReceivedFriendRequests": {
+        "friendRequestId2": true
+      },
+      "FeedbackGiven": {
+        "feedbackId1": true
+      },
+      "FlagsMade": {
+        "flagId1": true
+      }
+    },
+    "userId2": {
+      "Name": "Michael Johnson",
+      "Status": "Active",
+      "Interests": "Sign Language, Deaf Culture, Accessibility Advocacy",
+      "AccountAction": ["create"],
+      "MatchAction": "manual",
+      "Connections": {
+        "connectionId2": true
+      },
+      "Posts": {
+        "postId2": true
+      },
+      "SentMessages": {
+        "messageId2": true
+      },
+      "ReceivedMessages": {
+        "messageId1": true,
+        "messageId3": true
+      },
+      "SentFriendRequests": {
+        "friendRequestId2": true
+      },
+      "ReceivedFriendRequests": {
+        "friendRequestId1": true
+      },
+      "FeedbackGiven": {
+        "feedbackId2": true
+      },
+      "FlagsMade": {
+        "flagId2": true
+      }
+    },
+    "userId3": {
+      "Name": "Sarah Lee",
+      "Status": "Active",
+      "Interests": "Wheelchair Dancing, Accessible Cooking, Braille Literacy",
+      "AccountAction": ["create", "update"],
+      "MatchAction": "manual",
+      "Connections": {
+        "connectionId3": true
+      },
+      "Posts": {
+        "postId3": true,
+        "postId4": true
+      },
+      "SentMessages": {
+        "messageId3": true
+      },
+      "ReceivedMessages": {
+        "messageId1": true
+      },
+      "SentFriendRequests": {
+        "friendRequestId3": true
+      },
+      "ReceivedFriendRequests": {
+        "friendRequestId3": true
+      },
+      "FeedbackGiven": {
+        "feedbackId3": true
+      },
+      "FlagsMade": {
+        "flagId3": true
+      }
+    }
+  },
+  "MESSAGE": {
+    "messageId1": {
+      "Content": "Excited to join the workshop on digital accessibility!",
+      "SenderId": "userId1",
+      "ReceiverId": "userId2",
+      "Timestamp": "2024-02-18T12:00:00Z"
+    },
+    "messageId2": {
+      "Content": "Looking forward to learning sign language with you!",
+      "SenderId": "userId2",
+      "ReceiverId": "userId1",
+      "Timestamp": "2024-02-18T13:30:00Z"
+    },
+    "messageId3": {
+      "Content": "Your post on wheelchair dancing inspired me to start!",
+      "SenderId": "userId3",
+      "ReceiverId": "userId2",
+      "Timestamp": "2024-02-19T15:45:00Z"
+    }
+  },
+  "CONNECTION": {
+    "connectionId1": {
+      "UserId1": "userId1",
+      "UserId2": "userId2",
+      "Timestamp": "2024-02-18T12:00:00Z"
+    },
+    "connectionId2": {
+      "UserId1": "userId2",
+      "UserId2": "userId3",
+      "Timestamp": "2024-02-19T11:00:00Z"
+    },
+    "connectionId3": {
+      "UserId1": "userId1",
+      "UserId2": "userId3",
+      "Timestamp": "2024-02-20T09:30:00Z"
+    }
+  },
+  "FRIENDREQUEST": {
+    "friendRequestId1": {
+      "SenderId": "userId1",
+      "ReceiverId": "userId2",
+      "Status": "accepted",
+      "Timestamp": "2024-02-18T11:30:00Z"
+    },
+    "friendRequestId2": {
+      "SenderId": "userId2",
+      "ReceiverId": "userId1",
+      "Status": "accepted",
+      "Timestamp": "2024-02-18T12:30:00Z"
+    },
+    "friendRequestId3": {
+      "SenderId": "userId3",
+      "ReceiverId": "userId1",
+      "Status": "pending",
+      "Timestamp": "2024-02-19T16:00:00Z"
+    }
+  },
+  "POST": {
+    "postId1": {
+      "Content": "Just completed an accessible travel guide for Barcelona! #AccessibleTravel",
+      "UserId": "userId1",
+      "Timestamp": "2024-02-18T17:30:00Z"
+    },
+    "postId2": {
+      "Content": "Exploring deaf culture through art. Here's my latest piece. #DeafCulture",
+      "UserId": "userId2",
+      "Timestamp": "2024-02-19T12:45:00Z"
+    },
+    "postId3": {
+      "Content": "Wheelchair dancing at the local community center was a blast! Who else loves dancing? #WheelchairDancing",
+      "UserId": "userId3",
+      "Timestamp": "2024-02-20T13:15:00Z"
+    },
+    "postId4": {
+      "Content": "Tried some new recipes that are easy to make from a wheelchair! Delicious and accessible. #AccessibleCooking",
+      "UserId": "userId3",
+      "Timestamp": "2024-02-21T14:00:00Z"
+    }
+  },
+  "FEEDBACK": {
+    "feedbackId1": {
+      "Content": "Connectability's voice command feature has been a game-changer for me. Thank you!",
+      "UserId": "userId1",
+      "Timestamp": "2024-02-18T18:30:00Z"
+    },
+    "feedbackId2": {
+      "Content": "I appreciate the efforts to make the platform more accessible, but could we have more ASL content?",
+      "UserId": "userId2",
+      "Timestamp": "2024-02-19T19:00:00Z"
+    },
+    "feedbackId3": {
+      "Content": "Having some trouble with the app's navigation. Could use more intuitive design for low-vision users.",
+      "UserId": "userId3",
+      "Timestamp": "2024-02-20T20:00:00Z"
+    }
+  },
+  "FLAG": {
+    "flagId1": {
+      "UserId": "userId1",
+      "Reason": "Accessibility Barrier",
+      "Timestamp": "2024-02-18T19:30:00Z"
+    },
+    "flagId2": {
+      "UserId": "userId2",
+      "Reason": "Inaccurate Information",
+      "Timestamp": "2024-02-19T20:30:00Z"
+    },
+    "flagId3": {
+      "UserId": "userId3",
+      "Reason": "Misrepresentation of Disability",
+      "Timestamp": "2024-02-20T21:30:00Z"
+    }
+  }
+}
