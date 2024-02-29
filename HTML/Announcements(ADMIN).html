@@ -1,120 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Announcements - ConnectAbility</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f0f2f5;
-    }
-    .header {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 20px;
-      text-align: center;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .sidebar {
-      background-color: #003366;
-      color: white;
-      padding: 10px;
-      position: fixed;
-      width: 200px;
-      height: 100%;
-      overflow: auto;
-    }
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      padding: 10px 15px;
-      display: block;
-      border-radius: 4px;
-      transition: background-color 0.3s;
-    }
-    .sidebar a:hover {
-      background-color: #0056b3;
-    }
-    .main-content {
-      margin-left: 200px;
-      padding: 20px;
-    }
-    .main-content-header {
-      background-color: #ffffff;
-      padding: 10px 20px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      font-size: 24px;
-      color: #003366;
-      text-align: center;
-    }
-    .announcement {
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 5px;
-      margin-bottom: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .announcement h2 {
-      color: #003366;
-      font-size: 18px;
-      margin-bottom: 8px;
-    }
-    .announcement p {
-      font-size: 14px;
-      color: #555;
-      line-height: 1.5;
-      margin-bottom: 10px;
-    }
-    .announcement time {
-      display: block;
-      text-align: right;
-      color: #777;
-    }
-  </style>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Announcements - ConnectAbility</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f0f2f5;
+      }
+      .header {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .sidebar {
+        background-color: #003366;
+        color: white;
+        padding: 10px;
+        position: fixed;
+        width: 200px;
+        height: 100%;
+        overflow: auto;
+      }
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        padding: 10px 15px;
+        display: block;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+      .sidebar a:hover {
+        background-color: #0056b3;
+      }
+      .main-content {
+        margin-left: 200px;
+        padding: 20px;
+      }
+      .main-content-header {
+        background-color: #ffffff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        font-size: 24px;
+        color: #003366;
+        text-align: center;
+      }
+      .announcement {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .announcement h2 {
+        color: #003366;
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+      .announcement p {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.5;
+        margin-bottom: 10px;
+      }
+      .announcement time {
+        display: block;
+        text-align: right;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>ConnectAbility</h1>
+    </div>
 
-<div class="header">
-  <h1>ConnectAbility</h1>
-</div>
+    <div class="sidebar">
+      <a href="admin.html">User Search</a>
+      <a href="MessageMonitoring(ADMIN).html">Message Monitoring</a>
+      <a href="Announcements(USER).html">Announcements</a>
+      <a href="Announcements(ADMIN).html">Admin Announcements</a>
+      <a href="DisabilityReport(ADMIN).html">Disability Report</a>
+    </div>
 
-<div class="sidebar">
-  <a href="#">User Search</a>
-  <a href="#">Message Monitoring</a>
-  <a href="#">Announcements</a>
-  <a href="#">Admin Announcements</a>
-  <a href="#">Disability Report</a>
-</div>
+    <div class="main-content">
+      <div class="main-content-header">Announcements</div>
 
-<div class="main-content">
-  <div class="main-content-header">
-    Announcements
-  </div>
-
-  <!-- Example Announcement -->
-  <div class="announcement">
-    <h2>Support Role Coordinator</h2>
-    <p>Scheduled Maintenance - System Upgrade</p>
-      <p>Date: 2/6/2024</p>
-      <p>Attention Admins! Connectability will undergo scheduled maintenance on 2/15/24 for a system upgrade. The platform will be temporarily inaccessible during this time. We appreciate your understanding as we work to enhance your user experience.</p>
-    <time>11:40am</time>
-  </div>
-  <!-- Another Example Announcement -->
-  <div class="announcement">
-    <h2>Support Role Coordinator</h2>
-    <p>New Feature Announcement - Customizable User Roles</p>
-    <p>Date: 2/6/2024</p>
-      <p>Admins rejoice! You can now customize user roles in Connectability. Tailor access and permissions to match your team's unique structure. Head to the admin settings to explore this powerful new feature and optimize your team's workflow.</p>
-    <time>8:24am</time>
-  </div>
-  <!-- More announcements can be added here -->
-</div>
-</body>
+      <!-- Example Announcement -->
+      <div class="announcement">
+        <h2>Support Role Coordinator</h2>
+        <p>Scheduled Maintenance - System Upgrade</p>
+        <p>Date: 2/6/2024</p>
+        <p>
+          Attention Admins! Connectability will undergo scheduled maintenance on
+          2/15/24 for a system upgrade. The platform will be temporarily
+          inaccessible during this time. We appreciate your understanding as we
+          work to enhance your user experience.
+        </p>
+        <time>11:40am</time>
+      </div>
+      <!-- Another Example Announcement -->
+      <div class="announcement">
+        <h2>Support Role Coordinator</h2>
+        <p>New Feature Announcement - Customizable User Roles</p>
+        <p>Date: 2/6/2024</p>
+        <p>
+          Admins rejoice! You can now customize user roles in Connectability.
+          Tailor access and permissions to match your team's unique structure.
+          Head to the admin settings to explore this powerful new feature and
+          optimize your team's workflow.
+        </p>
+        <time>8:24am</time>
+      </div>
+      <!-- More announcements can be added here -->
+    </div>
+  </body>
 </html>
