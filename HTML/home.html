@@ -1,143 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ConnectAbility Feed</title>
-    <style>
-      body {
-        font-family: "Arial", sans-serif;
-        margin: 0;
-        padding: 0;
-        background: #f4f4f4;
-      }
-      .header {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-      }
-      .sidebar {
-        background-color: #003366;
-        color: white;
-        padding: 10px;
-        position: fixed;
-        width: 200px;
-        height: 100%;
-        overflow: auto;
-      }
-      .sidebar a {
-        color: white;
-        text-decoration: none;
-        padding: 10px 15px;
-        display: block;
-        border-radius: 4px;
-        transition: background-color 0.3s;
-      }
-      .sidebar a:hover {
-        background-color: #0056b3;
-      }
-      .main-content {
-        margin-left: 200px;
-        padding: 20px;
-      }
-      .post {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-      }
-      .post img {
-        max-width: 50%;
-        height: auto;
-        border-radius: 5px;
-      }
-      .post-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-      }
-      .post-header img {
-        border-radius: 50%;
-        margin-right: 10px;
-      }
-      .post-header h3 {
-        margin: 0;
-      }
-      .post-content {
-        margin-bottom: 10px;
-      }
-      .post-time {
-        text-align: right;
-        color: #777;
-      }
-      .make-post {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-        border-radius: 5px;
-        text-decoration: none;
-        display: block;
-        width: auto;
-        margin-bottom: 20px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="header">
-      <h1>ConnectAbility</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ConnectAbility Feed</title>
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    .header {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+    }
+    .sidebar {
+      background-color: #003366;
+      color: white;
+      padding: 10px;
+      position: fixed;
+      width: 200px;
+      height: 100%;
+      overflow: auto;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 15px;
+      display: block;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    .sidebar a:hover {
+      background-color: #0056b3;
+    }
+    .main-content {
+      margin-left: 200px;
+      padding: 20px;
+    }
+    .post {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .post img {
+      max-width: 100%; /* Make image responsive */
+      max-height: 300px; /* Set max height for the image */
+      border-radius: 5px;
+      margin-bottom: 10px; /* Add some space between text and image */
+    }
+    .post-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .post-header img {
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .post-header h3 {
+      margin: 0;
+    }
+    .post-content {
+      margin-bottom: 10px;
+    }
+    .post-time {
+      text-align: right;
+      color: #777;
+    }
+    .make-post {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      border-radius: 5px;
+      text-decoration: none;
+      display: block;
+      width: auto;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h1>ConnectAbility</h1>
+</div>
+
+<div class="sidebar">
+  <a href="home.html">Home</a>
+  <a href="#">Profile</a>
+  <a href="#">Messages</a>
+  <a href="match.html">Matches</a>
+  <a href="#">Announcements</a>
+  <a href="#">Resources</a>
+  <a href="#">Feedback</a>
+  <a href="settings.html">Settings</a>
+</div>
+
+<div class="main-content">
+  <a href="#" class="make-post">Make Post</a>
+
+  <!-- Post template -->
+  <!-- Repeat this block for each post using server-side or client-side rendering -->
+  <div class="post">
+    <div class="post-header">
+      <img src="greg.png" alt="Profile picture" width="50" />
+      <h3>Gregory</h3>
     </div>
-
-    <div class="sidebar">
-      <a href="home.html">Home</a>
-      <a href="#">Profile</a>
-      <a href="#">Messages</a>
-      <a href="match.html">Matches</a>
-      <a href="#">Announcements</a>
-      <a href="#">Resources</a>
-      <a href="#">Feedback</a>
-      <a href="settings.html">Settings</a>
+    <div class="post-content">
+      Me enjoying the sunset yesterday!
     </div>
-
-    <div class="main-content">
-      <a href="#" class="make-post">Make Post</a>
-
-      <!-- Post template -->
-      <!-- Repeat this block for each post using server-side or client-side rendering -->
-      <div class="post">
-        <div class="post-header">
-          <img src="profile_picture_url.jpg" alt="Profile picture" width="50" />
-          <h3>Gregory</h3>
-        </div>
-        <div class="post-content">
-          Me enjoying the sunset yesterday!
-          <img
+    <img
             src="https://upload.wikimedia.org/wikipedia/commons/5/58/Sunset_2007-1.jpg"
             alt="Sunset"
-          />
-        </div>
-        <div class="post-time">4:31pm</div>
-      </div>
+    />
+    <div class="post-time">4:31pm</div>
+  </div>
 
-      <!-- Example of another post -->
-      <div class="post">
-        <div class="post-header">
-          <img
-            src="profile_picture_url_2.jpg"
-            alt="Profile picture"
-            width="50"
-          />
-          <h3>Janet</h3>
-        </div>
-        <div class="post-content">
-          “Have enough courage to trust love one more time and always one more
-          time.” - Maya Angelou
-        </div>
-        <div class="post-time">1:09pm</div>
-      </div>
+  <!-- Example of another post -->
+  <div class="post">
+    <div class="post-header">
+      <img src="janet.png" alt="Profile picture" width="50" />
+      <h3>Janet</h3>
     </div>
+    <div class="post-content">
+      “Have enough courage to trust love one more time and always one more
+      time.” - Maya Angelou
+    </div>
+    <div class="post-time">1:09pm</div>
+  </div>
+</div>
 
-    <script src="navigation.js"></script>
-  </body>
+<script src="navigation.js"></script>
+</body>
 </html>

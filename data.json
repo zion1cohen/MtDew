@@ -22,6 +22,14 @@
     "resourceId3": {
       "Content": "Tips for Safe and Positive Interactions on Connectability",
       "Timestamp": "2024-02-19T10:00:00Z"
+    },
+    "resourceId4": {
+      "Content": "Building Accessible Communities: A Workshop Series",
+      "Timestamp": "2024-02-19T14:30:00Z"
+    },
+    "resourceId5": {
+      "Content": "Introduction to Assistive Technologies",
+      "Timestamp": "2024-02-20T11:00:00Z"
     }
   },
   "ANNOUNCEMENT": {
@@ -36,6 +44,14 @@
     "announcementId3": {
       "Content": "Join Our Monthly Virtual Meetup for Wheelchair Users",
       "Timestamp": "2024-02-20T08:00:00Z"
+    },
+    "announcementId4": {
+      "Content": "System Update: Improved Accessibility Features",
+      "Timestamp": "2024-02-20T14:30:00Z"
+    },
+    "announcementId5": {
+      "Content": "Celebrating Inclusive Design Milestones on ConnectAbility",
+      "Timestamp": "2024-02-21T10:00:00Z"
     }
   },
   "ADMIN": {
@@ -47,6 +63,12 @@
     },
     "adminId3": {
       "Name": "Sam Rivera"
+    },
+    "adminId4": {
+      "Name": "Mia Rodriguez"
+    },
+    "adminId5": {
+      "Name": "Chris Evans"
     }
   },
   "REPORT": {
@@ -61,12 +83,24 @@
     "reportId3": {
       "Type": "Technical Glitch",
       "Timestamp": "2024-02-19T14:30:00Z"
+    },
+    "reportId4": {
+      "Type": "Content Violation",
+      "Timestamp": "2024-02-20T09:00:00Z"
+    },
+    "reportId5": {
+      "Type": "Security Concern",
+      "Timestamp": "2024-02-21T11:30:00Z"
     }
   },
   "USER": {
     "userId1": {
       "Name": "Emily Carter",
       "Status": "Active",
+      "Age": 28,
+      "Gender": "Female",
+      "Disability": "Mobility Impairment",
+      "MaritalStatus": "Single",
       "Interests": "Accessible Travel, Adaptive Sports, Assistive Technology",
       "AccountAction": ["create", "update", "login"],
       "MatchAction": "automatic",
@@ -96,11 +130,16 @@
       },
       "FlagsMade": {
         "flagId1": true
-      }
+      },
+      "Email": "emily.carter@example.com"
     },
     "userId2": {
       "Name": "Michael Johnson",
       "Status": "Active",
+      "Age": 32,
+      "Gender": "Male",
+      "Disability": "Visual Impairment",
+      "MaritalStatus": "Married",
       "Interests": "Sign Language, Deaf Culture, Accessibility Advocacy",
       "AccountAction": ["create"],
       "MatchAction": "manual",
@@ -128,11 +167,16 @@
       },
       "FlagsMade": {
         "flagId2": true
-      }
+      },
+      "Email": "michael.johnson@example.com"
     },
     "userId3": {
       "Name": "Sarah Lee",
       "Status": "Active",
+      "Age": 25,
+      "Gender": "Female",
+      "Disability": "Wheelchair Dancing",
+      "MaritalStatus": "Single",
       "Interests": "Wheelchair Dancing, Accessible Cooking, Braille Literacy",
       "AccountAction": ["create", "update"],
       "MatchAction": "manual",
@@ -160,7 +204,80 @@
       },
       "FlagsMade": {
         "flagId3": true
-      }
+      },
+      "Email": "sarah.lee@example.com"
+    },
+    "userId4": {
+      "Name": "Daniel Patel",
+      "Status": "Active",
+      "Age": 30,
+      "Gender": "Male",
+      "Disability": "Cognitive or Intellectual Disability",
+      "MaritalStatus": "Single",
+      "Interests": "Accessible Technology, Inclusive Design, Coding",
+      "AccountAction": ["create", "update"],
+      "MatchAction": "automatic",
+      "Connections": {
+        "connectionId4": true
+      },
+      "Posts": {
+        "postId5": true
+      },
+      "SentMessages": {
+        "messageId4": true
+      },
+      "ReceivedMessages": {
+        "messageId2": true
+      },
+      "SentFriendRequests": {
+        "friendRequestId4": true
+      },
+      "ReceivedFriendRequests": {
+        "friendRequestId5": true
+      },
+      "FeedbackGiven": {
+        "feedbackId4": true
+      },
+      "FlagsMade": {
+        "flagId4": true
+      },
+      "Email": "daniel.patel@example.com"
+    },
+    "userId5": {
+      "Name": "Aisha Khan",
+      "Status": "Active",
+      "Age": 27,
+      "Gender": "Female",
+      "Disability": "Neurodevelopmental Disorders (Autism)",
+      "MaritalStatus": "Single",
+      "Interests": "Accessible Art, Disability Rights Advocacy, Inclusive Education",
+      "AccountAction": ["create"],
+      "MatchAction": "manual",
+      "Connections": {
+        "connectionId5": true
+      },
+      "Posts": {
+        "postId6": true
+      },
+      "SentMessages": {
+        "messageId5": true
+      },
+      "ReceivedMessages": {
+        "messageId4": true
+      },
+      "SentFriendRequests": {
+        "friendRequestId6": true
+      },
+      "ReceivedFriendRequests": {
+        "friendRequestId4": true
+      },
+      "FeedbackGiven": {
+        "feedbackId5": true
+      },
+      "FlagsMade": {
+        "flagId5": true
+      },
+      "Email": "aisha.khan@example.com"
     }
   },
   "MESSAGE": {
@@ -181,6 +298,18 @@
       "SenderId": "userId3",
       "ReceiverId": "userId2",
       "Timestamp": "2024-02-19T15:45:00Z"
+    },
+    "messageId4": {
+      "Content": "Discussing the latest accessible technologies!",
+      "SenderId": "userId4",
+      "ReceiverId": "userId5",
+      "Timestamp": "2024-02-20T11:00:00Z"
+    },
+    "messageId5": {
+      "Content": "Admiring your inclusive art pieces. Let's collaborate!",
+      "SenderId": "userId5",
+      "ReceiverId": "userId3",
+      "Timestamp": "2024-02-21T09:30:00Z"
     }
   },
   "CONNECTION": {
@@ -198,6 +327,16 @@
       "UserId1": "userId1",
       "UserId2": "userId3",
       "Timestamp": "2024-02-20T09:30:00Z"
+    },
+    "connectionId4": {
+      "UserId1": "userId4",
+      "UserId2": "userId5",
+      "Timestamp": "2024-02-20T10:30:00Z"
+    },
+    "connectionId5": {
+      "UserId1": "userId5",
+      "UserId2": "userId3",
+      "Timestamp": "2024-02-21T09:00:00Z"
     }
   },
   "FRIENDREQUEST": {
@@ -218,6 +357,18 @@
       "ReceiverId": "userId1",
       "Status": "pending",
       "Timestamp": "2024-02-19T16:00:00Z"
+    },
+    "friendRequestId4": {
+      "SenderId": "userId4",
+      "ReceiverId": "userId5",
+      "Status": "accepted",
+      "Timestamp": "2024-02-20T10:00:00Z"
+    },
+    "friendRequestId5": {
+      "SenderId": "userId5",
+      "ReceiverId": "userId4",
+      "Status": "pending",
+      "Timestamp": "2024-02-21T08:30:00Z"
     }
   },
   "POST": {
@@ -240,6 +391,16 @@
       "Content": "Tried some new recipes that are easy to make from a wheelchair! Delicious and accessible. #AccessibleCooking",
       "UserId": "userId3",
       "Timestamp": "2024-02-21T14:00:00Z"
+    },
+    "postId5": {
+      "Content": "Exploring the world of coding and accessibility! #Coding #Accessibility",
+      "UserId": "userId4",
+      "Timestamp": "2024-02-20T10:45:00Z"
+    },
+    "postId6": {
+      "Content": "Promoting inclusive education through art. Let's create a supportive environment! #InclusiveEducation",
+      "UserId": "userId5",
+      "Timestamp": "2024-02-21T08:00:00Z"
     }
   },
   "FEEDBACK": {
@@ -257,6 +418,16 @@
       "Content": "Having some trouble with the app's navigation. Could use more intuitive design for low-vision users.",
       "UserId": "userId3",
       "Timestamp": "2024-02-20T20:00:00Z"
+    },
+    "feedbackId4": {
+      "Content": "Great work on the coding tutorials! Clear and beginner-friendly. #AccessibilityInCoding",
+      "UserId": "userId4",
+      "Timestamp": "2024-02-20T11:30:00Z"
+    },
+    "feedbackId5": {
+      "Content": "As an educator, I value platforms promoting inclusive education. Keep it up!",
+      "UserId": "userId5",
+      "Timestamp": "2024-02-21T09:00:00Z"
     }
   },
   "FLAG": {
@@ -274,6 +445,16 @@
       "UserId": "userId3",
       "Reason": "Misrepresentation of Disability",
       "Timestamp": "2024-02-20T21:30:00Z"
+    },
+    "flagId4": {
+      "UserId": "userId4",
+      "Reason": "Positive Contribution",
+      "Timestamp": "2024-02-20T11:45:00Z"
+    },
+    "flagId5": {
+      "UserId": "userId5",
+      "Reason": "Promoting Inclusivity",
+      "Timestamp": "2024-02-21T09:15:00Z"
     }
   }
 }
