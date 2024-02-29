@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - ConnectAbility</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f2f5;
+    }
+    .header {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .sidebar {
+      background-color: #003366;
+      color: white;
+      padding: 10px;
+      position: fixed;
+      height: 100%;
+      width: 200px;
+      overflow-y: auto;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      display: block;
+    }
+    .main-content {
+      margin-left: 200px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .settings-container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      width: fit-content;
+    }
+    .settings-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+    }
+    .settings-item {
+      background-color: #e7e7ff; /* Light blue background */
+      padding: 10px 20px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .settings-item:hover {
+      background-color: #d0d0f0; /* Slightly darker blue on hover */
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>ConnectAbility</h1>
+</div>
+
+<div class="sidebar">
+  <a href="#">Home</a>
+  <a href="#">Profile</a>
+  <a href="#">Resources</a>
+  <a href="#">Announcement Support</a>
+  <a href="#">Settings</a>
+  <a href="#">User Reports</a>
+</div>
+
+<div class="main-content">
+  <div class="settings-container">
+    <h2>Settings</h2>
+    <ul class="settings-list">
+      <li class="settings-item">Team Management</li>
+      <li class="settings-item">Theme and Display</li>
+      <li class="settings-item">Help and Support</li>
+      <li class="settings-item">Feedback</li>
+      <li class="settings-item">Accessibility</li>
+    </ul>
+  </div>
+</div>
+
+</body>
+</html>
