@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback - ConnectAbility</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f2f5;
+    }
+    .header {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .sidebar {
+      background-color: #003366;
+      color: white;
+      padding: 10px;
+      position: fixed;
+      height: 100%;
+      width: 200px;
+      overflow-y: auto;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      display: block;
+    }
+    .main-content {
+      margin-left: 200px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .feedback-container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .feedback-header {
+      color: #003366;
+      margin-bottom: 20px;
+    }
+    .feedback-item {
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+    }
+    .feedback-item:last-child {
+      border-bottom: none;
+    }
+    .feedback-item p {
+      margin: 0;
+      padding: 0;
+    }
+    .feedback-response {
+      background-color: #007bff;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      float: right; /* Align the button to the right */
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>ConnectAbility</h1>
+</div>
+
+<div class="sidebar">
+  <a href="#">Home</a>
+  <a href="#">Profile</a>
+  <a href="#">Resources</a>
+  <a href="#">Announcement Support</a>
+  <a href="#">Settings</a>
+  <a href="#">User Reports</a>
+</div>
+
+<div class="main-content">
+  <div class="feedback-container">
+    <h2 class="feedback-header">Feedback</h2>
+    <!-- Example Feedback Item -->
+    <div class="feedback-item">
+      <p>"Connectability has revolutionized the way I manage my professional connections! The intuitive interface and seamless integration with various platforms make networking a breeze..." - Sarah M. <span>8:45pm</span></p>
+      <button class="feedback-response">Respond</button>
+    </div>
+    <!-- More Feedback Items -->
+    <div class="feedback-item">
+      <p>"I've tried several connectivity apps, but Connectability stands out with its user-friendly design and robust features..." - Alex P. <span>7:23pm</span></p>
+      <button class="feedback-response">Respond</button>
+    </div>
+    <div class="feedback-item">
+    <p>"I've tried several connectivity apps, but Connectability stands out with its user-friendly design and robust features..." - Alex P. <span>7:23pm</span></p>
+    <button class="feedback-response">Respond</button>
+  </div>
+    <div class="feedback-item">
+      <p>"I've tried several connectivity apps, but Connectability stands out with its user-friendly design and robust features..." - Alex P. <span>7:23pm</span></p>
+      <button class="feedback-response">Respond</button>
+    </div><div class="feedback-item">
+    <p>"I've tried several connectivity apps, but Connectability stands out with its user-friendly design and robust features..." - Alex P. <span>7:23pm</span></p>
+    <button class="feedback-response">Respond</button>
+  </div>
+    <!-- Add additional feedback items here -->
+  </div>
+</div>
+
+</body>
+</html>
