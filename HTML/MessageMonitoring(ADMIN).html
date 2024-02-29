@@ -1,164 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Message Monitoring - ConnectAbility</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      background-color: #f0f2f5;
-    }
-    .header {
-      background-color: #007bff;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    .sidebar {
-      background-color: #003366;
-      color: white;
-      padding: 10px;
-      position: fixed;
-      height: 100%;
-      width: 200px;
-      overflow-y: auto;
-    }
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      padding: 10px;
-      display: block;
-    }
-    .main-content {
-      margin-left: 200px;
-      padding: 20px;
-    }
-    .message-monitoring-container {
-      background-color: white;
-      border-radius: 4px;
-      padding: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    .message-monitoring-header {
-      border-bottom: 2px solid #007bff;
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      text-align: left;
-      padding: 8px;
-    }
-    th {
-      background-color: #007bff;
-      color: white;
-    }
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-    .timestamp {
-      color: #555;
-    }
-  </style>
-</head>
-<body>
-
-<div class="header">
-  <h1>ConnectAbility</h1>
-</div>
-
-<div class="sidebar">
-  <a href="#">User Search</a>
-  <a href="#">Message Monitoring</a>
-  <a href="#">Announcements</a>
-  <a href="#">Admin Announcements</a>
-  <a href="#">Disability Report</a>
-</div>
-
-<div class="main-content">
-  <div class="message-monitoring-container">
-    <div class="message-monitoring-header">
-      <h2>Message Monitoring</h2>
-      <p>System Messages from the previous week<br>
-        Monday, January 29, 2024 3:00:24 PM EST</p>
-      <p>Lists all messages reported during the past 7 days</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Message Monitoring - ConnectAbility</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        background-color: #f0f2f5;
+      }
+      .header {
+        background-color: #007bff;
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
+      .sidebar {
+        background-color: #003366;
+        color: white;
+        padding: 10px;
+        position: fixed;
+        height: 100%;
+        width: 200px;
+        overflow-y: auto;
+      }
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        padding: 10px;
+        display: block;
+      }
+      .main-content {
+        margin-left: 200px;
+        padding: 20px;
+      }
+      .message-monitoring-container {
+        background-color: white;
+        border-radius: 4px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      .message-monitoring-header {
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        text-align: left;
+        padding: 8px;
+      }
+      th {
+        background-color: #007bff;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+      .timestamp {
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>ConnectAbility</h1>
     </div>
-    <table>
-      <tr>
-        <th>Timestamp</th>
-        <th>User ID</th>
-        <th>User</th>
-        <th>Message</th>
-        <th>Status</th>
-      </tr>
-      <!-- Example row -->
-      <tr>
-        <td class="timestamp">2024/1/30, 1:02 AM</td>
-        <td>93191</td>
-        <td>Nick</td>
-        <td>"I have a problem with this person being in the same chat as I am."</td>
-        <td>Reviewed</td>
-      </tr>
-      <tr>
-        <td class="timestamp">2024/1/30, 1:02 AM</td>
-        <td>93191</td>
-        <td>Nick</td>
-        <td>"I have a problem with this person being in the same chat as I am."</td>
-        <td>Reviewed</td>
-      </tr><tr>
-      <td class="timestamp">2024/1/30, 1:02 AM</td>
-      <td>93191</td>
-      <td>Nick</td>
-      <td>"I have a problem with this person being in the same chat as I am."</td>
-      <td>Reviewed</td>
-    </tr><tr>
-      <td class="timestamp">2024/1/30, 1:02 AM</td>
-      <td>93191</td>
-      <td>Nick</td>
-      <td>"I have a problem with this person being in the same chat as I am."</td>
-      <td>Reviewed</td>
-    </tr><tr>
-      <td class="timestamp">2024/1/30, 1:02 AM</td>
-      <td>93191</td>
-      <td>Nick</td>
-      <td>"I have a problem with this person being in the same chat as I am."</td>
-      <td>Reviewed</td>
-    </tr><tr>
-      <td class="timestamp">2024/1/30, 1:02 AM</td>
-      <td>93191</td>
-      <td>Nick</td>
-      <td>"I have a problem with this person being in the same chat as I am."</td>
-      <td>Reviewed</td>
-    </tr><tr>
-      <td class="timestamp">2024/1/30, 1:02 AM</td>
-      <td>93191</td>
-      <td>Nick</td>
-      <td>"I have a problem with this person being in the same chat as I am."</td>
-      <td>Reviewed</td>
-    </tr><tr>
-      <td class="timestamp">2024/1/30, 1:02 AM</td>
-      <td>93191</td>
-      <td>Nick</td>
-      <td>"I have a problem with this person being in the same chat as I am."</td>
-      <td>Reviewed</td>
-    </tr><tr>
-      <td class="timestamp">2024/1/30, 1:02 AM</td>
-      <td>93191</td>
-      <td>Nick</td>
-      <td>"I have a problem with this person being in the same chat as I am."</td>
-      <td>Reviewed</td>
-    </tr>
-      <!-- Additional rows for other reported messages -->
-      <!-- ... -->
-    </table>
-  </div>
-</div>
 
-</body>
+    <div class="sidebar">
+      <a href="search.html">User Search</a>
+      <a href="MessageMonitoring(ADMIN).html">Message Monitoring</a>
+      <a href="Announcements(ADMIN).html">Announcements</a>
+      <a href="#">Admin Announcements</a>
+      <a href="#">Disability Report</a>
+    </div>
+
+    <div class="main-content">
+      <div class="message-monitoring-container">
+        <div class="message-monitoring-header">
+          <h2>Message Monitoring</h2>
+          <p>
+            System Messages from the previous week<br />
+            Monday, January 29, 2024 3:00:24 PM EST
+          </p>
+          <p>Lists all messages reported during the past 7 days</p>
+        </div>
+        <table>
+          <tr>
+            <th>Timestamp</th>
+            <th>User ID</th>
+            <th>User</th>
+            <th>Message</th>
+            <th>Status</th>
+          </tr>
+          <!-- Example row -->
+          <tr>
+            <td class="timestamp">2024/1/30, 1:02 AM</td>
+            <td>93191</td>
+            <td>Nick</td>
+            <td>
+              "I have a problem with this person being in the same chat as I
+              am."
+            </td>
+            <td>Reviewed</td>
+          </tr>
+          <tr>
+            <td class="timestamp">2024/1/30, 1:02 AM</td>
+            <td>93191</td>
+            <td>Nick</td>
+            <td>
+              "I have a problem with this person being in the same chat as I
+              am."
+            </td>
+            <td>Reviewed</td>
+          </tr>
+          <tr>
+            <td class="timestamp">2024/1/30, 1:02 AM</td>
+            <td>93191</td>
+            <td>Nick</td>
+            <td>
+              "I have a problem with this person being in the same chat as I
+              am."
+            </td>
+            <td>Reviewed</td>
+          </tr>
+          <tr>
+            <td class="timestamp">2024/1/30, 1:02 AM</td>
+            <td>93191</td>
+            <td>Nick</td>
+            <td>
+              "I have a problem with this person being in the same chat as I
+              am."
+            </td>
+            <td>Reviewed</td>
+          </tr>
+          <tr>
+            <td class="timestamp">2024/1/30, 1:02 AM</td>
+            <td>93191</td>
+            <td>Nick</td>
+            <td>
+              "I have a problem with this person being in the same chat as I
+              am."
+            </td>
+            <td>Reviewed</td>
+          </tr>
+          <tr>
+            <td class="timestamp">2024/1/30, 1:02 AM</td>
+            <td>93191</td>
+            <td>Nick</td>
+            <td>
+              "I have a problem with this person being in the same chat as I
+              am."
+            </td>
+            <td>Reviewed</td>
+          </tr>
+          <tr>
+            <td class="timestamp">2024/1/30, 1:02 AM</td>
+            <td>93191</td>
+            <td>Nick</td>
+            <td>
+              "I have a problem with this person being in the same chat as I
+              am."
+            </td>
+            <td>Reviewed</td>
+          </tr>
+          <tr>
+            <td class="timestamp">2024/1/30, 1:02 AM</td>
+            <td>93191</td>
+            <td>Nick</td>
+            <td>
+              "I have a problem with this person being in the same chat as I
+              am."
+            </td>
+            <td>Reviewed</td>
+          </tr>
+          <tr>
+            <td class="timestamp">2024/1/30, 1:02 AM</td>
+            <td>93191</td>
+            <td>Nick</td>
+            <td>
+              "I have a problem with this person being in the same chat as I
+              am."
+            </td>
+            <td>Reviewed</td>
+          </tr>
+          <!-- Additional rows for other reported messages -->
+          <!-- ... -->
+        </table>
+      </div>
+    </div>
+  </body>
 </html>
