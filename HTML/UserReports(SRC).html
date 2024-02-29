@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Reports - ConnectAbility</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f2f5;
+    }
+    .header {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .sidebar {
+      background-color: #003366;
+      color: white;
+      padding: 10px;
+      position: fixed;
+      height: 100%;
+      width: 200px;
+      overflow-y: auto;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      display: block;
+    }
+    .main-content {
+      margin-left: 200px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .report-container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .report-header {
+      color: #003366;
+      margin-bottom: 20px;
+    }
+    .report-list {
+      list-style: none;
+      padding: 0;
+    }
+    .report-item {
+      margin-bottom: 10px;
+      padding: 10px 0;
+    }
+    .generate-report {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>ConnectAbility</h1>
+</div>
+
+<div class="sidebar">
+  <a href="#">Home</a>
+  <a href="#">Profile</a>
+  <a href="#">Resources</a>
+  <a href="#">Announcement Support</a>
+  <a href="#">Settings</a>
+  <a href="#">User Reports</a>
+</div>
+
+<div class="main-content">
+  <div class="report-container">
+    <h2 class="report-header">User Reports</h2>
+    <button class="generate-report">Generate Report</button>
+    <ul class="report-list">
+      <!-- Example Report Item -->
+      <li class="report-item">
+        <strong>Report 001: Offensive Language</strong><br>
+        User ID: #10596<br>
+        Date/Time: March 15, 2024 - 09:45 AM<br>
+        Description: User #12345 posted offensive language in a comment. This violates our community guidelines.
+      </li>
+      <li class="report-item">
+        <strong>Report 002: Harassment</strong><br>
+        User ID: #54057<br>
+        Date/Time: March 15, 2024 - 09:45 AM<br>
+        Description: User #12345 posted offensive language in a comment. This violates our community guidelines.
+      </li><li class="report-item">
+      <strong>Report 003: Inappropiate Content</strong><br>
+      User ID: #24039<br>
+      Date/Time: March 15, 2024 - 09:45 AM<br>
+      Description: User #48569 posted offensive language in a comment. This violates our community guidelines.
+    </li><li class="report-item">
+      <strong>Report 004: Hate Speech</strong><br>
+      User ID: #74644<br>
+      Date/Time: March 15, 2024 - 09:45 AM<br>
+      Description: User #12345 posted offensive language in a comment. This violates our community guidelines.
+    </li>
+      <!-- More Report Items -->
+      <!-- Add additional report items here -->
+    </ul>
+  </div>
+</div>
+
+</body>
+</html>
