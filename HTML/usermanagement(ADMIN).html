@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management - ConnectAbility</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f2f5;
+    }
+    .header {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .sidebar {
+      background-color: #003366;
+      color: white;
+      padding: 10px;
+      position: fixed;
+      height: 100%;
+      width: 200px;
+      overflow: auto;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 15px;
+      display: block;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    .sidebar a:hover {
+      background-color: #0056b3;
+    }
+    .main-content {
+      margin-left: 200px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .search-bar {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .user-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 10px;
+      width: 100%;
+    }
+    .user-card {
+      background-color: white;
+      border-radius: 4px;
+      padding: 10px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .user-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 50%;
+    }
+    .user-card a {
+      display: block;
+      margin-top: 8px;
+      text-decoration: none;
+      color: #007bff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>ConnectAbility</h1>
+</div>
+
+<div class="sidebar">
+  <a href="#">User Search</a>
+  <a href="#">Message Monitoring</a>
+  <a href="#">Announcements</a>
+  <a href="#">Admin Announcements</a>
+  <a href="#">Disability Report</a>
+</div>
+
+<div class="main-content">
+  <div class="user-management">
+    <h2>User Management</h2>
+    <div class="search-bar">
+      <input type="text" placeholder="Search for a User">
+    </div>
+    <div class="user-grid">
+      <!-- Example User Card -->
+      <div class="user-card">
+        <img src="user1.jpg" alt="Janet">
+        <a href="#">Janet</a>
+      </div>
+      <!-- Repeat user cards for each user -->
+      <div class="user-grid">
+        <!-- Example User Card -->
+        <div class="user-card">
+          <img src="user1.jpg" alt="Timothy">
+          <a href="#">Timothy</a>
+        </div><div class="user-grid">
+        <!-- Example User Card -->
+        <div class="user-card">
+          <img src="user1.jpg" alt="Sam">
+          <a href="#">Sam</a>
+        </div><div class="user-grid">
+        <!-- Example User Card -->
+        <div class="user-card">
+          <img src="user1.jpg" alt="Adam">
+          <a href="#">Adam</a>
+        </div><div class="user-grid">
+        <!-- Example User Card -->
+        <div class="user-card">
+          <img src="user1.jpg" alt="Steve">
+          <a href="#">Steve</a>
+        </div><div class="user-grid">
+        <!-- Example User Card -->
+        <div class="user-card">
+          <img src="user1.jpg" alt="Tom">
+          <a href="#">Tom</a>
+        </div><div class="user-grid">
+        <!-- Example User Card -->
+        <div class="user-card">
+          <img src="user1.jpg" alt="Candace">
+          <a href="#">Candace</a>
+        </div><div class="user-grid">
+        <!-- Example User Card -->
+        <div class="user-card">
+          <img src="user1.jpg" alt="Michael">
+          <a href="#">Michael</a>
+        </div><div class="user-grid">
+        <!-- Example User Card -->
+        <div class="user-card">
+          <img src="user1.jpg" alt="Michelle">
+          <a href="#">Michelle</a>
+        </div>
+      <!-- ... -->
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
