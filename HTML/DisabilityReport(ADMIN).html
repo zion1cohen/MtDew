@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Disability Report - ConnectAbility</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Link to Chart.js CDN -->
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f2f5;
+      }
+      .header {
+        background-color: #007bff;
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
+      .sidebar {
+        background-color: #003366;
+        color: white;
+        padding: 10px;
+        position: fixed;
+        width: 200px;
+        height: 100%;
+        overflow-y: auto;
+      }
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        padding: 10px;
+        display: block;
+      }
+      .main-content {
+        margin-left: 200px;
+        padding: 20px;
+      }
+      .report-container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      .report-section {
+        margin-bottom: 20px;
+      }
+      .chart-container {
+        width: 400px;
+        height: 400px;
+        margin: 0 auto;
+      }
+      #disabilityChart {
+        width: 100%;
+        height: 100%;
+      }
+      .generate-report-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+        display: block;
+        width: 200px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>ConnectAbility</h1>
+    </div>
+
+    <div class="sidebar">
+      <a href="admin.html">User Search</a>
+      <a href="MessageMonitoring(ADMIN).html">Message Monitoring</a>
+      <a href="Announcements(USER).html">Announcements</a>
+      <a href="Announcements(ADMIN).html">Admin Announcements</a>
+      <a href="DisabilityReport(ADMIN).html">Disability Report</a>
+    </div>
+
+    <div class="main-content">
+      <div class="report-container">
+        <h2>Disability Report</h2>
+        <div class="report-section">
+          <h3>Report: Total Number of Users by Disability</h3>
+          <p>Date: 2/8/2024</p>
+          <div class="chart-container">
+            <canvas id="disabilityChart"></canvas>
+          </div>
+          <div class="report-details">
+            <!-- Insert details here if needed -->
+          </div>
+        </div>
+        <button class="generate-report-btn">Generate Report</button>
+      </div>
+    </div>
+
+    <script>
+      const data = {
+        labels: [
+          "Visual Impairment",
+          "Hearing Impairment",
+          "Mobility Impairment",
+          "Cognitive Disabilities",
+          "Neurological Disorders",
+        ],
+        datasets: [
+          {
+            label: "Disability Distribution",
+            data: [150, 80, 120, 90, 60], // Random data
+            backgroundColor: [
+              "rgb(255, 99, 132)",
+              "rgb(54, 162, 235)",
+              "rgb(255, 205, 86)",
+              "rgb(75, 192, 192)",
+              "rgb(153, 102, 255)",
+            ],
+            hoverOffset: 4,
+          },
+        ],
+      };
+
+      const config = {
+        type: "pie",
+        data: data,
+      };
+
+      const disabilityChart = new Chart(
+        document.getElementById("disabilityChart"),
+        config
+      );
+    </script>
+  </body>
+</html>
