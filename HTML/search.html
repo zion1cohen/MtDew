@@ -30,54 +30,75 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      async function searchUser() {
+      async function searchUser(filterParams = {}) {
         const searchInput = document.getElementById("searchInput").value.trim();
         const userList = document.getElementById("userList");
         userList.innerHTML = ""; // Clear previous search results
 
-        // Query to search for the user based on the input
-        const usersRef = collection(db, "USER"); // Adjust "USER" if your collection name is different
-        const q = query(usersRef, where("Name", "==", searchInput)); // Filter users by name
+        let usersRef = collection(db, "USER");
+        let queries = [];
+        if (searchInput) {
+          queries.push(where("Name", "==", searchInput));
+        }
+
+        // Adding filters based on function parameters
+        if (filterParams.ageRange) {
+          queries.push(where("Age", ">=", filterParams.ageRange.start));
+          queries.push(where("Age", "<=", filterParams.ageRange.end));
+        }
+        if (filterParams.gender) {
+          queries.push(where("Gender", "==", filterParams.gender));
+        }
+        if (filterParams.maritalStatus) {
+          queries.push(
+            where("MaritalStatus", "==", filterParams.maritalStatus)
+          );
+        }
+        if (filterParams.disability) {
+          queries.push(where("Disability", "==", filterParams.disability));
+        }
+
+        const q = query(usersRef, ...queries);
 
         const querySnapshot = await getDocs(q);
         if (querySnapshot.empty) {
           console.log("No matching user found.");
-          userList.innerHTML = "<p>No matching user found.</p>"; // Show a message if no user is found
+          userList.innerHTML = "<p>No matching user found.</p>";
         } else {
           querySnapshot.forEach((doc) => {
             const userData = doc.data();
-            console.log(`Document found: `, userData); // Log each document's data
-            // Add your UI update logic here
+            console.log(`Document found: `, userData);
             const userCard = document.createElement("div");
             userCard.classList.add("user-card");
-            userCard.innerHTML = `<h3>${userData.Name}</h3>`; // Example of UI update
+            userCard.innerHTML = `<h3>${userData.Name}</h3>`;
             userList.appendChild(userCard);
           });
         }
       }
 
+      function parseAgeRange(ageRange) {
+        const [start, end] = ageRange.split("-").map(Number);
+        return { start, end };
+      }
+
       function filterByAge(ageRange) {
-        // Query users by age range
         console.log("Filtering users by age range:", ageRange);
-        // Add your Firestore query logic here
+        searchUser({ ageRange: parseAgeRange(ageRange) });
       }
 
       function filterByGender(gender) {
-        // Query users by gender
         console.log("Filtering users by gender:", gender);
-        // Add your Firestore query logic here
+        searchUser({ gender });
       }
 
       function filterByMaritalStatus(status) {
-        // Query users by marital status
         console.log("Filtering users by marital status:", status);
-        // Add your Firestore query logic here
+        searchUser({ maritalStatus: status });
       }
 
       function filterByDisability(disability) {
-        // Query users by disability type
         console.log("Filtering users by disability type:", disability);
-        // Add your Firestore query logic here
+        searchUser({ disability });
       }
 
       function toggleFilterOptions() {
