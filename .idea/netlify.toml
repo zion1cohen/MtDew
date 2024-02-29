@@ -1,0 +1,3 @@
+[build]
+  publish = "idea"
+  command = "echo 'No build steps required'"
