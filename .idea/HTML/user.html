@@ -1,137 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ConnectAbility - Find Your Match</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f7f6;
-      margin: 0;
-      padding: 0;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ConnectAbility - Find Your Match</title>
 
-    .header {
-      background-color: #005A9C;
-      color: white;
-      text-align: center;
-      padding: 10px 0;
-    }
+    <!-- CSS styles -->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+      }
 
-    .sidebar {
-      background-color: #003366;
-      color: white;
-      padding: 20px;
-      width: 200px;
-      min-height: 100vh;
-      box-sizing: border-box;
-    }
+      .header {
+        background-color: #005a9c;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+      }
 
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      display: block;
-      padding: 10px 0;
-    }
+      .sidebar {
+        background-color: #003366;
+        color: white;
+        padding: 20px;
+        position: fixed;
+        width: 250px;
+        height: 100%;
+      }
 
-    .content {
-      margin-left: 200px;
-      padding: 20px;
-    }
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 10px;
+        margin: 5px 0;
+      }
 
-    .search-bar {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+      }
 
-    .search-bar input[type="text"] {
-      width: calc(100% - 110px);
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
+      .search-box {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+        background-color: white;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
 
-    .search-bar button {
-      padding: 10px 20px;
-      background-color: #005A9C;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+      .search-box input[type="text"] {
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 80%;
+        border-radius: 5px;
+      }
 
-    .search-bar button:hover {
-      background-color: #004080;
-    }
+      .search-box button {
+        padding: 10px 20px;
+        border: none;
+        background-color: #4caf50;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+      }
 
-    .user-card {
-      background-color: white;
-      box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
-      border-radius: 5px;
-      overflow: hidden;
-      display: inline-block;
-      width: calc(25% - 10px);
-      margin-right: 10px;
-      margin-bottom: 20px;
-    }
+      .user-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
 
-    .user-card img {
-      width: 100%;
-      height: auto;
-    }
+      .user-card {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        width: calc(100% / 3 - 20px);
+      }
 
-    .user-card h3 {
-      margin: 10px;
-    }
+      .user-card h3 {
+        margin: 0;
+        padding: 15px;
+      }
 
-    .user-card button {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      background-color: #28a745;
-      color: white;
-      cursor: pointer;
-    }
+      .user-card button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        width: 100%;
+        display: block;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>ConnectAbility</h1>
+    </div>
 
-    .user-card button:hover {
-      background-color: #218838;
-    }
+    <div class="sidebar">
+      <a href="#">User Search</a>
+      <a href="#">Message Monitoring</a>
+      <a href="#">Announcements</a>
+      <a href="#">Admin Announcements</a>
+      <a href="#">Disability Report</a>
+    </div>
 
-    .clearfix::after {
-      content: "";
-      clear: both;
-      display: table;
-    }
+    <div class="content">
+      <div class="search-box">
+        <input type="text" placeholder="Search for a User" id="searchInput" />
+        <button onclick="searchUsers()">Search</button>
+      </div>
 
-  </style>
-</head>
-<body>
+      <div class="user-list" id="userList">
+        <!-- User list will be displayed here -->
+      </div>
+    </div>
 
-<div class="header">
-  <h1>ConnectAbility</h1>
-</div>
+    <!-- Firebase SDK and Configuration -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        query,
+        where,
+      } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-<div class="sidebar">
-  <a href="#">Home</a>
-  <a href="#">Profile</a>
-  <a href="#">Messages</a>
-  <a href="#">Matches</a>
-  <a href="#">Announcements</a>
-  <a href="#">Resources</a>
-  <a href="#">Feedback</a>
-  <a href="#">Settings</a>
-</div>
+      const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID",
+        measurementId: "YOUR_MEASUREMENT_ID",
+      };
 
-<div class="content">
-  <div class="search-bar">
-    <input type="text" placeholder="Search for a User">
-    <button>Search</button>
-  </div>
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
 
-  <div class="clearfix">
-    <!-- Repeat this block for each user -->
-    <div class="user-card">
-      <img src="path_to_image.jpg" alt="User Photo">
-      <h3>User Name</h3
+      function searchUsers() {
+        const searchInput = document.getElementById("searchInput").value;
+        const userList = document.getElementById("userList");
+        userList.innerHTML = ""; // Clear previous search results
+
+        const usersRef = collection(db, "users");
+
+        query(usersRef, where("username", "==", searchInput))
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              const userData = doc.data();
+              const userCard = createUserCard(userData);
+              userList.appendChild(userCard);
+            });
+          })
+          .catch((error) => {
+            console.error("Error searching for users: ", error);
+          });
+      }
+
+      function createUserCard(userData) {
+        const userCard = document.createElement("div");
+        userCard.classList.add("user-card");
+
+        const userImg = document.createElement("img");
+        userImg.src = userData.photoURL;
+        userImg.alt = "User Photo";
+        userCard.appendChild(userImg);
+
+        const userName = document.createElement("h3");
+        userName.textContent = userData.username;
+        userCard.appendChild(userName);
+
+        return userCard;
+      }
+    </script>
+  </body>
+</html>
