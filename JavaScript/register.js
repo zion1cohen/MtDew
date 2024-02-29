@@ -32,7 +32,7 @@ window.onload = function () {
         .addEventListener("submit", async function (event) {
             event.preventDefault();
 
-            const uname = document.getElementById("uname").value;
+            const name = document.getElementById("name").value;
             const psw = document.getElementById("psw").value;
             const role = document.getElementById("role").value;
             const age = document.getElementById("age").value;
@@ -68,11 +68,12 @@ window.onload = function () {
                 // Save additional user information to Firestore with default values
                 await addDoc(collection(db, "USER"), {
                     userId: userCredential.user.uid,
+                    Name: name,
                     email: email,
-                    age: age,
-                    maritalStatus: maritalStatus,
-                    disability: disability,
-                    gender: gender,
+                    Age: age,
+                    MaritalStatus: maritalStatus,
+                    Disability: disability,
+                    Gender: gender,
                     ...defaultUserFields  // Spread the default values
                 });
 
