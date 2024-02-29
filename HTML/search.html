@@ -1,252 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Dashboard - ConnectAbility</title>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        where,
+        query,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>User Dashboard - ConnectAbility</title>
-  <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      where,
-      query,
-      getDocs,
-    } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+        authDomain: "connectability-6ee02.firebaseapp.com",
+        projectId: "connectability-6ee02",
+        storageBucket: "connectability-6ee02.appspot.com",
+        messagingSenderId: "908801065257",
+        appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+        measurementId: "G-N8HMEMRV16",
+      };
 
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
-      authDomain: "connectability-6ee02.firebaseapp.com",
-      projectId: "connectability-6ee02",
-      storageBucket: "connectability-6ee02.appspot.com",
-      messagingSenderId: "908801065257",
-      appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
-      measurementId: "G-N8HMEMRV16",
-    };
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+      async function searchUser(filterParams = {}) {
+        const searchInput = document.getElementById("searchInput").value.trim();
+        const userList = document.getElementById("userList");
+        userList.innerHTML = ""; // Clear previous search results
 
-    async function searchUser() {
-      const ageRange = getSelectedOption("ageRange");
-      const gender = getSelectedOption("gender");
-      const maritalStatus = getSelectedOption("maritalStatus");
-      const disabilityType = getSelectedOption("disabilityType");
+        let usersRef = collection(db, "USER");
+        let queries = [];
+        if (searchInput) {
+          queries.push(where("Name", "==", searchInput));
+        }
 
-      const userList = document.getElementById("userList");
-      userList.innerHTML = ""; // Clear previous search results
+        // Adding filters based on function parameters
+        if (filterParams.ageRange) {
+          queries.push(where("Age", ">=", filterParams.ageRange.start));
+          queries.push(where("Age", "<=", filterParams.ageRange.end));
+        }
+        if (filterParams.gender) {
+          queries.push(where("Gender", "==", filterParams.gender));
+        }
+        if (filterParams.maritalStatus) {
+          queries.push(
+            where("MaritalStatus", "==", filterParams.maritalStatus)
+          );
+        }
+        if (filterParams.disability) {
+          queries.push(where("Disability", "==", filterParams.disability));
+        }
 
-      // Query to search for users based on selected filters
-      const usersRef = collection(db, "USER");
-      let q = query(usersRef);
+        const q = query(usersRef, ...queries);
 
-      if (ageRange) {
-        q = query(usersRef, where("Age", "==", ageRange));
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+          console.log("No matching user found.");
+          userList.innerHTML = "<p>No matching user found.</p>";
+        } else {
+          querySnapshot.forEach((doc) => {
+            const userData = doc.data();
+            console.log(`Document found: `, userData);
+            const userCard = document.createElement("div");
+            userCard.classList.add("user-card");
+            userCard.innerHTML = `<h3>${userData.Name}</h3>`;
+            userList.appendChild(userCard);
+          });
+        }
       }
-      if (gender) {
-        q = query(usersRef, where("Gender", "==", gender));
-      }
-      if (maritalStatus) {
-        q = query(usersRef, where("MaritalStatus", "==", maritalStatus));
-      }
-      if (disabilityType) {
-        q = query(usersRef, where("Disability", "==", disabilityType));
+
+      function parseAgeRange(ageRange) {
+        const [start, end] = ageRange.split("-").map(Number);
+        return { start, end };
       }
 
-      const querySnapshot = await getDocs(q);
-      if (querySnapshot.empty) {
-        console.log("No matching user found.");
-        userList.innerHTML = "<p>No matching user found.</p>"; // Show a message if no user is found
-      } else {
-        querySnapshot.forEach((doc) => {
-          const userData = doc.data();
-          console.log(`Document found: `, userData); // Log each document's data
-          // Add your UI update logic here
-          const userCard = document.createElement("div");
-          userCard.classList.add("user-card");
-          userCard.innerHTML = `<h3>${userData.Name}</h3>`; // Example of UI update
-          userList.appendChild(userCard);
-        });
+      function filterByAge(ageRange) {
+        console.log("Filtering users by age range:", ageRange);
+        searchUser({ ageRange: parseAgeRange(ageRange) });
       }
-    }
 
-    function getSelectedOption(name) {
-      const options = document.getElementsByName(name);
-      const selectedOption = Array.from(options).find((option) => option.checked);
-      return selectedOption ? selectedOption.value : null;
-    }
+      function filterByGender(gender) {
+        console.log("Filtering users by gender:", gender);
+        searchUser({ gender });
+      }
 
-    window.searchUser = searchUser;
-  </script>
-  <style>
-    body {
-      font-family: "Arial", sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f0f0f0;
-    }
+      function filterByMaritalStatus(status) {
+        console.log("Filtering users by marital status:", status);
+        searchUser({ maritalStatus: status });
+      }
 
-    .header {
-      background-color: #005a9c;
-      color: white;
-      padding: 10px 20px;
-      text-align: center;
-    }
+      function filterByDisability(disability) {
+        console.log("Filtering users by disability type:", disability);
+        searchUser({ disability });
+      }
 
-    .sidebar {
-      background-color: #003366;
-      color: white;
-      padding: 20px;
-      position: fixed;
-      width: 150px;
-      height: 100%;
-    }
+      function toggleFilterOptions() {
+        const filterOptions = document.getElementById("filterOptions");
+        filterOptions.classList.toggle("show");
+      }
 
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      display: block;
-      padding: 10px;
-      margin: 5px 0;
-    }
+      function showAgeOptions() {
+        const ageOptions = prompt(
+          "Enter age range (e.g., 18-22, 22-30, 31-40, 40-55, 55+):"
+        );
+        if (ageOptions) {
+          filterByAge(ageOptions);
+        }
+      }
 
-    .content {
-      margin-left: 250px;
-      padding: 20px;
-    }
+      function showMaritalStatusOptions() {
+        const statusOptions = prompt(
+          "Enter marital status (single, married, divorced):"
+        );
+        if (statusOptions) {
+          filterByMaritalStatus(statusOptions);
+        }
+      }
 
-    .search-box {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      padding: 20px;
-      background-color: white;
-      margin-bottom: 20px;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    }
+      function showGenderOptions() {
+        const genderOptions = prompt("Enter gender (Male or Female):");
+        if (genderOptions) {
+          filterByGender(genderOptions);
+        }
+      }
 
-    .search-box input[type="text"] {
-      border: 1px solid #ccc;
-      padding: 10px;
-      width: 70%;
-      border-radius: 5px;
-    }
+      function showDisabilityOptions() {
+        const disabilityOptions = prompt("Enter disability type:");
+        if (disabilityOptions) {
+          filterByDisability(disabilityOptions);
+        }
+      }
 
-    .search-btn,
-    .filter-btn {
-      padding: 10px 20px;
-      border: none;
-      background-color: #4caf50;
-      color: white;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    .filter-btn {
-      margin-left: 10px;
-    }
-
-    .filter-dropdown {
-      position: relative;
-    }
-
-    .filter-dropdown button {
-      display: block;
-    }
-
-    .filter-dropdown-content {
-      display: none;
-      position: absolute;
-      background-color: #f9f9f9;
-      min-width: 160px;
-      box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-      z-index: 1;
-    }
-
-    .filter-dropdown-content a {
-      color: black;
-      padding: 12px 16px;
-      text-decoration: none;
-      display: block;
-    }
-
-    .filter-dropdown-content a:hover {
-      background-color: #f1f1f1;
-    }
-
-    .show {
-      display: block;
-    }
-  </style>
-</head>
-
-<body>
-<div class="header">
-  <h1>ConnectAbility</h1>
-</div>
-<div class="sidebar">
-  <a href="home.html">Home</a>
-  <a href="#">Profile</a>
-  <a href="#">Messages</a>
-  <a href="match.html">Matches</a>
-  <a href="announcement.html">Announcements</a>
-  <a href="resource.html">Resources</a>
-  <a href="#">Feedback</a>
-  <a href="settings.html">Settings</a>
-</div>
-<div class="content">
-  <div class="search-box">
-    <input type="text" placeholder="Search for a User" id="searchInput" />
-    <div class="filter-dropdown">
-      <button class="filter-btn" onclick="toggleFilterOptions()">Filters</button>
-      <div class="filter-dropdown-content" id="filterOptions">
-        <div>
-          <label>Age Range:</label>
-          <select name="ageRange">
-            <option value="18-22">18-22</option>
-            <option value="22-30">22-30</option>
-            <option value="31-40">31-40</option>
-            <option value="40-55">40-55</option>
-            <option value="55+">55+</option>
-          </select>
+      window.searchUser = searchUser;
+      window.toggleFilterOptions = toggleFilterOptions;
+      window.showAgeOptions = showAgeOptions;
+      window.showMaritalStatusOptions = showMaritalStatusOptions;
+      window.showGenderOptions = showGenderOptions;
+      window.showDisabilityOptions = showDisabilityOptions;
+    </script>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f0f0f0;
+      }
+      .header {
+        background-color: #005a9c;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+      }
+      .sidebar {
+        background-color: #003366;
+        color: white;
+        padding: 20px;
+        position: fixed;
+        width: 150px;
+        height: 100%;
+      }
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 10px;
+        margin: 5px 0;
+      }
+      .content {
+        margin-left: 250px;
+        padding: 20px;
+      }
+      .search-box {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 20px;
+        background-color: white;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+      .search-box input[type="text"] {
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 70%;
+        border-radius: 5px;
+      }
+      .search-btn,
+      .filter-btn {
+        padding: 10px 20px;
+        border: none;
+        background-color: #4caf50;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+      .filter-btn {
+        margin-left: 10px;
+      }
+      .filter-dropdown {
+        position: relative;
+      }
+      .filter-dropdown button {
+        display: block;
+      }
+      .filter-dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+      .filter-dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+      .filter-dropdown-content a:hover {
+        background-color: #f1f1f1;
+      }
+      .show {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>ConnectAbility</h1>
+    </div>
+    <div class="sidebar">
+      <a href="home.html">Home</a>
+      <a href="profile.html">Profile</a>
+      <a href="MessageMonitoring(ADMIN).html">Messages</a>
+      <a href="match.html">Matches</a>
+      <a href="Announcements(ADMIN).html">Announcements</a>
+      <a href="Resources(USER).html">Resources</a>
+      <a href="Feedback(USER).html">Feedback</a>
+      <a href="settings.html">Settings</a>
+    </div>
+    <div class="content">
+      <div class="search-box">
+        <input type="text" placeholder="Search for a User" id="searchInput" />
+        <div class="filter-dropdown">
+          <button class="filter-btn" onclick="toggleFilterOptions()">
+            Filters
+          </button>
+          <div class="filter-dropdown-content" id="filterOptions">
+            <a href="#" onclick="showAgeOptions()">Age Range</a>
+            <a href="#" onclick="showGenderOptions()">Gender</a>
+            <a href="#" onclick="showMaritalStatusOptions()">Marital Status</a>
+            <a href="#" onclick="showDisabilityOptions()">Disability Type</a>
+          </div>
         </div>
-        <div>
-          <label>Gender:</label>
-          <select name="gender">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        </div>
-        <div>
-          <label>Marital Status:</label>
-          <select name="maritalStatus">
-            <option value="Single">Single</option>
-            <option value="Married">Married</option>
-            <option value="Divorced">Divorced</option>
-          </select>
-        </div>
-        <div>
-          <label>Disability Type:</label>
-          <select name="disabilityType">
-            <option value="Physical">Physical</option>
-            <option value="Intellectual">Intellectual</option>
-            <option value="Sensory">Sensory</option>
-          </select>
-        </div>
+        <button class="search-btn" onclick="searchUser()">Search</button>
+      </div>
+      <div class="user-list" id="userList">
+        <!-- User list will be displayed here -->
       </div>
     </div>
-    <button class="search-btn" onclick="searchUser()">Search</button>
-  </div>
-  <div class="user-list" id="userList">
-    <!-- User list will be displayed here -->
-  </div>
-</div>
-<script src="navigation.js"></script>
-</body>
-
+    <script src="navigation.js"></script>
+  </body>
 </html>
