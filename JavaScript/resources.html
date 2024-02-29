@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resources - ConnectAbility</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f0f2f5;
+      }
+      .header {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+      }
+      .sidebar {
+        background-color: #003366;
+        color: white;
+        padding: 10px;
+        position: fixed;
+        width: 200px;
+        height: 100%;
+        overflow: auto;
+      }
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        padding: 10px 15px;
+        display: block;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+      .sidebar a:hover {
+        background-color: #0056b3;
+      }
+      .main-content {
+        margin-left: 200px;
+        padding: 20px;
+      }
+      .resource-container {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .resource-header {
+        color: #003366;
+        font-size: 24px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .resource-list {
+        list-style: none;
+        padding-left: 0;
+        counter-reset: resource-counter;
+      }
+      .resource-list li {
+        padding: 10px 0;
+        border-bottom: 1px solid #ccc;
+        counter-increment: resource-counter;
+      }
+      .resource-list li:before {
+        content: counter(resource-counter) ". ";
+        font-weight: bold;
+      }
+      .resource-list a {
+        text-decoration: none;
+        color: #007bff;
+      }
+      .resource-list a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>ConnectAbility</h1>
+    </div>
+
+    <div class="sidebar">
+      <a href="home.html">Home</a>
+      <a href="#">Profile</a>
+      <a href="#">Messages</a>
+      <a href="match.html">Matches</a>
+      <a href="announcment.html">Announcements</a>
+      <a href="resources.html">Resources</a>
+      <a href="#">Feedback</a>
+      <a href="settings.html">Settings</a>
+    </div>
+
+    <div class="main-content">
+      <div class="resource-container">
+        <div class="resource-header">Resources</div>
+        <ul class="resource-list">
+          <!-- Numbered Support Role Links -->
+          <li>
+            <span>Support Role - </span>
+            <a href="http://ncdj.org" target="_blank"
+              >National Center on Disability and Journalism (NCDJ)</a
+            >
+          </li>
+          <li>
+            <span>Support Role - </span>
+            <a href="http://aapd.com" target="_blank"
+              >American Association of People with Disabilities</a
+            >
+          </li>
+          <li>
+            <span>Support Role - </span>
+            <a href="http://who.int" target="_blank"
+              >World Health Organization (WHO)</a
+            >
+          </li>
+          <!-- Additional resources can be added here -->
+        </ul>
+      </div>
+    </div>
+    <script src="navigation.js"></script>
+  </body>
+</html>
