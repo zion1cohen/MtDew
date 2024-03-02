@@ -1,6 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 import {
   getAuth,
+  GoogleAuthProvider, // Import GoogleAuthProvider
+  signInWithPopup, // Import signInWithPopup
   signInWithEmailAndPassword,
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
@@ -19,6 +21,24 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
+document
+  .getElementById("googleSignInButton")
+  .addEventListener("click", async () => {
+    const provider = new GoogleAuthProvider();
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log("Google sign-in successful:", user);
+
+      // Assuming you handle role determination and redirection elsewhere
+      // Redirect to a default page or handle as needed
+      window.location.href = `home.html`;
+    } catch (error) {
+      console.error("Error signing in with Google:", error.message);
+    }
+  });
 
 // Wait for the page to load before attaching event listeners
 window.onload = function () {
