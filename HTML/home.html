@@ -13,21 +13,21 @@
 
   <style>
     body {
-      font-family: "Roboto", sans-serif; /* Changed font to Roboto */
+      font-family: "Roboto", sans-serif;
       margin: 0;
       padding: 0;
-      background: linear-gradient(90deg, #d3e0ea 25%, #f4f4f4 25%, #f4f4f4 50%, #d3e0ea 50%, #d3e0ea 75%, #f4f4f4 75%, #f4f4f4 100%);
+      background-color: #e5e5f7;
     }
 
     .header {
-      background: linear-gradient(45deg, #007bff, #0056b3); /* Updated header background with gradient */
+      background: linear-gradient(45deg, #007bff, #0056b3);
       color: white;
-      padding: 15px 20px; /* Increased padding for the header */
+      padding: 15px 20px;
       text-align: center;
     }
 
     .sidebar {
-      background: linear-gradient(180deg, #0056b3, #003366); /* Updated sidebar background with gradient */
+      background: linear-gradient(180deg, #0056b3, #003366);
       color: white;
       padding: 10px;
       position: fixed;
@@ -40,11 +40,11 @@
       color: white;
       text-decoration: none;
       padding: 10px 15px;
-      display: flex; /* Align icon and text horizontally */
-      align-items: center; /* Center items vertically */
+      display: flex;
+      align-items: center;
       border-radius: 4px;
       transition: background-color 0.3s;
-      margin-bottom: 8px; /* Added spacing between sidebar links */
+      margin-bottom: 8px;
     }
 
     .sidebar a:hover {
@@ -52,34 +52,46 @@
     }
 
     .sidebar i {
-      margin-right: 8px; /* Added spacing between icon and text */
+      margin-right: 8px;
     }
 
     .main-content {
       padding: 20px;
       margin-left: 200px;
-      width: calc(100% - 200px); /* Adjusted width to fill the remaining space */
+      width: calc(100% - 200px);
+      position: relative; /* Set position to relative for z-index */
+    }
+
+    .background-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-radial-gradient(circle at 0 0, transparent 0, #e5e5f7 10px), repeating-linear-gradient(#444cf755, #444cf7);
+      z-index: -1; /* Set a lower z-index to keep it behind the content */
+      opacity: 0.4; /* Adjust opacity as needed */
     }
 
     .post {
       background-color: #ffffff;
       padding: 20px;
-      border-radius: 10px; /* Increased border radius for a softer look */
+      border-radius: 10px;
       margin-bottom: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Added subtle box shadow */
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
     .post img {
       max-width: 100%;
       max-height: 300px;
       border-radius: 10px;
-      margin-bottom: 15px; /* Increased spacing between text and image */
+      margin-bottom: 15px;
     }
 
     .post-header {
       display: flex;
       align-items: center;
-      margin-bottom: 15px; /* Increased spacing between post header and content */
+      margin-bottom: 15px;
     }
 
     .post-header img {
@@ -89,22 +101,22 @@
 
     .post-header h3 {
       margin: 0;
-      font-size: 18px; /* Increased font size for post header */
+      font-size: 18px;
     }
 
     .post-content {
       margin-bottom: 15px;
-      font-size: 16px; /* Adjusted font size for post content */
+      font-size: 16px;
     }
 
     .post-time {
       text-align: right;
       color: #777;
-      font-size: 14px; /* Adjusted font size for post time */
+      font-size: 14px;
     }
 
     .make-post {
-      background: linear-gradient(45deg, #007bff, #0056b3); /* Updated button background with gradient */
+      background: linear-gradient(45deg, #007bff, #0056b3);
       color: white;
       padding: 12px 24px;
       text-align: center;
@@ -118,17 +130,6 @@
 
     .make-post:hover {
       background-color: #0056b3;
-    }
-
-    /* Isometric Background Pattern */
-    .isometric-bg {
-      background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 8" width="16" height="8" fill="%2326363b"%3E%3Cpath d="M8 0l8 4-8 4L0 4z" fill-opacity=".25"%3E%3C/path%3E%3Cpath d="M8 0l8 4V8L8 4z" fill-opacity=".1"%3E%3C/path%3E%3Cpath d="M0 4v4l8 4V8z" fill-opacity=".1"%3E%3C/path%3E%3C/svg%3E') repeat;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: -1;
     }
   </style>
 </head>
@@ -151,6 +152,9 @@
   </div>
 
   <div class="main-content">
+    <!-- Background Overlay -->
+    <div class="background-overlay"></div>
+
     <a href="#" class="btn btn-primary make-post">Make Post</a>
 
     <!-- Post template -->
@@ -177,9 +181,6 @@
       <div class="post-time">1:09pm</div>
     </div>
   </div>
-
-  <!-- Isometric Background Pattern -->
-  <div class="isometric-bg"></div>
 </div>
 
 <!-- Add Bootstrap JS and Popper.js -->
