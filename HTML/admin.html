@@ -10,7 +10,7 @@
       import {
         getFirestore,
         collection,
-        where, // Add this import statement
+        where,
         query,
         getDocs,
       } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
@@ -30,32 +30,120 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      async function searchUser() {
+      async function searchUser(filterParams = {}) {
         const searchInput = document.getElementById("searchInput").value.trim();
         const userList = document.getElementById("userList");
         userList.innerHTML = ""; // Clear previous search results
 
-        // Query to search for the user based on the input
-        const usersRef = collection(db, "USER"); // Adjust "USER" if your collection name is different
-        const q = query(usersRef, where("Name", "==", searchInput)); // Filter users by name
+        let usersRef = collection(db, "USER");
+        let queries = [];
+        if (searchInput) {
+          queries.push(where("Name", "==", searchInput));
+        }
+
+        // Adding filters based on function parameters
+        if (filterParams.ageRange) {
+          queries.push(where("Age", ">=", filterParams.ageRange.start));
+          queries.push(where("Age", "<=", filterParams.ageRange.end));
+        }
+        if (filterParams.gender) {
+          queries.push(where("Gender", "==", filterParams.gender));
+        }
+        if (filterParams.maritalStatus) {
+          queries.push(
+                  where("MaritalStatus", "==", filterParams.maritalStatus)
+          );
+        }
+        if (filterParams.disability) {
+          queries.push(where("Disability", "==", filterParams.disability));
+        }
+
+        const q = query(usersRef, ...queries);
 
         const querySnapshot = await getDocs(q);
         if (querySnapshot.empty) {
           console.log("No matching user found.");
-          userList.innerHTML = "<p>No matching user found.</p>"; // Show a message if no user is found
+          userList.innerHTML = "<p>No matching user found.</p>";
         } else {
           querySnapshot.forEach((doc) => {
             const userData = doc.data();
-            console.log(`Document found: `, userData); // Log each document's data
-            // Add your UI update logic here
+            console.log(`Document found: `, userData);
             const userCard = document.createElement("div");
             userCard.classList.add("user-card");
-            userCard.innerHTML = `<h3>${userData.Name}</h3>`; // Example of UI update
+            userCard.innerHTML = `<h3>${userData.Name}</h3>`;
             userList.appendChild(userCard);
           });
         }
       }
+
+      function parseAgeRange(ageRange) {
+        const [start, end] = ageRange.split("-").map(Number);
+        return { start, end };
+      }
+
+      function filterByAge(ageRange) {
+        console.log("Filtering users by age range:", ageRange);
+        searchUser({ ageRange: parseAgeRange(ageRange) });
+      }
+
+      function filterByGender(gender) {
+        console.log("Filtering users by gender:", gender);
+        searchUser({ gender });
+      }
+
+      function filterByMaritalStatus(status) {
+        console.log("Filtering users by marital status:", status);
+        searchUser({ maritalStatus: status });
+      }
+
+      function filterByDisability(disability) {
+        console.log("Filtering users by disability type:", disability);
+        searchUser({ disability });
+      }
+
+      function toggleFilterOptions() {
+        const filterOptions = document.getElementById("filterOptions");
+        filterOptions.classList.toggle("show");
+      }
+
+      function showAgeOptions() {
+        const ageOptions = prompt(
+                "Enter age range (e.g., 18-22, 22-30, 31-40, 40-55, 55+):"
+        );
+        if (ageOptions) {
+          filterByAge(ageOptions);
+        }
+      }
+
+      function showMaritalStatusOptions() {
+        const statusOptions = prompt(
+                "Enter marital status (Single, Married, Divorced):"
+        );
+        if (statusOptions) {
+          filterByMaritalStatus(statusOptions);
+        }
+      }
+
+      function showGenderOptions() {
+        const genderOptions = prompt("Enter gender (Male or Female):");
+        if (genderOptions) {
+          filterByGender(genderOptions);
+        }
+      }
+
+      function showDisabilityOptions() {
+        const disabilityOptions = prompt("Enter disability type:");
+        if (disabilityOptions) {
+          filterByDisability(disabilityOptions);
+        }
+      }
+
       window.searchUser = searchUser;
+      window.toggleFilterOptions = toggleFilterOptions;
+      window.showAgeOptions = showAgeOptions;
+      window.showMaritalStatusOptions = showMaritalStatusOptions;
+      window.showGenderOptions = showGenderOptions;
+      window.showDisabilityOptions = showDisabilityOptions;
     </script>
 
     <style>
