@@ -80,6 +80,67 @@
       border: 1px solid #ccc;
     }
   </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import { getFirestore, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+      authDomain: "connectability-6ee02.firebaseapp.com",
+      projectId: "connectability-6ee02",
+      storageBucket: "connectability-6ee02.appspot.com",
+      messagingSenderId: "908801065257",
+      appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+      measurementId: "G-N8HMEMRV16",
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    function suspendUser() {
+      const userName = document.getElementById("userName").innerText;
+      const suspendDuration = document.getElementById("suspend-duration").value;
+
+      // Get user ID from URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get('userId');
+
+      // Use userId in your queries
+      const userDocRef = doc(db, 'USER', userId);
+
+      // TODO: Implement Firebase update to suspend user
+      updateDoc(userDocRef, { status: 'suspended', suspendDuration: suspendDuration })
+              .then(() => {
+                alert(`${userName} suspended successfully for ${suspendDuration}.`);
+              })
+              .catch((error) => {
+                console.error("Error updating document: ", error);
+                alert(`Failed to suspend ${userName}. Please try again.`);
+              });
+    }
+
+    function deleteUser() {
+      const userName = document.getElementById("userName").innerText;
+
+      // Get user ID from URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get('userId');
+
+      // Use userId in your queries
+      const userDocRef = doc(db, 'USER', userId);
+
+      // TODO: Implement Firebase delete to remove user
+      deleteDoc(userDocRef)
+              .then(() => {
+                alert(`${userName} deleted successfully.`);
+              })
+              .catch((error) => {
+                console.error("Error deleting document: ", error);
+                alert(`Failed to delete ${userName}. Please try again.`);
+              });
+    }
+  </script>
 </head>
 <body>
 
@@ -99,9 +160,9 @@
   <div class="remove-user-container">
     <h2>Remove User</h2>
     <img src="user-profile.jpg" alt="User Profile" width="100" height="100">
-    <p>Justin Heyes</p>
-    <p>Report Type: Harassment or Bullying</p>
-    <p>User sends derogatory messages to another user, making fun of their interests, appearance, or background.</p>
+    <p id="userName">Justin Heyes</p>
+    <p id="reportType">Report Type: Harassment or Bullying</p>
+    <p id="reportDetails">User sends derogatory messages to another user, making fun of their interests, appearance, or background.</p>
     <div class="action-buttons">
       <select id="suspend-duration">
         <option value="1 day">1 Day</option>
@@ -110,8 +171,8 @@
         <option value="1 month">1 Month</option>
         <option value="Permanent">Permanent</option>
       </select>
-      <button class="suspend-button">Suspend User</button>
-      <button class="delete-button">Delete User</button>
+      <button class="suspend-button" onclick="suspendUser()">Suspend User</button>
+      <button class="delete-button" onclick="deleteUser()">Delete User</button>
     </div>
   </div>
 </div>
