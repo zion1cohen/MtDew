@@ -31,6 +31,7 @@
       const db = getFirestore(app);
 
       async function searchUser(filterParams = {}) {
+
         const searchInput = document.getElementById("searchInput").value.trim();
         const userList = document.getElementById("userList");
         userList.innerHTML = ""; // Clear previous search results
@@ -70,7 +71,8 @@
             console.log(`Document found: `, userData);
             const userCard = document.createElement("div");
             userCard.classList.add("user-card");
-            userCard.innerHTML = `<h3>${userData.Name}</h3>`;
+            // Create a clickable link to remove_user.html with user's name as a query parameter
+            userCard.innerHTML = `<a href="remove_user.html?user=${userData.Name}"><h3>${userData.Name}</h3></a>`;
             userList.appendChild(userCard);
           });
         }
