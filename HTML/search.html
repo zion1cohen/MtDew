@@ -72,7 +72,7 @@
             const userCard = document.createElement("div");
             userCard.classList.add("user-card");
             // Create a clickable link to remove_user.html with user's name as a query parameter
-            userCard.innerHTML = `<a href="remove_user.html?user=${userData.Name}"><h3>${userData.Name}</h3></a>`;
+            userCard.innerHTML = `<a href="RemoveUser(ADMIN).html?user=${userData.Name}"><h3>${userData.Name}</h3></a>`;
             userList.appendChild(userCard);
           });
         }
