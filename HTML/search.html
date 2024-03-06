@@ -31,6 +31,7 @@
       const db = getFirestore(app);
 
       async function searchUser(filterParams = {}) {
+
         const searchInput = document.getElementById("searchInput").value.trim();
         const userList = document.getElementById("userList");
         userList.innerHTML = ""; // Clear previous search results
@@ -70,7 +71,8 @@
             console.log(`Document found: `, userData);
             const userCard = document.createElement("div");
             userCard.classList.add("user-card");
-            userCard.innerHTML = `<h3>${userData.Name}</h3>`;
+            // Create a clickable link to remove_user.html with user's name as a query parameter
+            userCard.innerHTML = `<a href="RemoveUser(ADMIN).html?user=${userData.Name}"><h3>${userData.Name}</h3></a>`;
             userList.appendChild(userCard);
           });
         }
@@ -231,10 +233,37 @@
       .show {
         display: block;
       }
+      .user-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      .user-card {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        width: calc(100% / 3 - 20px);
+      }
+      .user-card h3 {
+        margin: 0;
+        padding: 15px;
+      }
+      .user-card button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        width: 100%;
+        display: block;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
-    <div class="header">
+  <body onload="searchUser()">
+  <div class="header">
       <h1>ConnectAbility</h1>
     </div>
     <div class="sidebar">
