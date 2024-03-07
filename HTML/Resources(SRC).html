@@ -1,130 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resources - ConnectAbility</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f0f2f5;
-    }
-    .header {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 20px;
-      text-align: center;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .sidebar {
-      background-color: #003366;
-      color: white;
-      padding: 10px;
-      position: fixed;
-      height: 100%;
-      width: 200px;
-      overflow-y: auto;
-    }
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      padding: 10px;
-      display: block;
-    }
-    .main-content {
-      margin-left: 200px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .search-bar {
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    .search-bar input {
-      width: 100%;
-      padding: 10px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    .resource-container {
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .resource-header {
-      color: #003366;
-      margin-bottom: 20px;
-    }
-    .resource-list {
-      list-style: none;
-      padding: 0;
-    }
-    .resource-item {
-      margin-bottom: 10px;
-      padding: 10px 0;
-    }
-    .resource-link {
-      color: #007bff;
-      text-decoration: none;
-      margin-left: 5px;
-    }
-    .add-resource {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-bottom: 20px;
-    }
-  </style>
-</head>
-<body>
-
-<div class="header">
-  <h1>ConnectAbility</h1>
-</div>
-
-<div class="sidebar">
-  <a href="#">Home</a>
-  <a href="#">Profile</a>
-  <a href="#">Resources</a>
-  <a href="#">Announcement Support</a>
-  <a href="#">Settings</a>
-  <a href="#">User Reports</a>
-</div>
-
-<div class="main-content">
-  <div class="resource-container">
-    <h2 class="resource-header">Resources</h2>
-    <div class="search-bar">
-      <input type="text" placeholder="Add Resource">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resources - ConnectAbility</title>
+    <script
+      type="module"
+      src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"
+    ></script>
+    <script
+      type="module"
+      src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
+    ></script>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f2f5;
+      }
+      .header {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .sidebar {
+        background-color: #003366;
+        color: white;
+        padding: 10px;
+        position: fixed;
+        height: 100%;
+        width: 200px;
+        overflow-y: auto;
+      }
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        padding: 10px;
+        display: block;
+      }
+      .main-content {
+        margin-left: 200px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+      }
+      .search-bar {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+      .search-bar input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+      .resource-container {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .resource-header {
+        color: #003366;
+        margin-bottom: 20px;
+      }
+      .resource-list {
+        list-style: none;
+        padding: 0;
+      }
+      .resource-item {
+        margin-bottom: 10px;
+        padding: 10px 0;
+      }
+      .resource-link {
+        color: #007bff;
+        text-decoration: none;
+        margin-left: 5px;
+      }
+      .add-resource {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>ConnectAbility</h1>
     </div>
-    <button class="add-resource">Add Resource</button>
-    <ul class="resource-list">
-      <!-- Example Resource Item -->
-      <li class="resource-item">
-        National Center on Disability and Journalism (NCDJ):
-        <a href="http://ncdj.org" class="resource-link" target="_blank">Website</a>
-      </li>
-      <!-- More Resource Items -->
-      <li class="resource-item">
-        American Association of People with Disabilities (AAPD):
-        <a href="http://aapd.com" class="resource-link" target="_blank">Website</a>
-      </li>
-      <!-- Add additional resource items here -->
-    </ul>
-  </div>
-</div>
 
-</body>
+    <div class="sidebar">
+      <a href="#">Home</a>
+      <a href="#">Profile</a>
+      <a href="#">Resources</a>
+      <a href="#">Announcement Support</a>
+      <a href="#">Settings</a>
+      <a href="#">User Reports</a>
+    </div>
+
+    <div class="main-content">
+      <div class="resource-container">
+        <h2 class="resource-header">Resources</h2>
+        <div class="search-bar">
+          <input type="text" id="resourceName" placeholder="Resource Name" />
+          <input type="text" id="resourceLink" placeholder="Resource Link" />
+        </div>
+        <button class="add-resource" id="addResourceButton">
+          Add Resource
+        </button>
+        <ul class="resource-list" id="resourceList">
+          <!-- Dynamically added resources will appear here -->
+        </ul>
+      </div>
+    </div>
+
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        orderBy,
+        query,
+        onSnapshot,
+      } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+        authDomain: "connectability-6ee02.firebaseapp.com",
+        projectId: "connectability-6ee02",
+        storageBucket: "connectability-6ee02.appspot.com",
+        messagingSenderId: "908801065257",
+        appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+        measurementId: "G-N8HMEMRV16",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      document.addEventListener("DOMContentLoaded", function () {
+        document
+          .getElementById("addResourceButton")
+          .addEventListener("click", function () {
+            const resourceName = document
+              .getElementById("resourceName")
+              .value.trim();
+            const resourceLink = document
+              .getElementById("resourceLink")
+              .value.trim();
+
+            if (!resourceName || !resourceLink) {
+              alert("Please fill in both fields.");
+              return;
+            }
+
+            addDoc(collection(db, "RESOURCE"), {
+              name: resourceName,
+              link: resourceLink,
+              timestamp: new Date().getTime(), // or use serverTimestamp() if you want server-side timestamp
+            })
+              .then(() => {
+                console.log("Resource added successfully");
+                document.getElementById("resourceName").value = "";
+                document.getElementById("resourceLink").value = "";
+              })
+              .catch((error) => {
+                console.error("Error adding resource:", error);
+              });
+          });
+
+        onSnapshot(
+          query(collection(db, "RESOURCE"), orderBy("timestamp", "desc")),
+          (snapshot) => {
+            const resourcesList = document.getElementById("resourceList");
+            resourcesList.innerHTML = ""; // Clear current list
+            snapshot.forEach((doc) => {
+              const resource = doc.data();
+              const listItem = document.createElement("li");
+              listItem.className = "resource-item";
+
+              const textNode = document.createTextNode(`${resource.name}: `);
+              const linkElement = document.createElement("a");
+              linkElement.href = resource.link;
+              linkElement.target = "_blank";
+              linkElement.className = "resource-link";
+              linkElement.textContent = "Visit";
+
+              listItem.appendChild(textNode);
+              listItem.appendChild(linkElement);
+              resourcesList.appendChild(listItem);
+            });
+          }
+        );
+      });
+    </script>
+  </body>
 </html>

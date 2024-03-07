@@ -1,136 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resources - ConnectAbility</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f0f2f5;
-    }
-    .header {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 20px;
-      text-align: center;
-    }
-    .sidebar {
-      background-color: #003366;
-      color: white;
-      padding: 10px;
-      position: fixed;
-      width: 200px;
-      height: 100%;
-      overflow: auto;
-    }
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      padding: 10px 15px;
-      display: block;
-      border-radius: 4px;
-      transition: background-color 0.3s;
-    }
-    .sidebar a:hover {
-      background-color: #0056b3;
-    }
-    .main-content {
-      margin-left: 200px;
-      padding: 20px;
-    }
-    .resource-container {
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .resource-header {
-      color: #003366;
-      font-size: 24px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .resource-list {
-      list-style: none;
-      padding-left: 0;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resources - ConnectAbility</title>
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        orderBy,
+        query,
+        onSnapshot,
+      } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+        authDomain: "connectability-6ee02.firebaseapp.com",
+        projectId: "connectability-6ee02",
+        storageBucket: "connectability-6ee02.appspot.com",
+        messagingSenderId: "908801065257",
+        appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+        measurementId: "G-N8HMEMRV16",
+      };
 
-    .resource-list li {
-      padding: 10px 0;
-      border-bottom: 1px solid #ccc;
-    }
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
 
+      function fetchResources() {
+        onSnapshot(
+          query(collection(db, "RESOURCE"), orderBy("timestamp")),
+          (snapshot) => {
+            const resourcesList = document.querySelector(".resource-list");
+            resourcesList.innerHTML = ""; // Clear existing list
+            snapshot.forEach((doc) => {
+              const resource = doc.data();
+              const listItem = document.createElement("li");
+              listItem.innerHTML = `
+              <b>${resource.title || "Resource"}</b><br>
+              <a href="${resource.link}" target="_blank">${resource.name}</a>
+              - ${resource.description || ""}
+            `;
+              resourcesList.appendChild(listItem);
+            });
+          }
+        );
+      }
 
-    .resource-list li:before {
-      content: counter(resource-counter) ". ";
-      font-weight: bold;
-    }
+      fetchResources();
+    </script>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f0f2f5;
+      }
+      .header {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+      }
+      .sidebar {
+        background-color: #003366;
+        color: white;
+        padding: 10px;
+        position: fixed;
+        width: 200px;
+        height: 100%;
+        overflow: auto;
+      }
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        padding: 10px 15px;
+        display: block;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+      .sidebar a:hover {
+        background-color: #0056b3;
+      }
+      .main-content {
+        margin-left: 200px;
+        padding: 20px;
+      }
+      .resource-container {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .resource-header {
+        color: #003366;
+        font-size: 24px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .resource-list {
+        list-style: none;
+        padding-left: 0;
+      }
+      .resource-list li {
+        padding: 10px 0;
+        border-bottom: 1px solid #ccc;
+      }
+      .resource-list li:before {
+        content: counter(resource-counter) ". ";
+        font-weight: bold;
+      }
+      .resource-list a {
+        text-decoration: none;
+        color: #007bff;
+      }
+      .resource-list a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>ConnectAbility</h1>
+    </div>
 
-    .resource-list a {
-      text-decoration: none;
-      color: #007bff;
-    }
-    .resource-list a:hover {
-      text-decoration: underline;
-    }
-  </style>
-</head>
-<body>
+    <div class="sidebar">
+      <a href="#">Home</a>
+      <a href="#">Profile</a>
+      <a href="#">Messages</a>
+      <a href="#">Matches</a>
+      <a href="#">Announcements</a>
+      <a href="#">Resources</a>
+      <a href="#">Feedback</a>
+      <a href="#">Settings</a>
+    </div>
 
-<div class="header">
-  <h1>ConnectAbility</h1>
-</div>
-
-<div class="sidebar">
-  <a href="#">Home</a>
-  <a href="#">Profile</a>
-  <a href="#">Messages</a>
-  <a href="#">Matches</a>
-  <a href="#">Announcements</a>
-  <a href="#">Resources</a>
-  <a href="#">Feedback</a>
-  <a href="#">Settings</a>
-</div>
-
-<div class="main-content">
-  <div class="resource-container">
-    <div class="resource-header">Resources</div>
-    <p>Subject: Exciting News! Introducing Our New Disability Resource Page 🌟</p>
-    <p>Dear ConnectAbility Users, ...</p>
-    <p>Subject: Exciting News! Introducing Our New Disability Resource Page 🌟
-      Dear Connectability Users,
-
-      I hope this message finds you well! As part of our ongoing commitment to fostering an inclusive and supportive community, I am thrilled to announce the launch of our brand-new Disability Resource Page!
-
-      🌐 Explore the Power of Inclusivity:Our Disability Resource Page is a dedicated space designed to provide valuable information, support, and resources for our users with diverse abilities. Whether you're seeking accessibility features within Connectability or searching for external resources, this page is here to empower you on your journey.
-      🤝 Connect, Learn, and Thrive:We believe in the strength of our community, and this resource page is a testament to our dedication to inclusivity. It's not just a page; it's a hub where everyone can come together, learn from each other, and thrive as part of the Connectability family.
-      🔗 What You'll Find:
-      Useful guides on maximizing accessibility features within Connectability.
-      External resources for personal and professional development.
-      Tips and best practices for creating an inclusive environment.
-      🚀 Your Feedback Matters:We want this resource page to grow and evolve with your needs. Your feedback is invaluable! Share your thoughts, suggestions, or anything you'd like to see on the page. Together, we can make Connectability an even more inclusive space for everyone.</p>
-    <ul class="resource-list">
-      <!-- Example Resource -->
-      <li>
-        <b>Support Role</b><br>
-        <a href="#" target="_blank">National Center on Disability and Journalism (NCDJ)</a> - Website
-      </li>
-      <li>
-        <b>Support Role</b><br>
-        <a href="#" target="_blank">American Association of People with Disabilities</a> - Website
-      </li>
-      <li>
-        <b>Support Role</b><br>
-        <a href="#" target="_blank">World Health Organization (WHO)</a> - Resources and Rehabilitation
-      </li>
-      <!-- Additional resources can be added here -->
-    </ul>
-  </div>
-</div>
-
-</body>
+    <div class="main-content">
+      <div class="resource-container">
+        <div class="resource-header">Resources</div>
+        <ul class="resource-list">
+          <!-- Dynamically added resources will appear here -->
+        </ul>
+      </div>
+    </div>
+  </body>
 </html>
