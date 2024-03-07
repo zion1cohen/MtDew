@@ -32,6 +32,8 @@
 
       async function searchUser(filterParams = {}) {
 
+
+
         const searchInput = document.getElementById("searchInput").value.trim();
         const userList = document.getElementById("userList");
         userList.innerHTML = ""; // Clear previous search results
@@ -71,9 +73,10 @@
             console.log(`Document found: `, userData);
             const userCard = document.createElement("div");
             userCard.classList.add("user-card");
-            // Create a clickable link to remove_user.html with user's name as a query parameter
-            userCard.innerHTML = `<a href="RemoveUser(ADMIN).html?user=${userData.Name}"><h3>${userData.Name}</h3></a>`;
-            userList.appendChild(userCard);
+            userCard.innerHTML = `
+  <a href="#" onclick="openModal('${doc.id}', '${userData.Name}'); return false;">${userData.Name}</a>
+  <!-- More details -->
+`;            userList.appendChild(userCard);
           });
         }
       }
@@ -140,6 +143,53 @@
         }
       }
 
+      // Inside the <script type="module"> tag
+      function openModal(userId, userName) {
+        const modal = document.getElementById("userActionModal");
+        // Display the modal
+        modal.style.display = "block";
+        // Update button actions
+        document.getElementById("suspendBtn").onclick = function() {
+          const duration = document.getElementById("duration").value;
+          suspendUser(userId, duration);
+        };
+        document.getElementById("deactivateBtn").onclick = function() {
+          deactivateUser(userId);
+        };
+      }
+
+        // Function to close the modal
+        function closeModal() {
+        const modal = document.getElementById("userActionModal");
+        modal.style.display = "none";
+      }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+        const modal = document.getElementById("userActionModal");
+        if (event.target === modal) {
+        modal.style.display = "none";
+      }
+      }
+      var modal = document.getElementById('userActionModal');
+
+      // Get the element that closes the modal
+      var closeBtn = document.getElementsByClassName('close')[0];
+
+      // When the user clicks on the "x" button, close the modal
+      closeBtn.onclick = function() {
+        modal.style.display = 'none';
+      }
+
+      // Optionally, close the modal if the user clicks outside of it
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = 'none';
+        }
+      }
+
+      window.closeModal = closeModal;
+      window.openModal = openModal;
       window.searchUser = searchUser;
       window.toggleFilterOptions = toggleFilterOptions;
       window.showAgeOptions = showAgeOptions;
@@ -259,6 +309,64 @@
         display: block;
         cursor: pointer;
       }
+      /* Modal (background) */
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      }
+
+      /* Modal Content */
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+      }
+
+      /* The Close Button */
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .suspend-button {
+        background-color: #f0ad4e;
+        color: white;
+      }
+      .delete-button {
+        background-color: #d9534f;
+        color: white;
+      }
+      select {
+        padding: 5px;
+        margin: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
     </style>
   </head>
   <body>
@@ -296,6 +404,28 @@
         <!-- User list will be displayed here -->
       </div>
     </div>
-    <script src="navigation.js"></script>
+  <!-- The Modal -->
+  <div id="userActionModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>User Actions</h2>
+      <p id="reportType">Report Type: Harassment or Bullying</p>
+      <p id="reportDetails">User sends derogatory messages to another user, making fun of their interests, appearance, or background.</p>
+      <p>Select an action for this user:</p>
+      <div class="action-buttons">
+        <select id="suspend-duration">
+          <option value="1 day">1 Day</option>
+          <option value="3 days">3 Days</option>
+          <option value="1 week">1 Week</option>
+          <option value="1 month">1 Month</option>
+          <option value="Permanent">Permanent</option>
+        </select>
+        <button class="suspend-button" onclick="suspendUser()">Suspend User</button>
+        <button class="delete-button" onclick="deleteUser()">Delete User</button>
+      </div>
+    </div>
+  </div>
+  <script src="navigation.js"></script>
   </body>
 </html>
