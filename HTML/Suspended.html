@@ -388,7 +388,6 @@
         }
     </style>
 </head>
-<body>
 <body onload="searchUser()">
 <div class="header">
     <h1>ConnectAbility</h1>
@@ -436,6 +435,22 @@
         </div>
     </div>
 </div>
-<script src="navigation.js"></script>
+<script src="firebaseUtils.js"></script>
+<script>
+    // Example usage
+    const userId1 = "cL7XkV5cJ2Ob34e8mvauUcpsmHy2";
+    const userId2 = "anotherUserId";
+    const userId3 = "yetAnotherUserId";
+
+    // File objects or references to file input elements
+    const file1 = "2ST6olHkgA2MBPGhj1tq";
+    const file2 = /* File object or reference for user 2 */;
+    const file3 = /* File object or reference for user 3 */;
+
+    // Add images to users
+    addImageToUser(userId1, file1, "gs://connectability-6ee02.appspot.com/man1.jpg");
+    addImageToUser(userId2, file2);
+    addImageToUser(userId3, file3);
+</script>
 </body>
 </html>
