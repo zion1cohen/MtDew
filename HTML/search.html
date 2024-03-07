@@ -14,6 +14,7 @@
         query,
         getDocs,
       } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+      import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"; // Import Storage
 
       // Your web app's Firebase configuration
       const firebaseConfig = {
@@ -29,6 +30,8 @@
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
+      // Initialize Firebase Storage
+      const storage = getStorage(app);
 
       async function searchUser(filterParams = {}) {
 
@@ -70,15 +73,18 @@
         } else {
           querySnapshot.forEach((doc) => {
             const userData = doc.data();
-            console.log(`Document found: `, userData);
             const userCard = document.createElement("div");
             userCard.classList.add("user-card");
             userCard.innerHTML = `
-  <a href="#" onclick="openModal('${doc.id}', '${userData.Name}'); return false;">${userData.Name}</a>
-  <!-- More details -->
-`;            userList.appendChild(userCard);
+         <img src="${userData.Picture || '74.jpg'}" alt="User Photo" class="user-img">
+          <div class="user-info">
+      <div><strong>Name:</strong> ${userData.Name}</div>
+      <button onclick="openModal('${doc.id}', '${userData.Name}');">View Actions</button>
+    `;
+            userList.appendChild(userCard);
           });
         }
+
       }
 
       function parseAgeRange(ageRange) {
