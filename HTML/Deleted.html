@@ -79,7 +79,7 @@
          <img src="${userData.Picture || '74.jpg'}" alt="User Photo" class="user-img">
           <div class="user-info">
       <div><strong>Name:</strong> ${userData.Name}</div>
-      <button onclick="openModal('${doc.id}', '${userData.Name}');">View Actions</button>
+      <button onclick="openModal('${doc.id}', '${userData.Name}');">Activate User</button>
     `;
                     userList.appendChild(userCard);
                 });
@@ -372,11 +372,11 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        .suspend-button {
+        .yes-button {
             background-color: #f0ad4e;
             color: white;
         }
-        .delete-button {
+        .no-button {
             background-color: #d9534f;
             color: white;
         }
@@ -428,20 +428,11 @@
     <!-- Modal content -->
     <div class="modal-content">
         <span class="close">&times;</span>
-        <h2>User Actions</h2>
-        <p id="reportType">Report Type: Harassment or Bullying</p>
-        <p id="reportDetails">User sends derogatory messages to another user, making fun of their interests, appearance, or background.</p>
-        <p>Select an action for this user:</p>
+        <h2>Warning</h2>
+        <p id="reportDetails">Are you sure you want to activate this user?</p>
         <div class="action-buttons">
-            <select id="suspend-duration">
-                <option value="1 day">1 Day</option>
-                <option value="3 days">3 Days</option>
-                <option value="1 week">1 Week</option>
-                <option value="1 month">1 Month</option>
-                <option value="Permanent">Permanent</option>
-            </select>
-            <button class="suspend-button" onclick="suspendUser()">Suspend User</button>
-            <button class="delete-button" onclick="deleteUser()">Delete User</button>
+            <button class="yes-button" onclick="suspendUser()">Yes</button>
+            <button class="no-button" onclick="deleteUser()">No</button>
         </div>
     </div>
 </div>
