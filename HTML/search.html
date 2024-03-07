@@ -87,6 +87,8 @@
 
       }
 
+
+
       function parseAgeRange(ageRange) {
         const [start, end] = ageRange.split("-").map(Number);
         return { start, end };
@@ -147,6 +149,17 @@
         if (disabilityOptions) {
           filterByDisability(disabilityOptions);
         }
+      }
+
+
+      function redirectToSuspendedUsersPage() {
+        // Change the URL to the relative path of the suspended users page
+        window.location.href = "match.html";
+      }
+
+      function redirectToDeletedUsersPage() {
+        // Change the URL to the relative path of the deleted users page
+        window.location.href = "Announcements(ADMIN).html";
       }
 
       // Inside the <script type="module"> tag
@@ -250,6 +263,27 @@
         padding: 10px;
         width: 70%;
         border-radius: 5px;
+      }
+      .suspended-users-btn{
+        padding: 10px 20px;
+        margin-left: 10px;
+        margin-right: 10px;
+        border: none;
+        background-color: #f0ad4e;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+        text-decoration: none;
+      }
+      .deleted-users-btn{
+        padding: 10px 20px;
+        margin-right: 20px;
+        border: none;
+        background-color: #d9534f;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+        text-decoration: none;
       }
       .search-btn,
       .filter-btn {
@@ -405,6 +439,8 @@
           </div>
         </div>
         <button class="search-btn" onclick="searchUser()">Search</button>
+        <a href="Announcements(ADMIN).html" class="suspended-users-btn" onclick="redirectToSuspendedUsersPage()">Suspended Users</a>
+        <a href="match.html" class="deleted-users-btn" onclick="redirectToDeletedUsersPage()">Deleted Users</a>
       </div>
       <div class="user-list" id="userList">
         <!-- User list will be displayed here -->
