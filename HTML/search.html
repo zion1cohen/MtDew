@@ -4,17 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Dashboard - ConnectAbility</title>
+    <script src="node.js"></script>
     <script type="module">
-      // Import the functions you need from the SDKs you need
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-      import {
-        getFirestore,
-        collection,
-        where,
-        query,
-        getDocs,
-      } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-      import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"; // Import Storage
+      import { getFirestore, collection, where, query, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+      import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+      import { updateDoc as firestoreUpdateDoc, doc as firestoreDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+
+
 
       // Your web app's Firebase configuration
       const firebaseConfig = {
@@ -34,8 +32,6 @@
       const storage = getStorage(app);
 
       async function searchUser(filterParams = {}) {
-
-
 
         const searchInput = document.getElementById("searchInput").value.trim();
         const userList = document.getElementById("userList");
@@ -71,23 +67,25 @@
           console.log("No matching user found.");
           userList.innerHTML = "<p>No matching user found.</p>";
         } else {
-          querySnapshot.forEach((doc) => {
-            const userData = doc.data();
+          querySnapshot.forEach((userDoc) => {
+            const userData = userDoc.data();
             const userCard = document.createElement("div");
             userCard.classList.add("user-card");
             userCard.innerHTML = `
-         <img src="${userData.Picture || '74.jpg'}" alt="User Photo" class="user-img">
-          <div class="user-info">
-      <div><strong>Name:</strong> ${userData.Name}</div>
-      <button onclick="openModal('${doc.id}', '${userData.Name}');">View Actions</button>
-    `;
+    <img src="${userData.Picture || '74.jpg'}" alt="User Photo" class="user-img">
+    <div class="user-info">
+        <div><strong>Name:</strong> ${userData.Name}</div>
+        <button onclick="openModal('${userDoc.id}', '${userData.Name}')">View Actions</button>
+    </div>`;
             userList.appendChild(userCard);
           });
+
+
         }
 
       }
 
-
+      searchUser();
 
       function parseAgeRange(ageRange) {
         const [start, end] = ageRange.split("-").map(Number);
@@ -152,6 +150,7 @@
       }
 
 
+
       function redirectToSuspendedUsersPage() {
         // Change the URL to the relative path of the suspended users page
         window.location.href = "match.html";
@@ -163,48 +162,65 @@
       }
 
       // Inside the <script type="module"> tag
+      let currentUserId;
+
       function openModal(userId, userName) {
         const modal = document.getElementById("userActionModal");
         // Display the modal
         modal.style.display = "block";
+
+        // Store userId in the variable
+        currentUserId = userId;
+
+        // Update modal content based on userId and userName
+        const reportTypeElement = document.getElementById("reportType");
+        const reportDetailsElement = document.getElementById("reportDetails");
+
+        // Modify these lines based on your actual report type and details logic
+        reportTypeElement.innerText = "Report Type: Some Report Type";
+        reportDetailsElement.innerText = "User-specific report details go here.";
+
         // Update button actions
         document.getElementById("suspendBtn").onclick = function() {
-          const duration = document.getElementById("duration").value;
-          suspendUser(userId, duration);
+          const duration = document.getElementById("suspend-duration").value;
+          suspendUser(duration); // Removed userId parameter
         };
-        document.getElementById("deactivateBtn").onclick = function() {
-          deactivateUser(userId);
+
+        document.getElementById("deleteBtn").onclick = function() {
+          deleteUser(); // Removed userId parameter
         };
       }
+      async function suspendUser(duration) {
+        console.log("Suspending user:", currentUserId, "for", duration);
+        try {
+          // Update the user document in the database with the suspension status
+          const userRef = doc(db, "USER", currentUserId);
+          await firestoreUpdateDoc(userRef, {
+            Status: "Suspended",
+            //SuspensionDuration: duration,
+          });
 
-        // Function to close the modal
-        function closeModal() {
-        const modal = document.getElementById("userActionModal");
-        modal.style.display = "none";
-      }
 
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-        const modal = document.getElementById("userActionModal");
-        if (event.target === modal) {
-        modal.style.display = "none";
-      }
-      }
-      var modal = document.getElementById('userActionModal');
-
-      // Get the element that closes the modal
-      var closeBtn = document.getElementsByClassName('close')[0];
-
-      // When the user clicks on the "x" button, close the modal
-      closeBtn.onclick = function() {
-        modal.style.display = 'none';
-      }
-
-      // Optionally, close the modal if the user clicks outside of it
-      window.onclick = function(event) {
-        if (event.target == modal) {
-          modal.style.display = 'none';
+          console.log(`User ${currentUserId} suspended for ${duration}`);
+          closeModal(); // Close the modal after suspending the user
+        } catch (error) {
+          console.error("Error suspending user:", error);
         }
+      }
+
+      async function deleteUser() {
+        console.log("Deleting user:", currentUserId);
+        try {
+          // Implement the code to delete the user as needed
+          // You can use a similar approach as suspendUser to update the database
+          // and then delete the user if required.
+        } catch (error) {
+          console.error("Error deleting user:", error);
+        }
+      }
+      function closeModal() {
+        const modal = document.getElementById("userActionModal");
+        modal.style.display = "none";
       }
 
       window.closeModal = closeModal;
@@ -409,8 +425,9 @@
       }
     </style>
   </head>
-  <body>
-  <body onload="searchUser()">
+
+
+  <body onload="searchUser();">
   <div class="header">
       <h1>ConnectAbility</h1>
     </div>
@@ -463,11 +480,10 @@
           <option value="1 month">1 Month</option>
           <option value="Permanent">Permanent</option>
         </select>
-        <button class="suspend-button" onclick="suspendUser()">Suspend User</button>
+        <button class="suspend-button" onclick="suspendUser(document.getElementById('suspend-duration').value)">Suspend User</button>
         <button class="delete-button" onclick="deleteUser()">Delete User</button>
       </div>
     </div>
   </div>
-  <script src="navigation.js"></script>
   </body>
 </html>
