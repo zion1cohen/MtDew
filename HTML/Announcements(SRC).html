@@ -4,6 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Support Role Announcements - ConnectAbility</title>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            getDocs,
+        } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+            authDomain: "connectability-6ee02.firebaseapp.com",
+            projectId: "connectability-6ee02",
+            storageBucket: "connectability-6ee02.appspot.com",
+            messagingSenderId: "908801065257",
+            appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+            measurementId: "G-N8HMEMRV16",
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function addAnnouncement(announcementText) {
+            try {
+                const timestamp = new Date(); // Current timestamp
+                const docRef = await addDoc(collection(db, "ANNOUNCEMENT"), {
+                    Content: announcementText,
+                    Timestamp: timestamp
+                });
+                console.log("Announcement added with ID: ", docRef.id);
+                return true;
+            } catch (e) {
+                console.error("Error adding announcement: ", e);
+                return false;
+            }
+        }
+
+        async function displayAnnouncements() {
+            const announcementsContainer = document.getElementById("announcements");
+            announcementsContainer.innerHTML = ""; // Clear previous announcements
+            const querySnapshot = await getDocs(collection(db, "ANNOUNCEMENT"));
+            querySnapshot.forEach((doc) => {
+                const announcementData = doc.data();
+                const timestamp = new Date(announcementData.Timestamp.seconds * 1000); // Convert timestamp to Date object
+                const announcementElement = document.createElement("div");
+                announcementElement.innerHTML = `
+            <p><span>${announcementData.Content}</span></p>
+            <p><em>${timestamp.toLocaleString()}</em></p>
+            <hr>
+        `;
+                announcementsContainer.appendChild(announcementElement);
+            });
+        }
+
+
+
+        window.onload = function() {
+            displayAnnouncements();
+            const addAnnouncementBtn = document.getElementById("addAnnouncementBtn");
+            addAnnouncementBtn.addEventListener("click", addNewAnnouncement);
+
+        }
+
+        function addNewAnnouncement() {
+            const announcementInput = document.getElementById("announcementInput");
+            const announcementText = announcementInput.value.trim();
+            if (announcementText !== "") {
+                addAnnouncement(announcementText).then((success) => {
+                    if (success) {
+                        // If announcement added successfully, update UI to display it
+                        displayAnnouncements();
+                        announcementInput.value = ""; // Clear input field
+                    } else {
+                        alert("Failed to add announcement. Please try again.");
+                    }
+                });
+            } else {
+                alert("Please enter an announcement.");
+            }
+        }
+    </script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -77,6 +162,15 @@
             cursor: pointer;
             margin-bottom: 20px;
         }
+        .announcement-form {
+            margin-bottom: 20px;
+        }
+        .announcement-form textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
@@ -97,23 +191,15 @@
 <div class="main-content">
     <div class="announcement-section">
         <h2>Support Role Announcements</h2>
-        <div class="search-bar">
-            <input type="text" placeholder="Enter an announcement">
+        <div class="announcement-form">
+            <textarea id="announcementInput" rows="4" placeholder="Enter your announcement"></textarea>
+            <button id="addAnnouncementBtn" class="add-announcement">Add Announcement</button>
         </div>
-        <button class="add-announcement">Add Announcement</button>
-        <!-- Example Announcement -->
-        <p><span>Scheduled Maintenance - System Upgrade</span><br>
-            Date: 2/6/2024<br>
-            Attention Admins! ConnectAbility will undergo scheduled maintenance on 2/15/24 for a system upgrade. The platform will be temporarily inaccessible during this time. We appreciate your understanding as we work to enhance your user experience.</p>
-        <!-- Additional Announcements -->
-        <p><span>Upcoming Webinar - Mastering ConnectAbility Tips and Tricks!</span><br>
-            Date: 2/6/2024<br>
-            Join us for an exclusive webinar where we'll walk you through advanced tips and tricks to maximize your ConnectAbility experience. Learn how to leverage features like tags, categories, and automated follow-ups. Mark your calendar for an insightful session!</p>
-        <p><span>New Feature Announcement - Customizable User Roles</span><br>
-            Date: 2/6/2024<br>
-            Admins rejoice! You can now customize user roles in ConnectAbility. Tailor access and permissions to match your team's unique structure. Head to the admin settings to explore this powerful new feature and optimize your team's workflow.</p>
+        <div id="announcements"></div>
     </div>
 </div>
+
+
 
 </body>
 </html>
