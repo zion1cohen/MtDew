@@ -1,489 +1,424 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>User Dashboard - ConnectAbility</title>
-    <script src="node.js"></script>
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-      import { getFirestore, collection, where, query, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-      import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
-      import { updateDoc as firestoreUpdateDoc, doc as firestoreDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Dashboard - ConnectAbility</title>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      where,
+      query,
+      getDocs,
+      doc,
+      updateDoc,
+      deleteDoc,
+    } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+      authDomain: "connectability-6ee02.firebaseapp.com",
+      projectId: "connectability-6ee02",
+      storageBucket: "connectability-6ee02.appspot.com",
+      messagingSenderId: "908801065257",
+      appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+      measurementId: "G-N8HMEMRV16",
+    };
 
 
-      // Your web app's Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
-        authDomain: "connectability-6ee02.firebaseapp.com",
-        projectId: "connectability-6ee02",
-        storageBucket: "connectability-6ee02.appspot.com",
-        messagingSenderId: "908801065257",
-        appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
-        measurementId: "G-N8HMEMRV16",
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+
+    async function searchUser(filterParams = {}) {
+      const searchInput = document.getElementById("searchInput").value.trim();
+      const userList = document.getElementById("userList");
+      userList.innerHTML = ""; // Clear previous search results
+
+
+      let usersRef = collection(db, "USER");
+      let queries = [];
+      if (searchInput) {
+        queries.push(where("Name", "==", searchInput));
+      }
+
+
+      // Adding filters based on function parameters
+      if (filterParams.ageRange) {
+        queries.push(where("Age", ">=", filterParams.ageRange.start));
+        queries.push(where("Age", "<=", filterParams.ageRange.end));
+      }
+      if (filterParams.gender) {
+        queries.push(where("Gender", "==", filterParams.gender));
+      }
+      if (filterParams.maritalStatus) {
+        queries.push(
+                where("MaritalStatus", "==", filterParams.maritalStatus)
+        );
+      }
+      if (filterParams.disability) {
+        queries.push(where("Disability", "==", filterParams.disability));
+      }
+
+
+      const q = query(usersRef, ...queries);
+
+
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        console.log("No matching user found.");
+        userList.innerHTML = "<p>No matching user found.</p>";
+      } else {
+        querySnapshot.forEach((doc) => {
+          const userData = doc.data();
+          console.log(`Document found: `, userData);
+          const userCard = document.createElement("div");
+          userCard.classList.add("user-card");
+          userCard.innerHTML = `
+            <h3>${userData.Name}</h3>
+            <p>Age: ${userData.Age}</p>
+            <p>Gender: ${userData.Gender}</p>
+            <p>Marital Status: ${userData.MaritalStatus}</p>
+            <p>Disability: ${userData.Disability}</p>
+            <p>Status: ${userData.Status}</p>
+            <button onclick="openModal('${doc.id}', '${userData.Status}')">Manage User</button>
+          `;
+          userList.appendChild(userCard);
+        });
+      }
+    }
+
+    // Call searchUser() function when the page loads to display all users
+    window.onload = function() {
+      searchUser();
+    };
+
+    function parseAgeRange(ageRange) {
+      const [start, end] = ageRange.split("-").map(Number);
+      return { start, end };
+    }
+
+
+    function filterByAge(ageRange) {
+      console.log("Filtering users by age range:", ageRange);
+      searchUser({ ageRange: parseAgeRange(ageRange) });
+    }
+
+
+    function filterByGender(gender) {
+      console.log("Filtering users by gender:", gender);
+      searchUser({ gender });
+    }
+
+
+    function filterByMaritalStatus(status) {
+      console.log("Filtering users by marital status:", status);
+      searchUser({ maritalStatus: status });
+    }
+
+
+    function filterByDisability(disability) {
+      console.log("Filtering users by disability type:", disability);
+      searchUser({ disability });
+    }
+
+
+    function toggleFilterOptions() {
+      const filterOptions = document.getElementById("filterOptions");
+      filterOptions.classList.toggle("show");
+    }
+
+
+    function showAgeOptions() {
+      const ageOptions = prompt(
+              "Enter age range (e.g., 18-22, 22-30, 31-40, 40-55, 55+):"
+      );
+      if (ageOptions) {
+        filterByAge(ageOptions);
+      }
+    }
+
+
+    function showMaritalStatusOptions() {
+      const statusOptions = prompt(
+              "Enter marital status (single, married, divorced):"
+      );
+      if (statusOptions) {
+        filterByMaritalStatus(statusOptions);
+      }
+    }
+
+
+    function showGenderOptions() {
+      const genderOptions = prompt("Enter gender (Male or Female):");
+      if (genderOptions) {
+        filterByGender(genderOptions);
+      }
+    }
+
+
+    function showDisabilityOptions() {
+      const disabilityOptions = prompt("Enter disability type:");
+      if (disabilityOptions) {
+        filterByDisability(disabilityOptions);
+      }
+    }
+
+    async function openModal(userId, status) {
+      const modal = document.getElementById("myModal");
+      modal.style.display = "block";
+
+      const suspendBtn = document.getElementById("suspendUser");
+      suspendBtn.style.display = status === "Suspended" ? "none" : "block";
+      suspendBtn.onclick = async function () {
+        await updateDoc(doc(db, "USER", userId), { Status: "Suspended" });
+        closeModal();
       };
 
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-      // Initialize Firebase Storage
-      const storage = getStorage(app);
+      const unsuspendBtn = document.getElementById("unsuspendUser");
+      unsuspendBtn.style.display = status === "Suspended" ? "block" : "none";
+      unsuspendBtn.onclick = async function () {
+        await updateDoc(doc(db, "USER", userId), { Status: "Active" });
+        closeModal();
+      };
 
-      async function searchUser(filterParams = {}) {
+      const deactivateBtn = document.getElementById("deactivateUser");
+      deactivateBtn.onclick = async function () {
+        await deleteDoc(doc(db, "USER", userId));
+        closeModal();
+      };
+    }
 
-        const searchInput = document.getElementById("searchInput").value.trim();
-        const userList = document.getElementById("userList");
-        userList.innerHTML = ""; // Clear previous search results
+    function closeModal() {
+      const modal = document.getElementById("myModal");
+      modal.style.display = "none";
+    }
 
-        let usersRef = collection(db, "USER");
-        let queries = [];
-        if (searchInput) {
-          queries.push(where("Name", "==", searchInput));
-        }
-
-        // Adding filters based on function parameters
-        if (filterParams.ageRange) {
-          queries.push(where("Age", ">=", filterParams.ageRange.start));
-          queries.push(where("Age", "<=", filterParams.ageRange.end));
-        }
-        if (filterParams.gender) {
-          queries.push(where("Gender", "==", filterParams.gender));
-        }
-        if (filterParams.maritalStatus) {
-          queries.push(
-            where("MaritalStatus", "==", filterParams.maritalStatus)
-          );
-        }
-        if (filterParams.disability) {
-          queries.push(where("Disability", "==", filterParams.disability));
-        }
-
-        const q = query(usersRef, ...queries);
-
-        const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) {
-          console.log("No matching user found.");
-          userList.innerHTML = "<p>No matching user found.</p>";
-        } else {
-          querySnapshot.forEach((userDoc) => {
-            const userData = userDoc.data();
-            const userCard = document.createElement("div");
-            userCard.classList.add("user-card");
-            userCard.innerHTML = `
-    <img src="${userData.Picture || '74.jpg'}" alt="User Photo" class="user-img">
-    <div class="user-info">
-        <div><strong>Name:</strong> ${userData.Name}</div>
-        <button onclick="openModal('${userDoc.id}', '${userData.Name}')">View Actions</button>
-    </div>`;
-            userList.appendChild(userCard);
-          });
-
-
-        }
-
-      }
-
-      searchUser();
-
-      function parseAgeRange(ageRange) {
-        const [start, end] = ageRange.split("-").map(Number);
-        return { start, end };
-      }
-
-      function filterByAge(ageRange) {
-        console.log("Filtering users by age range:", ageRange);
-        searchUser({ ageRange: parseAgeRange(ageRange) });
-      }
-
-      function filterByGender(gender) {
-        console.log("Filtering users by gender:", gender);
-        searchUser({ gender });
-      }
-
-      function filterByMaritalStatus(status) {
-        console.log("Filtering users by marital status:", status);
-        searchUser({ maritalStatus: status });
-      }
-
-      function filterByDisability(disability) {
-        console.log("Filtering users by disability type:", disability);
-        searchUser({ disability });
-      }
-
-      function toggleFilterOptions() {
-        const filterOptions = document.getElementById("filterOptions");
-        filterOptions.classList.toggle("show");
-      }
-
-      function showAgeOptions() {
-        const ageOptions = prompt(
-          "Enter age range (e.g., 18-22, 22-30, 31-40, 40-55, 55+):"
-        );
-        if (ageOptions) {
-          filterByAge(ageOptions);
-        }
-      }
-
-      function showMaritalStatusOptions() {
-        const statusOptions = prompt(
-          "Enter marital status (Single, Married, Divorced):"
-        );
-        if (statusOptions) {
-          filterByMaritalStatus(statusOptions);
-        }
-      }
-
-      function showGenderOptions() {
-        const genderOptions = prompt("Enter gender (Male or Female):");
-        if (genderOptions) {
-          filterByGender(genderOptions);
-        }
-      }
-
-      function showDisabilityOptions() {
-        const disabilityOptions = prompt("Enter disability type:");
-        if (disabilityOptions) {
-          filterByDisability(disabilityOptions);
-        }
-      }
-
-
-
-      function redirectToSuspendedUsersPage() {
-        // Change the URL to the relative path of the suspended users page
-        window.location.href = "match.html";
-      }
-
-      function redirectToDeletedUsersPage() {
-        // Change the URL to the relative path of the deleted users page
-        window.location.href = "Announcements(ADMIN).html";
-      }
-
-      // Inside the <script type="module"> tag
-      let currentUserId;
-
-      function openModal(userId, userName) {
-        const modal = document.getElementById("userActionModal");
-        // Display the modal
-        modal.style.display = "block";
-
-        // Store userId in the variable
-        currentUserId = userId;
-
-        // Update modal content based on userId and userName
-        const reportTypeElement = document.getElementById("reportType");
-        const reportDetailsElement = document.getElementById("reportDetails");
-
-        // Modify these lines based on your actual report type and details logic
-        reportTypeElement.innerText = "Report Type: Some Report Type";
-        reportDetailsElement.innerText = "User-specific report details go here.";
-
-        // Update button actions
-        document.getElementById("suspendBtn").onclick = function() {
-          const duration = document.getElementById("suspend-duration").value;
-          suspendUser(duration); // Removed userId parameter
-        };
-
-        document.getElementById("deleteBtn").onclick = function() {
-          deleteUser(); // Removed userId parameter
-        };
-      }
-      async function suspendUser(duration) {
-        console.log("Suspending user:", currentUserId, "for", duration);
-        try {
-          // Update the user document in the database with the suspension status
-          const userRef = doc(db, "USER", currentUserId);
-          await firestoreUpdateDoc(userRef, {
-            Status: "Suspended",
-            //SuspensionDuration: duration,
-          });
-
-
-          console.log(`User ${currentUserId} suspended for ${duration}`);
-          closeModal(); // Close the modal after suspending the user
-        } catch (error) {
-          console.error("Error suspending user:", error);
-        }
-      }
-
-      async function deleteUser() {
-        console.log("Deleting user:", currentUserId);
-        try {
-          // Implement the code to delete the user as needed
-          // You can use a similar approach as suspendUser to update the database
-          // and then delete the user if required.
-        } catch (error) {
-          console.error("Error deleting user:", error);
-        }
-      }
-      function closeModal() {
-        const modal = document.getElementById("userActionModal");
-        modal.style.display = "none";
-      }
-
-      window.closeModal = closeModal;
-      window.openModal = openModal;
-      window.searchUser = searchUser;
-      window.toggleFilterOptions = toggleFilterOptions;
-      window.showAgeOptions = showAgeOptions;
-      window.showMaritalStatusOptions = showMaritalStatusOptions;
-      window.showGenderOptions = showGenderOptions;
-      window.showDisabilityOptions = showDisabilityOptions;
-    </script>
-    <style>
-      body {
-        font-family: "Arial", sans-serif;
-        margin: 0;
-        padding: 0;
-        background: #f0f0f0;
-      }
-      .header {
-        background-color: #005a9c;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-      }
-      .sidebar {
-        background-color: #003366;
-        color: white;
-        padding: 20px;
-        position: fixed;
-        width: 150px;
-        height: 100%;
-      }
-      .sidebar a {
-        color: white;
-        text-decoration: none;
-        display: block;
-        padding: 10px;
-        margin: 5px 0;
-      }
-      .content {
-        margin-left: 250px;
-        padding: 20px;
-      }
-      .search-box {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        padding: 20px;
-        background-color: white;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      }
-      .search-box input[type="text"] {
-        border: 1px solid #ccc;
-        padding: 10px;
-        width: 70%;
-        border-radius: 5px;
-      }
-      .suspended-users-btn{
-        padding: 10px 20px;
-        margin-left: 10px;
-        margin-right: 10px;
-        border: none;
-        background-color: #f0ad4e;
-        color: white;
-        cursor: pointer;
-        border-radius: 5px;
-        text-decoration: none;
-      }
-      .deleted-users-btn{
-        padding: 10px 20px;
-        margin-right: 20px;
-        border: none;
-        background-color: #d9534f;
-        color: white;
-        cursor: pointer;
-        border-radius: 5px;
-        text-decoration: none;
-      }
-      .search-btn,
-      .filter-btn {
-        padding: 10px 20px;
-        border: none;
-        background-color: #4caf50;
-        color: white;
-        cursor: pointer;
-        border-radius: 5px;
-      }
-      .filter-btn {
-        margin-left: 10px;
-      }
-      .filter-dropdown {
-        position: relative;
-      }
-      .filter-dropdown button {
-        display: block;
-      }
-      .filter-dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-        z-index: 1;
-      }
-      .filter-dropdown-content a {
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-      }
-      .filter-dropdown-content a:hover {
-        background-color: #f1f1f1;
-      }
-      .show {
-        display: block;
-      }
-      .user-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-      }
-      .user-card {
-        background-color: white;
-        border-radius: 10px;
-        overflow: hidden;
-        text-align: center;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        width: calc(100% / 3 - 20px);
-      }
-      .user-card h3 {
-        margin: 0;
-        padding: 15px;
-      }
-      .user-card button {
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        width: 100%;
-        display: block;
-        cursor: pointer;
-      }
-      /* Modal (background) */
-      .modal {
-        display: none; /* Hidden by default */
-        position: fixed; /* Stay in place */
-        z-index: 1; /* Sit on top */
-        left: 0;
-        top: 0;
-        width: 100%; /* Full width */
-        height: 100%; /* Full height */
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgb(0,0,0); /* Fallback color */
-        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-      }
-
-      /* Modal Content */
-      .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto; /* 15% from the top and centered */
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%; /* Could be more or less, depending on screen size */
-      }
-
-      /* The Close Button */
-      .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-      }
-
-      .close:hover,
-      .close:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-      }
-      button {
-        padding: 10px 20px;
-        margin: 5px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      .suspend-button {
-        background-color: #f0ad4e;
-        color: white;
-      }
-      .delete-button {
-        background-color: #d9534f;
-        color: white;
-      }
-      select {
-        padding: 5px;
-        margin: 5px;
-        border-radius: 4px;
-        border: 1px solid #ccc;
-      }
-    </style>
-  </head>
-
-
-  <body onload="searchUser();">
-  <div class="header">
-      <h1>ConnectAbility</h1>
-    </div>
-    <div class="sidebar">
-      <a href="home.html">Home</a>
-      <a href="profile.html">Profile</a>
-      <a href="MessageMonitoring(ADMIN).html">Messages</a>
-      <a href="match.html">Matches</a>
-      <a href="Announcements(ADMIN).html">Announcements</a>
-      <a href="Resources(USER).html">Resources</a>
-      <a href="Feedback(USER).html">Feedback</a>
-      <a href="settings.html">Settings</a>
-    </div>
-    <div class="content">
-      <div class="search-box">
-        <input type="text" placeholder="Search for a User" id="searchInput" />
-        <div class="filter-dropdown">
-          <button class="filter-btn" onclick="toggleFilterOptions()">
-            Filters
-          </button>
-          <div class="filter-dropdown-content" id="filterOptions">
-            <a href="#" onclick="showAgeOptions()">Age Range</a>
-            <a href="#" onclick="showGenderOptions()">Gender</a>
-            <a href="#" onclick="showMaritalStatusOptions()">Marital Status</a>
-            <a href="#" onclick="showDisabilityOptions()">Disability Type</a>
-          </div>
-        </div>
-        <button class="search-btn" onclick="searchUser()">Search</button>
-        <a href="Suspended.html" class="suspended-users-btn" onclick="redirectToSuspendedUsersPage()">Suspended Users</a>
-        <a href="Deleted.html" class="deleted-users-btn" onclick="redirectToDeletedUsersPage()">Deleted Users</a>
-      </div>
-      <div class="user-list" id="userList">
-        <!-- User list will be displayed here -->
+    window.searchUser = searchUser;
+    window.toggleFilterOptions = toggleFilterOptions;
+    window.showAgeOptions = showAgeOptions;
+    window.showMaritalStatusOptions = showMaritalStatusOptions;
+    window.showGenderOptions = showGenderOptions;
+    window.showDisabilityOptions = showDisabilityOptions;
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+  </script>
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f0f0;
+    }
+    .header {
+      background-color: #005a9c;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+    }
+    .sidebar {
+      background-color: #003366;
+      color: white;
+      padding: 20px;
+      position: fixed;
+      width: 150px;
+      height: 100%;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 10px;
+      margin: 5px 0;
+    }
+    .content {
+      margin-left: 250px;
+      padding: 20px;
+    }
+    .search-box {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 20px;
+      background-color: white;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    .search-box input[type="text"] {
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 70%;
+      border-radius: 5px;
+    }
+    .search-btn,
+    .filter-btn {
+      padding: 10px 20px;
+      border: none;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .filter-btn {
+      margin-left: 10px;
+    }
+    .filter-dropdown {
+      position: relative;
+    }
+    .filter-dropdown button {
+      display: block;
+    }
+    .filter-dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+      z-index: 1;
+    }
+    .filter-dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+    .filter-dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+    .show {
+      display: block;
+    }
+    .user-card {
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      width: 300px; /* Adjust the width as needed */
+    }
+    .user-card h3 {
+      margin-top: 0;
+    }
+    /* The Modal */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+    /* Modal Content/Box */
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto; /* 10% from the top and centered */
+      padding: 20px;
+      border-radius: 10px;
+      width: 50%; /* Could be more or less, depending on screen size */
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+    /* Close Button */
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    /* Button Styles */
+    .modal-content button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+    .modal-content button:hover {
+      opacity: 0.8;
+    }
+    #suspendUser {
+      background-color: #ffc107; /* Yellow */
+      color: black;
+    }
+    #unsuspendUser {
+      background-color: #2196f3; /* Blue */
+      color: white;
+    }
+    #deactivateUser {
+      background-color: #f44336; /* Red */
+      color: white;
+    }
+    #manageUser {
+      background-color: #2196f3; /* Blue */
+      color: white;
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h1>ConnectAbility</h1>
+</div>
+<div class="sidebar">
+  <a href="home.html">Home</a>
+  <a href="profile.html">Profile</a>
+  <a href="MessageMonitoring(ADMIN).html">Messages</a>
+  <a href="match.html">Matches</a>
+  <a href="Announcements(ADMIN).html">Announcements</a>
+  <a href="Resources(USER).html">Resources</a>
+  <a href="Feedback(USER).html">Feedback</a>
+  <a href="settings.html">Settings</a>
+</div>
+<div class="content">
+  <div class="search-box">
+    <input type="text" placeholder="Search for a User" id="searchInput" />
+    <div class="filter-dropdown">
+      <button class="filter-btn" onclick="toggleFilterOptions()">
+        Filters
+      </button>
+      <div class="filter-dropdown-content" id="filterOptions">
+        <a href="#" onclick="showAgeOptions()">Age Range</a>
+        <a href="#" onclick="showGenderOptions()">Gender</a>
+        <a href="#" onclick="showMaritalStatusOptions()">Marital Status</a>
+        <a href="#" onclick="showDisabilityOptions()">Disability Type</a>
       </div>
     </div>
-  <!-- The Modal -->
-  <div id="userActionModal" class="modal">
-    <!-- Modal content -->
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>User Actions</h2>
-      <p id="reportType">Report Type: Harassment or Bullying</p>
-      <p id="reportDetails">User sends derogatory messages to another user, making fun of their interests, appearance, or background.</p>
-      <p>Select an action for this user:</p>
-      <div class="action-buttons">
-        <select id="suspend-duration">
-          <option value="1 day">1 Day</option>
-          <option value="3 days">3 Days</option>
-          <option value="1 week">1 Week</option>
-          <option value="1 month">1 Month</option>
-          <option value="Permanent">Permanent</option>
-        </select>
-        <button class="suspend-button" onclick="suspendUser(document.getElementById('suspend-duration').value)">Suspend User</button>
-        <button class="delete-button" onclick="deleteUser()">Delete User</button>
-      </div>
-    </div>
+    <button class="search-btn" onclick="searchUser()">Search</button>
   </div>
-  </body>
+  <div class="user-list" id="userList">
+    <!-- User list will be displayed here -->
+  </div>
+</div>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2>Manage User</h2>
+    <p>Do you want to suspend, unsuspend, or deactivate this user?</p>
+    <button id="suspendUser">Suspend User</button>
+    <button id="unsuspendUser">Unsuspend User</button>
+    <button id="deactivateUser">Deactivate User</button>
+  </div>
+</div>
+
+<script src="navigation.js"></script>
+</body>
 </html>
