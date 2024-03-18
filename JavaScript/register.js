@@ -1,15 +1,9 @@
+// Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-// Your web app's Firebase configuration
+// Your Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
   authDomain: "connectability-6ee02.firebaseapp.com",
@@ -27,72 +21,88 @@ const db = getFirestore(app);
 
 // Wait for the page to load before attaching event listeners
 window.onload = function () {
-  document
-    .getElementById("registerForm")
-    .addEventListener("submit", async function (event) {
-      event.preventDefault();
+  document.getElementById("registerForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
 
-      const name = document.getElementById("name").value;
-      const psw = document.getElementById("psw").value;
-      const role = document.getElementById("role").value;
-      const age = document.getElementById("age").value;
-      const maritalStatus = document.getElementById("MaritalStatus").value;
-      const disability = document.getElementById("disability").value;
-      const gender = document.getElementById("gender").value;
-      const email = document.getElementById("email").value;
+    const name = document.getElementById("name").value;
+    const psw = document.getElementById("psw").value;
+    const role = document.getElementById("role").value;
+    const age = document.getElementById("age").value;
+    const maritalStatus = document.getElementById("MaritalStatus").value;
+    const disability = document.getElementById("disability").value;
+    const gender = document.getElementById("gender").value;
+    const email = document.getElementById("email").value;
 
-      try {
-        // Create user account using Firebase Authentication
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          psw
-        );
+    // Get the uploaded file
+    const file = document.getElementById("fileInput").files[0];
 
-        // Define default values for additional user information
-        const defaultUserFields = {
-          Status: "Active",
-          Interests: "", // You can set a default value or leave it empty
-          AccountAction: ["create"],
-          MatchAction: "manual",
-          Connections: {},
-          Posts: {},
-          SentMessages: {},
-          ReceivedMessages: {},
-          SentFriendRequests: {},
-          ReceivedFriendRequests: {},
-          FeedbackGiven: {},
-          FlagsMade: {},
+    // Define a function to read the file as a data URL
+    const readFileAsDataURL = (file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          resolve(event.target.result);
         };
+        reader.onerror = (error) => {
+          reject(error);
+        };
+        reader.readAsDataURL(file);
+      });
+    };
 
-        // Save additional user information to Firestore with default values
-        await addDoc(collection(db, "USER"), {
-          userId: userCredential.user.uid,
-          Name: name,
-          email: email,
-          Age: age,
-          MaritalStatus: maritalStatus,
-          Disability: disability,
-          Gender: gender,
-          ...defaultUserFields, // Spread the default values
-        });
+    try {
+      // Create user account using Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, psw);
 
-        // Redirect user based on role
-        switch (role) {
-          case "user":
-            window.location.href = "home.html";
-            break;
-          case "admin":
-            window.location.href = "admin.html";
-            break;
-          case "support":
-            window.location.href = "support.html";
-            break;
-          default:
-            console.log("Invalid role selected.");
-        }
-      } catch (error) {
-        console.error("Error registering user:", error.message);
+      // Read the file as a data URL
+      let photoURL = '';
+      if (file) {
+        photoURL = await readFileAsDataURL(file);
       }
-    });
+
+      // Set default values for additional fields
+      const defaultFields = {
+        AccountAction: [],
+        FeedbackGiven: [],
+        FlagsMade: [],
+        Friends: [],
+        Interests: "",
+        Posts: {},
+        ReceivedFriendRequests: [],
+        ReceivedMessages: [],
+        SentFriendRequests: [],
+        SentMessages: [],
+      };
+
+      // Save user information to Firestore with UID as document ID
+      await setDoc(doc(db, "USER", userCredential.user.uid), {
+        userId: userCredential.user.uid,
+        Name: name,
+        email: email,
+        Age: age,
+        MaritalStatus: maritalStatus,
+        Disability: disability,
+        Gender: gender,
+        Photo: photoURL, // Add photo URL to document data
+        ...defaultFields, // Merge default fields into document data
+      });
+
+      // Redirect user based on role
+      switch (role) {
+        case "user":
+          window.location.href = "home.html";
+          break;
+        case "admin":
+          window.location.href = "admin.html";
+          break;
+        case "support":
+          window.location.href = "support.html";
+          break;
+        default:
+          console.log("Invalid role selected.");
+      }
+    } catch (error) {
+      console.error("Error registering user:", error.message);
+    }
+  });
 };
