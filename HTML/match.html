@@ -174,9 +174,16 @@
   import {
     getFirestore,
     collection,
+    query,
+    where,
     getDocs,
+    doc,
+    updateDoc,
+    getDoc,
+    setDoc // Import setDoc function
   } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+
 
   // Your Firebase configuration
   const firebaseConfig = {
@@ -194,36 +201,147 @@
   const db = getFirestore(app);
   const auth = getAuth(app);
 
-  // Function to fetch user data and populate match cards
-  // Function to fetch user data and populate match cards
+  // Function to handle match acceptance
+  // Function to handle match acceptance
+  async function acceptMatch(matchId, userId, otherUserId) {
+    try {
+      const userQuery = query(collection(db, 'USER'), where('userID', '==', userId));
+      const userSnapshot = await getDocs(userQuery);
+
+      if (userSnapshot.empty) {
+        console.error("User document not found for user with userID:", userId);
+        return;
+      }
+
+      const userDoc = userSnapshot.docs[0];
+      const userData = userDoc.data();
+      const acceptedMatches = userData.acceptedMatches || {};
+      acceptedMatches[matchId] = true;
+
+      await updateDoc(userDoc.ref, { acceptedMatches: acceptedMatches });
+
+      // Update acceptedMatches for the other user
+      await updateAcceptedMatches(otherUserId, userId, matchId);
+
+      // Check if both users have accepted the match
+      const connectionRef = doc(db, 'Connection', matchId);
+      const connectionSnapshot = await getDoc(connectionRef);
+
+      if (!connectionSnapshot.exists()) {
+        await setDoc(connectionRef, {
+          UserId1: userId,
+          UserId2: otherUserId,
+          status: 'pending'
+        });
+      } else {
+        const connectionData = connectionSnapshot.data();
+        if (connectionData.status !== 'accepted') {
+          await updateDoc(connectionRef, { status: 'accepted' });
+
+          // Create or update friendship document
+          await updateFriendship(userId, otherUserId);
+        }
+      }
+    } catch (error) {
+      console.error("Error accepting match:", error);
+    }
+  }
+
+
+
+  async function updateAcceptedMatches(userId, otherUserId, matchId) {
+    const user1Ref = doc(db, 'USER', userId);
+    const user2Ref = doc(db, 'USER', otherUserId);
+
+    await Promise.all([
+      updateDoc(user1Ref, { [`acceptedMatches.${matchId}`]: true }),
+      updateDoc(user2Ref, { [`acceptedMatches.${matchId}`]: true })
+    ]);
+  }
+
+  async function updateFriendship(userId1, userId2) {
+    const friendshipId = [userId1, userId2].sort().join('_');
+    const friendshipRef = doc(db, 'Friendship', friendshipId);
+    const friendshipSnapshot = await getDoc(friendshipRef);
+
+    if (!friendshipSnapshot.exists()) {
+      await setDoc(friendshipRef, {
+        user1Id: userId1,
+        user2Id: userId2,
+        created_at: new Date()
+      });
+      console.log("Friendship document created:", friendshipId);
+    } else {
+      console.log("Friendship document already exists:", friendshipId);
+    }
+  }
+
+
+
+  async function declineMatch(matchId, userId) {
+    console.log("Match declined for user:", userId);
+    try {
+      // Decline match logic
+    } catch (error) {
+      console.error("Error declining match:", error);
+    }
+  }
+
+  async function checkFriendship(matchId) {
+    try {
+      console.log("Checking friendship for match:", matchId);
+      const connectionRef = doc(db, 'Connection', matchId);
+      const connectionDoc = await getDoc(connectionRef);
+      console.log("Connection document:", connectionDoc.data());
+
+      if (!connectionDoc.exists()) {
+        console.error("Connection document not found for match:", matchId);
+        return;
+      }
+
+      const connectionData = connectionDoc.data();
+      const userId1 = connectionData.UserId1;
+      const userId2 = connectionData.UserId2;
+
+      console.log("User ID 1:", userId1);
+      console.log("User ID 2:", userId2);
+
+      // Get user documents and continue with the logic
+    } catch (error) {
+      console.error("Error checking friendship:", error);
+    }
+  }
+
   async function populateMatchCards(user) {
     const matchesContainer = document.getElementById('matchesContainer');
     const userCollection = collection(db, 'USER');
     const querySnapshot = await getDocs(userCollection);
 
-    querySnapshot.forEach(doc => {
-      const userData = doc.data();
-      // Check if the Firebase UID matches the current user's UID
-      if (userData.userId !== user.uid) { // Check against the userId field instead of doc.id
-        // Create match card element
+    querySnapshot.forEach(userDoc => {
+      const userData = userDoc.data();
+      if (userData.userId !== user.uid) {
         const matchCard = document.createElement('div');
         matchCard.classList.add('match-card');
         matchCard.innerHTML = `
         <img src="${userData.Photo}" alt="User Photo" />
         <h3>${userData.Name}</h3>
         <div class="buttons">
-          <button class="accept" onclick="acceptMatch('${doc.id}', '${user.uid}')">Accept</button>
-          <button class="skip">Skip</button>
+          <button class="accept">Accept</button>
+          <button class="skip">Decline</button>
         </div>
       `;
         matchesContainer.appendChild(matchCard);
+
+        const acceptButton = matchCard.querySelector('.accept');
+        acceptButton.addEventListener('click', () => acceptMatch(userDoc.id, user.uid, userData.userId)); // Pass the other user's ID as a parameter
+
+        const declineButton = matchCard.querySelector('.skip');
+        declineButton.addEventListener('click', () => declineMatch(userDoc.id, user.uid));
       }
     });
   }
 
 
-
-  // Call the function to populate match cards when the page loads
   window.onload = function() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -235,12 +353,6 @@
       }
     });
   };
-
-  // Function to handle match acceptance
-  function acceptMatch(matchId, userId) {
-    console.log("Match accepted for user:", userId);
-    // Perform logic to accept match for the current user
-  }
 </script>
 </body>
 </html>
