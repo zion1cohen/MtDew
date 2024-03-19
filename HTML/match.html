@@ -205,7 +205,8 @@
   // Function to handle match acceptance
   async function acceptMatch(matchId, userId, otherUserId) {
     try {
-      const userQuery = query(collection(db, 'USER'), where('userID', '==', userId));
+      // Adjust the query to search for the userID field within the USER documents
+      const userQuery = query(collection(db, 'USER'), where('userId', '==', userId));
       const userSnapshot = await getDocs(userQuery);
 
       if (userSnapshot.empty) {
@@ -246,6 +247,7 @@
       console.error("Error accepting match:", error);
     }
   }
+
 
 
 
