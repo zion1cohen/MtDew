@@ -195,29 +195,29 @@
   checkAuthState();
   async function fetchFriendRequests(userId) {
     try {
-      const friendRequestsRef = collection(db, 'FRIENDREQUEST'); // Update collection reference
+      const friendRequestsRef = collection(db, 'FRIENDREQUEST');
       const querySnapshot = await getDocs(
               query(
                       friendRequestsRef,
-                      where('status', '==', 'pending'), // Optionally, filter by status if needed
-                      where('receiverId', '==', userId), // Check if the current user's ID is the receiverId
+                      where('status', '==', 'pending'),
+                      where('receiverId', '==', userId),
               )
       );
 
       const friendRequestsList = document.getElementById('friendRequestsList');
-      friendRequestsList.innerHTML = ''; // Clear previous friend requests
+      friendRequestsList.innerHTML = '';
 
       if (querySnapshot.empty) {
-        // If there are no friend requests, display a message
         friendRequestsList.innerHTML = '<p>No friend requests at the moment.</p>';
       } else {
         querySnapshot.forEach((doc) => {
           const request = doc.data();
           const listItem = document.createElement('li');
           listItem.textContent = `From: ${request.senderId}`;
+          listItem.id = doc.id; // Set the id attribute to the document ID
           const acceptButton = document.createElement('button');
           acceptButton.textContent = 'Accept';
-          acceptButton.onclick = () => acceptFriendRequest(doc.id, request.senderId, request.receiverId);
+          acceptButton.onclick = () => acceptFriendRequest(doc.id, request.senderId, userId);
           const declineButton = document.createElement('button');
           declineButton.textContent = 'Decline';
           declineButton.onclick = () => declineFriendRequest(doc.id);
@@ -225,23 +225,53 @@
           listItem.appendChild(declineButton);
           friendRequestsList.appendChild(listItem);
         });
+
       }
     } catch (error) {
       console.error("Error fetching friend requests:", error);
     }
   }
 
+  async function acceptFriendRequest(requestId, senderId, receiverId) {
+    try {
+      await updateDoc(doc(db, 'FRIENDREQUEST', requestId), {
+        status: 'accepted'
+      });
 
+      const senderDocRef = doc(db, 'USER', senderId);
+      const receiverDocRef = doc(db, 'USER', receiverId);
 
+      await Promise.all([
+        updateDoc(senderDocRef, {
+          friends: arrayUnion(receiverId)
+        }),
+        updateDoc(receiverDocRef, {
+          friends: arrayUnion(senderId)
+        })
+      ]);
 
+      const friendRequestsList = document.getElementById('friendRequestsList');
+      const listItem = document.getElementById(requestId);
+      friendRequestsList.removeChild(listItem);
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+    }
+  }
 
   async function declineFriendRequest(requestId) {
     try {
-      await deleteDoc(doc(db, 'friendRequests', requestId)); // Remove friend request document
+      await deleteDoc(doc(db, 'FRIENDREQUEST', requestId));
+
+      const friendRequestsList = document.getElementById('friendRequestsList');
+      const listItem = document.getElementById(requestId);
+      friendRequestsList.removeChild(listItem);
+
     } catch (error) {
       console.error("Error declining friend request:", error);
     }
   }
+
+
 
 </script>
 
