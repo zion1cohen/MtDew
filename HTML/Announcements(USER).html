@@ -4,6 +4,64 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Announcements - ConnectAbility</title>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        query,
+        orderBy,
+        onSnapshot,
+      } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+        authDomain: "connectability-6ee02.firebaseapp.com",
+        projectId: "connectability-6ee02",
+        storageBucket: "connectability-6ee02.appspot.com",
+        messagingSenderId: "908801065257",
+        appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+        measurementId: "G-N8HMEMRV16",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      function fetchAnnouncements() {
+        const announcementsContainer = document.querySelector(".main-content"); // Ensure this targets your announcement container
+
+        onSnapshot(
+          query(collection(db, "ANNOUNCEMENT"), orderBy("Timestamp")),
+          (snapshot) => {
+            if (snapshot.empty) {
+              console.log("No matching documents.");
+              return;
+            }
+
+            announcementsContainer.innerHTML = ""; // Optionally clear existing content
+
+            snapshot.forEach((doc) => {
+              const announcement = doc.data();
+              const announcementElement = document.createElement("div");
+              announcementElement.classList.add("announcement");
+              announcementElement.innerHTML = `
+                <h2>${announcement.title}</h2>
+                <p>${announcement.Content}</p>
+                <time>${announcement.Timestamp.toDate().toLocaleString()}</time>
+              `;
+              announcementsContainer.appendChild(announcementElement);
+            });
+          },
+          (err) => {
+            console.error(err);
+          }
+        );
+      }
+
+      fetchAnnouncements();
+    </script>
+
     <style>
       body {
         font-family: "Arial", sans-serif;
