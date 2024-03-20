@@ -95,6 +95,20 @@
     .message-header h3 {
       margin: 0;
     }
+    {
+      box-sizing: border-box;
+    }
+    /* Set additional styling options for the columns*/
+    .column {
+      float: left;
+      width: 30%;
+    }
+
+    .row:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
   </style>
 </head>
 <body>
@@ -105,34 +119,26 @@
 </div>
 
 <div class="sidebar">
-  <a href="#">Home</a>
-  <a href="#">Profile</a>
-  <a href="#">Messages</a>
-  <a href="#">Matches</a>
-  <a href="#">Announcements</a>
-  <a href="#">Resources</a>
-  <a href="#">Feedback</a>
-  <a href="#">Settings</a>
-</div>
+  <div class="sidebar">
+    <a href="home.html">Home</a>
+    <a href="profile(USER).html">Profile</a>
+    <a href="Messages(USER).html">Messages</a>
+    <a href="match.html">Matches</a>
+    <a href="Announcements(USER).html">Announcements</a>
+    <a href="Resources(USER).html">Resources</a>
+    <a href="Feedback(USER).html">Feedback</a>
+    <a href="settings.html">Settings</a>
+  </div>
 
-<div class="main-content">
-  <div class="friends-list">
-    <!-- Friends list goes here -->
-    <ul>
-      <li>Coffee</li>
-      <li>Tea</li>
-      <li>Milk</li>
-    </ul>
+<div class="row">
+  <div class="column" style="background-color:#f0f0f0;">
+    <h2>Friends</h2>
+    <p>Data..</p>
   </div>
-  <div class="messages-list">
-    <!-- Message threads go here -->
-    <p>Hemma</p>
+  <div class="column" style="background-color:#f0f0f0;">
+    <h2>friends</h2>
+    <p>Data..</p>
   </div>
-  <div class="message-thread">
-    <!-- Message thread display goes here -->
-    <p>Hemma</p>
-  </div>
-</div>
 <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-firestore.js"></script>
