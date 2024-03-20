@@ -5,12 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ConnectAbility Messages</title>
   <style>
+    /* Global styles */
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
       background: #f4f4f4;
     }
+
+    /* Header styles */
     .header {
       background-color: #007bff;
       color: white;
@@ -20,6 +23,8 @@
       justify-content: space-between;
       align-items: center;
     }
+
+    /* Sidebar styles */
     .sidebar {
       background-color: #003366;
       color: white;
@@ -40,29 +45,52 @@
     .sidebar a:hover {
       background-color: #0056b3;
     }
+
+    /* Main content styles */
     .main-content {
       margin-left: 200px;
       padding: 20px;
       display: flex;
+      justify-content: space-between; /* Adjust alignment of columns */
     }
+
+    /* Friends list styles */
     .friends-list {
-      width: 250px;
+      flex: 1; /* Take up remaining space */
       margin-right: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      padding: 20px; /* Add some padding */
     }
+
+    /* Messages list styles */
     .messages-list {
       width: 250px;
-      margin-right: 20px;
-      border-right: 1px solid #ccc;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      padding: 20px; /* Add some padding */
     }
+
+    /* Message thread styles */
     .message-thread {
-      flex-grow: 1;
+      flex-grow: 1; /* Take up remaining space */
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      padding: 20px; /* Add some padding */
     }
+
+    /* Message styles */
     .message {
       background-color: #ffffff;
       padding: 10px;
       border-radius: 5px;
       margin-bottom: 10px;
     }
+
+    /* Filter button styles */
     .filter-button {
       background-color: #007bff;
       border: none;
@@ -71,29 +99,10 @@
       color: white;
       cursor: pointer;
     }
-    .message input[type="text"] {
-      width: calc(100% - 40px);
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      margin-right: 10px;
-    }
-    .message img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 5px;
-    }
-    .message-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .message-header img {
-      border-radius: 50%;
-      margin-right: 10px;
-    }
-    .message-header h3 {
-      margin: 0;
+
+    /* Button hover effect */
+    .filter-button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
@@ -116,12 +125,9 @@
 </div>
 
 <div class="main-content">
-  <div class="friends-list">
-    <!-- Friends list goes here -->
+  <div class="friends-list" id="friendRequestsList">
     <ul>
-      <li>Coffee</li>
-      <li>Tea</li>
-      <li>Milk</li>
+      <!-- Friend requests will be dynamically populated here -->
     </ul>
   </div>
   <div class="messages-list">
@@ -133,23 +139,105 @@
     <p>Hemma</p>
   </div>
 </div>
-<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-firestore.js"></script>
 
-<!-- Firebase Initialization -->
-<script>
-  var firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID",
-    measurementId: "YOUR_MEASUREMENT_ID"
+
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js" type="module"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js" type="module"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js" type="module"></script>
+<script type="module">
+  // Import necessary Firebase modules
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    query,
+    where,
+    getDocs,
+    doc,
+    updateDoc,
+    getDoc,
+    setDoc,// Import setDoc function
+    arrayUnion // Import arrayUnion function
+  } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+
+
+  // Your Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+    authDomain: "connectability-6ee02.firebaseapp.com",
+    projectId: "connectability-6ee02",
+    storageBucket: "connectability-6ee02.appspot.com",
+    messagingSenderId: "908801065257",
+    appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+    measurementId: "G-N8HMEMRV16"
   };
+
   // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  function checkAuthState() {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        console.log("User is logged in:", user.uid);
+        fetchFriendRequests(user.uid); // Call fetchFriendRequests with the user's UID
+      } else {
+        console.log("No user is logged in.");
+        // Redirect to login page or handle no user scenario
+      }
+    });
+  }
+
+
+  // Call function to check authentication state
+  checkAuthState();
+  async function fetchFriendRequests(userId) {
+    try {
+      const friendRequestsRef = collection(db, 'friendRequests');
+      const querySnapshot = await getDocs(query(friendRequestsRef, where('receiverId', '==', userId)));
+
+      const friendRequestsList = document.getElementById('friendRequestsList');
+      friendRequestsList.innerHTML = ''; // Clear previous friend requests
+
+      if (querySnapshot.empty) {
+        // If there are no friend requests, display a message
+        friendRequestsList.innerHTML = '<p>No friend requests at the moment.</p>';
+      } else {
+        querySnapshot.forEach((doc) => {
+          const request = doc.data();
+          const listItem = document.createElement('li');
+          listItem.textContent = `From: ${request.senderId}`;
+          const acceptButton = document.createElement('button');
+          acceptButton.textContent = 'Accept';
+          acceptButton.onclick = () => acceptFriendRequest(doc.id, request.senderId, request.receiverId);
+          const declineButton = document.createElement('button');
+          declineButton.textContent = 'Decline';
+          declineButton.onclick = () => declineFriendRequest(doc.id);
+          listItem.appendChild(acceptButton);
+          listItem.appendChild(declineButton);
+          friendRequestsList.appendChild(listItem);
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching friend requests:", error);
+    }
+  }
+
+
+
+  async function declineFriendRequest(requestId) {
+    try {
+      await deleteDoc(doc(db, 'friendRequests', requestId)); // Remove friend request document
+    } catch (error) {
+      console.error("Error declining friend request:", error);
+    }
+  }
+
+</script>
+
+
 </script>
 </body>
 </html>
