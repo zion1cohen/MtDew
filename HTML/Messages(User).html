@@ -195,13 +195,12 @@
   checkAuthState();
   async function fetchFriendRequests(userId) {
     try {
-      const friendRequestsRef = collection(db, 'friendRequests');
+      const friendRequestsRef = collection(db, 'FRIENDREQUEST'); // Update collection reference
       const querySnapshot = await getDocs(
               query(
                       friendRequestsRef,
                       where('status', '==', 'pending'), // Optionally, filter by status if needed
-                      where('senderId', '==', userId), // Check if the current user's ID is the senderId
-                      
+                      where('receiverId', '==', userId), // Check if the current user's ID is the receiverId
               )
       );
 
@@ -231,6 +230,7 @@
       console.error("Error fetching friend requests:", error);
     }
   }
+
 
 
 
