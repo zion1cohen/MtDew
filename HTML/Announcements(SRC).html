@@ -1,94 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Support Role Announcements - ConnectAbility</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Announcements - ConnectAbility</title>
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import {
-            getFirestore,
-            collection,
-            addDoc,
-            getDocs,
-        } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-
-
-        // Your web app's Firebase configuration
+        import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+    
         const firebaseConfig = {
-            apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
-            authDomain: "connectability-6ee02.firebaseapp.com",
-            projectId: "connectability-6ee02",
-            storageBucket: "connectability-6ee02.appspot.com",
-            messagingSenderId: "908801065257",
-            appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
-            measurementId: "G-N8HMEMRV16",
-        };
+        apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+        authDomain: "connectability-6ee02.firebaseapp.com",
+        projectId: "connectability-6ee02",
+        storageBucket: "connectability-6ee02.appspot.com",
+        messagingSenderId: "908801065257",
+        appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+        measurementId: "G-N8HMEMRV16",
+      };
 
+    
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
-        async function addAnnouncement(announcementText) {
-            try {
-                const timestamp = new Date(); // Current timestamp
-                const docRef = await addDoc(collection(db, "ANNOUNCEMENT"), {
-                    Content: announcementText,
-                    Timestamp: timestamp
-                });
-                console.log("Announcement added with ID: ", docRef.id);
-                return true;
-            } catch (e) {
-                console.error("Error adding announcement: ", e);
-                return false;
-            }
+    
+        function createAnnouncementElement(announcement) {
+            const announcementElement = document.createElement("div");
+            announcementElement.classList.add("announcement");
+            
+            const titleElement = document.createElement("h2");
+            titleElement.textContent = announcement.title || "Announcement";
+            
+            const contentElement = document.createElement("p");
+            contentElement.textContent = announcement.Content;
+            
+            const timeElement = document.createElement("time");
+            timeElement.textContent = announcement.Timestamp ? announcement.Timestamp.toDate().toLocaleString() : "Unknown time";
+    
+            announcementElement.appendChild(titleElement);
+            announcementElement.appendChild(contentElement);
+            announcementElement.appendChild(timeElement);
+    
+            return announcementElement;
         }
-
-        async function displayAnnouncements() {
-            const announcementsContainer = document.getElementById("announcements");
-            announcementsContainer.innerHTML = ""; // Clear previous announcements
-            const querySnapshot = await getDocs(collection(db, "ANNOUNCEMENT"));
-            querySnapshot.forEach((doc) => {
-                const announcementData = doc.data();
-                const timestamp = new Date(announcementData.Timestamp.seconds * 1000); // Convert timestamp to Date object
-                const announcementElement = document.createElement("div");
-                announcementElement.innerHTML = `
-            <p><span>${announcementData.Content}</span></p>
-            <p><em>${timestamp.toLocaleString()}</em></p>
-            <hr>
-        `;
-                announcementsContainer.appendChild(announcementElement);
-            });
-        }
-
-
-
-        window.onload = function() {
-            displayAnnouncements();
-            const addAnnouncementBtn = document.getElementById("addAnnouncementBtn");
-            addAnnouncementBtn.addEventListener("click", addNewAnnouncement);
-
-        }
-
-        function addNewAnnouncement() {
-            const announcementInput = document.getElementById("announcementInput");
-            const announcementText = announcementInput.value.trim();
-            if (announcementText !== "") {
-                addAnnouncement(announcementText).then((success) => {
-                    if (success) {
-                        // If announcement added successfully, update UI to display it
-                        displayAnnouncements();
-                        announcementInput.value = ""; // Clear input field
-                    } else {
-                        alert("Failed to add announcement. Please try again.");
+    
+        function fetchAnnouncements() {
+            const announcementsContainer = document.querySelector('.main-content'); // Targeting the main-content for announcements
+            
+            const q = query(collection(db, "ANNOUNCEMENT"), orderBy("Timestamp"));
+            onSnapshot(q, (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added") {
+                        const doc = change.doc;
+                        const announcement = doc.data();
+                        const announcementElement = createAnnouncementElement(announcement);
+                        announcementsContainer.appendChild(announcementElement); // Append each announcement to the main-content div
                     }
                 });
-            } else {
-                alert("Please enter an announcement.");
-            }
+            });
         }
+    
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchAnnouncements(); // Fetch announcements on page load
+    
+            document.getElementById('addAnnouncementBtn').addEventListener('click', async () => {
+                const titleInput = document.getElementById('announcementTitleInput');
+                const announcementInput = document.getElementById('announcementInput');
+                const title = titleInput.value.trim();
+                const content = announcementInput.value.trim();
+    
+                if (title && content) {
+                    try {
+                        await addDoc(collection(db, "ANNOUNCEMENT"), {
+                            title: title,
+                            Content: content,
+                            Timestamp: serverTimestamp() // Save server timestamp when announcement is added
+                        });
+                        titleInput.value = '';
+                        announcementInput.value = '';
+                        alert('Announcement added successfully.');
+                    } catch (error) {
+                        console.error("Error adding document: ", error);
+                    }
+                } else {
+                    alert('Please fill in both title and content.');
+                }
+            });
+        });
     </script>
+       
+       
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -124,34 +124,12 @@
             margin-left: 200px;
             padding: 20px;
         }
-
-        .search-bar {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        .search-bar input {
+        .announcement-form input, .announcement-form textarea {
             width: 100%;
             padding: 10px;
+            margin-bottom: 10px;
             border-radius: 4px;
             border: 1px solid #ccc;
-        }
-        .announcement-section {
-            background-color: white;
-            padding: 20px;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        .announcement-section h2 {
-            color: #003366;
-            margin-bottom: 10px;
-        }
-        .announcement-section p {
-            color: #555;
-            line-height: 1.5;
-        }
-        .announcement-section p span {
-            font-weight: bold;
         }
         .add-announcement {
             background-color: #007bff;
@@ -160,16 +138,6 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-bottom: 20px;
-        }
-        .announcement-form {
-            margin-bottom: 20px;
-        }
-        .announcement-form textarea {
-            width: 100%;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
         }
     </style>
 </head>
@@ -192,14 +160,11 @@
     <div class="announcement-section">
         <h2>Support Role Announcements</h2>
         <div class="announcement-form">
+            <input type="text" id="announcementTitleInput" placeholder="Enter announcement title">
             <textarea id="announcementInput" rows="4" placeholder="Enter your announcement"></textarea>
             <button id="addAnnouncementBtn" class="add-announcement">Add Announcement</button>
         </div>
-        <div id="announcements"></div>
     </div>
 </div>
 
-
-
-</body>
-</html>
+</body
