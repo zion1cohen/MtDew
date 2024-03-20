@@ -196,7 +196,14 @@
   async function fetchFriendRequests(userId) {
     try {
       const friendRequestsRef = collection(db, 'friendRequests');
-      const querySnapshot = await getDocs(query(friendRequestsRef, where('receiverId', '==', userId)));
+      const querySnapshot = await getDocs(
+              query(
+                      friendRequestsRef,
+                      where('status', '==', 'pending'), // Optionally, filter by status if needed
+                      where('senderId', '==', userId), // Check if the current user's ID is the senderId
+                      
+              )
+      );
 
       const friendRequestsList = document.getElementById('friendRequestsList');
       friendRequestsList.innerHTML = ''; // Clear previous friend requests
@@ -224,6 +231,7 @@
       console.error("Error fetching friend requests:", error);
     }
   }
+
 
 
 
