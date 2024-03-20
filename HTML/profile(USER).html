@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile - ConnectAbility</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+    }
+    .profile-container {
+      width: 80%;
+      max-width: 900px;
+      margin: 20px auto;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .profile-header {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+    }
+    .profile-photo {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-right: 20px;
+    }
+    .profile-info h2 {
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .profile-info p {
+      color: #666;
+      margin: 5px 0;
+    }
+    .sidebar {
+      background-color: #003366;
+      color: white;
+      padding: 20px;
+      width: 200px;
+      height: auto; /* Adjust height as necessary */
+      box-sizing: border-box;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 10px 0;
+    }
+
+    .content {
+      flex-grow: 1; /* Allows the content area to fill the remaining space */
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="main-container">
+  <div class="sidebar">
+    <a href="home.html">Home</a>
+    <a href="#">Profile</a>
+    <a href="#">Messages</a>
+    <a href="match.html">Matches</a>
+    <a href="announcement.html">Announcements</a>
+    <a href="resources.html">Resources</a>
+    <a href="Feedback(USER)">Feedback</a>
+    <a href="settings.html">Settings</a>
+  </div>
+
+<div class="profile-container">
+  <div class="profile-header">
+    <img src="https://via.placeholder.com/100" alt="Profile Photo" class="profile-photo">
+    <div class="profile-info">
+      <h2>John Doe</h2>
+      <p>Email: johndoe@example.com</p>
+    </div>
+  </div>
+  <div class="profile-details">
+    <h3>About Me:</h3>
+    <p>Hello! I'm John, an enthusiast of technology and accessibility. I enjoy working on projects that make the world a more inclusive place for everyone.</p>
+    <h3>Contact Information:</h3>
+    <p>Phone: (123) 456-7890</p>
+    <p>Address: 123 Main Street, City, Country</p>
+  </div>
+</div>
+
+</body>
+</html>

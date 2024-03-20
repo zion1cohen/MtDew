@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ConnectAbility Messages</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    .header {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .sidebar {
+      background-color: #003366;
+      color: white;
+      padding: 10px;
+      position: fixed;
+      width: 200px;
+      height: 100%;
+      overflow: auto;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 15px;
+      display: block;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    .sidebar a:hover {
+      background-color: #0056b3;
+    }
+    .main-content {
+      margin-left: 200px;
+      padding: 20px;
+      display: flex;
+    }
+    .friends-list {
+      width: 250px;
+      margin-right: 20px;
+    }
+    .messages-list {
+      width: 250px;
+      margin-right: 20px;
+      border-right: 1px solid #ccc;
+    }
+    .message-thread {
+      flex-grow: 1;
+    }
+    .message {
+      background-color: #ffffff;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    .filter-button {
+      background-color: #007bff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+    .message input[type="text"] {
+      width: calc(100% - 40px);
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-right: 10px;
+    }
+    .message img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+    .message-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .message-header img {
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .message-header h3 {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>ConnectAbility</h1>
+  <button class="filter-button">Filter</button>
+</div>
+
+<div class="sidebar">
+  <a href="#">Home</a>
+  <a href="#">Profile</a>
+  <a href="#">Messages</a>
+  <a href="#">Matches</a>
+  <a href="#">Announcements</a>
+  <a href="#">Resources</a>
+  <a href="#">Feedback</a>
+  <a href="#">Settings</a>
+</div>
+
+<div class="main-content">
+  <div class="friends-list">
+    <!-- Friends list goes here -->
+    <ul>
+      <li>Coffee</li>
+      <li>Tea</li>
+      <li>Milk</li>
+    </ul>
+  </div>
+  <div class="messages-list">
+    <!-- Message threads go here -->
+    <p>Hemma</p>
+  </div>
+  <div class="message-thread">
+    <!-- Message thread display goes here -->
+    <p>Hemma</p>
+  </div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-firestore.js"></script>
+
+<!-- Firebase Initialization -->
+<script>
+  var firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID",
+    measurementId: "YOUR_MEASUREMENT_ID"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
+</body>
+</html>
