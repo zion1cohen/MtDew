@@ -63,6 +63,24 @@
       box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
       padding: 20px; /* Add some padding */
     }
+    /* Updated friend item styles */
+    .friend {
+      display: flex;
+      flex-direction: column; /* Arrange items vertically */
+      align-items: center; /* Center items horizontally */
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #007bff; /* Button background color */
+      color: white; /* Text color */
+      margin-bottom: 10px;
+      cursor: pointer; /* Change cursor to pointer on hover */
+      transition: background-color 0.3s;
+    }
+
+    /* Hover effect */
+    .friend:hover {
+      background-color: #0056b3; /* Darker background color on hover */
+    }
 
     /* Messages list styles */
     .messages-list {
@@ -73,36 +91,77 @@
       padding: 20px; /* Add some padding */
     }
 
-    /* Message thread styles */
+    /* Updated Message thread styles */
     .message-thread {
-      flex-grow: 1; /* Take up remaining space */
       background-color: #fff;
       border-radius: 5px;
       box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-      padding: 20px; /* Add some padding */
+      padding: 20px;
+      overflow-y: auto; /* Allow vertical scrolling */
     }
 
-    /* Message styles */
+    /* Message container styles */
+    .message-container {
+      max-height: 400px; /* Limit height and enable scrolling */
+      overflow-y: auto;
+    }
+
+    /* Individual message styles */
     .message {
-      background-color: #ffffff;
       padding: 10px;
       border-radius: 5px;
       margin-bottom: 10px;
     }
 
-    /* Filter button styles */
-    .filter-button {
+    /* Sent message styles */
+    .sent-message {
       background-color: #007bff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
       color: white;
+      align-self: flex-end;
+    }
+
+    /* Received message styles */
+    .received-message {
+      background-color: #f0f0f0;
+      color: #333;
+      align-self: flex-start;
+    }
+
+    /* Input container styles */
+    .input-container {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Textarea styles */
+    #messageInput {
+      flex-grow: 1;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      resize: none;
+    }
+
+    /* Send button styles */
+    #sendMessageButton {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
       cursor: pointer;
+      transition: background-color 0.3s;
     }
 
     /* Button hover effect */
-    .filter-button:hover {
+    #sendMessageButton:hover {
       background-color: #0056b3;
+    }
+    .friend p {
+      margin-top: 5px; /* Add some space between the image and the name */
+      text-align: center; /* Center the name */
     }
   </style>
 </head>
@@ -135,8 +194,13 @@
     <p>Hemma</p>
   </div>
   <div class="message-thread">
-    <!-- Message thread display goes here -->
-    <p>Hemma</p>
+    <div class="message-container" id="messageContainer">
+      <!-- Message thread display goes here -->
+    </div>
+    <div class="input-container">
+      <textarea id="messageInput" rows="3" placeholder="Type your message..."></textarea>
+      <button id="sendMessageButton">Send</button>
+    </div>
   </div>
 </div>
 
@@ -183,6 +247,7 @@
       if (user) {
         console.log("User is logged in:", user.uid);
         fetchFriendRequests(user.uid); // Call fetchFriendRequests with the user's UID
+        displayFriends(user.uid); // Call displayFriends with the user's UID
       } else {
         console.log("No user is logged in.");
         // Redirect to login page or handle no user scenario
@@ -271,6 +336,182 @@
     }
   }
 
+  async function displayFriends(userId) {
+    try {
+      const usersRef = collection(db, 'USER');
+      const querySnapshot = await getDocs(query(usersRef, where('userId', '==', userId)));
+
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        const friendsList = document.querySelector('.messages-list');
+        friendsList.innerHTML = ''; // Clear previous content
+
+        if (userData.friends && userData.friends.length > 0) {
+          userData.friends.forEach(async (friendId) => {
+            const friendDocRef = doc(db, 'USER', friendId);
+            const friendSnapshot = await getDoc(friendDocRef);
+
+            if (friendSnapshot.exists()) {
+              const friendData = friendSnapshot.data();
+              const friendItem = document.createElement('div');
+              friendItem.classList.add('friend');
+              friendItem.innerHTML = `
+    <img src="${friendData.Photo}" alt="${friendData.Name}">
+    <p>${friendData.Name}</p>
+  `;
+              // Add event listener to each friend item
+              friendItem.addEventListener('click', () => openMessageThread(friendData.userId, friendData.Name));
+              friendsList.appendChild(friendItem);
+            }
+          });
+        } else {
+          friendsList.innerHTML = '<p>No friends found.</p>';
+        }
+      } else {
+        console.log('User document does not exist.');
+      }
+    } catch (error) {
+      console.error('Error fetching friends:', error);
+    }
+  }
+
+
+
+
+  function openMessageThread(friendId, friendName) {
+    // Update message thread display with the selected friend's information
+    const messageThread = document.getElementById('messageContainer');
+    messageThread.innerHTML = `<p>You are now chatting with ${friendName}</p>`;
+    // You can also display previous messages or any other relevant information
+
+    // Show the message input area with the friend's name pre-filled
+    const messageInput = document.getElementById('messageInput');
+    messageInput.placeholder = `Type your message to ${friendName}...`;
+
+    // Store the friend's ID and name in a global variable for sending messages
+    window.currentFriendId = friendId;
+    window.currentFriendName = friendName;
+  }
+
+  // Function to send a message
+  async function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value.trim(); // Trim whitespace from the message
+
+    if (message === '') {
+      alert('Please enter a message.');
+      return;
+    }
+
+    try {
+      // Add the message to the MESSAGE collection
+      await setDoc(doc(db, 'MESSAGE'), {
+        senderId: auth.currentUser.uid,
+        receiverId: window.currentFriendId, // Use the friend's ID from the current message thread
+        message: message,
+        timestamp: new Date()
+      });
+
+      // Clear the message input after sending
+      messageInput.value = '';
+
+      // You can also update the message thread display to show the sent message immediately
+      // However, this implementation does not include real-time updates from the database
+      // You may want to implement a real-time listener to update the message thread
+      // with new messages as they arrive from the database
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  }
+
+  // Function to initialize real-time message listener
+  function initializeMessageListener(userId, friendId) {
+    const messageThreadRef = collection(db, 'MESSAGE');
+    const querySnapshot = query(
+            messageThreadRef,
+            where('senderId', 'in', [userId, friendId]), // Filter messages by senderId and receiverId
+            where('receiverId', 'in', [userId, friendId]),
+            orderBy('timestamp') // Order messages by timestamp
+    );
+
+    const unsubscribe = onSnapshot(querySnapshot, (snapshot) => {
+      const messageThread = document.getElementById('messageContainer');
+      messageThread.innerHTML = ''; // Clear previous messages
+      snapshot.forEach((doc) => {
+        const messageData = doc.data();
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        messageElement.textContent = messageData.message;
+        // Add appropriate styling based on whether the message was sent or received
+        if (messageData.senderId === userId) {
+          messageElement.classList.add('sent-message');
+        } else {
+          messageElement.classList.add('received-message');
+        }
+        messageThread.appendChild(messageElement);
+      });
+      // Scroll to the bottom of the message thread to show the latest message
+      messageThread.scrollTop = messageThread.scrollHeight;
+    });
+
+    return unsubscribe; // Return the unsubscribe function to stop listening when needed
+  }
+
+  // Function to open a message thread and initialize message listener
+  function openMessageThread(friendId, friendName) {
+    // Update message thread display with the selected friend's information
+    const messageThread = document.getElementById('messageContainer');
+    messageThread.innerHTML = `<p>You are now chatting with ${friendName}</p>`;
+    // You can also display previous messages or any other relevant information
+
+    // Show the message input area with the friend's name pre-filled
+    const messageInput = document.getElementById('messageInput');
+    messageInput.placeholder = `Type your message to ${friendName}...`;
+
+    // Store the friend's ID and name in a global variable for sending messages
+    window.currentFriendId = friendId;
+    window.currentFriendName = friendName;
+
+    // Initialize real-time message listener
+    window.messageListener = initializeMessageListener(auth.currentUser.uid, friendId);
+  }
+
+  // Function to send a message
+  async function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value.trim(); // Trim whitespace from the message
+
+    if (message === '') {
+      alert('Please enter a message.');
+      return;
+    }
+
+    try {
+      // Add the message to the MESSAGE collection
+      await setDoc(collection(db, 'MESSAGE').doc(), {
+        senderId: auth.currentUser.uid,
+        receiverId: window.currentFriendId, // Use the friend's ID from the current message thread
+        message: message,
+        timestamp: new Date()
+      });
+
+      // Clear the message input after sending
+      messageInput.value = '';
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  }
+
+  // Function to stop listening for messages
+  function stopListening() {
+    if (window.messageListener) {
+      window.messageListener();
+    }
+  }
+
+  // Call stopListening when the user navigates away from the message thread or logs out
+  // For example:
+  // window.addEventListener('beforeunload', stopListening);
 
 
 </script>
