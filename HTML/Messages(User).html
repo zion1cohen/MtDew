@@ -202,7 +202,14 @@
       <button id="sendMessageButton">Send</button>
     </div>
   </div>
+  <!-- Updated container for the message thread -->
+  <div class="message-thread" id="messageThreadContainer" style="display: none;">
+    <div class="message-container" id="messageThread">
+      <!-- Separate message thread display goes here -->
+    </div>
+  </div>
 </div>
+
 
 
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js" type="module"></script>
@@ -210,7 +217,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js" type="module"></script>
 <script type="module">
   // Import necessary Firebase modules
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
   import {
     getFirestore,
     collection,
@@ -220,11 +226,13 @@
     doc,
     updateDoc,
     getDoc,
-    setDoc,// Import setDoc function
-    arrayUnion,// Import arrayUnion function
-    orderBy, // Add orderBy to the import statement
-    onSnapshot // Import onSnapshot function
+    addDoc, // Ensure addDoc is imported
+    setDoc,
+    arrayUnion,
+    orderBy,
+    onSnapshot
   } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
 
@@ -240,7 +248,9 @@
   };
 
   // Initialize Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
   const app = initializeApp(firebaseConfig);
+
   const db = getFirestore(app);
   const auth = getAuth(app);
   const messagesRef = collection(db, 'MESSAGE'); // Define messagesRef here
@@ -389,57 +399,63 @@
   async function openMessageThread(userId, friendId, friendName) {
     console.log("Opening message thread for:", friendName);
 
-    const messageThread = document.getElementById('messageContainer');
+    const messageThreadContainer = document.getElementById('messageThreadContainer');
+    messageThreadContainer.style.display = 'block'; // Show the message thread container
+
+    const messageThread = document.getElementById('messageThread');
     messageThread.innerHTML = `<p>You are now chatting with ${friendName}</p>`;
 
     try {
-      const messagesRef = collection(db, 'MESSAGE');
-
-      // Query for messages sent from the current user to the friend
-      const sentMessagesQuerySnapshot = await getDocs(
-              query(messagesRef,
-                      where('senderId', '==', userId),
-                      where('receiverId', '==', friendId)
+      // Query the conversation document where the current user is user1 and the friend is user2
+      const conversationQuerySnapshot1 = await getDocs(
+              query(
+                      collection(db, 'conversations'),
+                      where('user1Id', '==', userId),
+                      where('user2Id', '==', friendId)
               )
       );
 
-      console.log("Sent messages:", sentMessagesQuerySnapshot.docs.map(doc => doc.data()));
-
-      // Iterate over sent messages and display them
-      sentMessagesQuerySnapshot.forEach(doc => {
-        const messageData = doc.data();
-        const messageElement = createMessageElement(messageData.message, 'sent-message');
-        messageThread.appendChild(messageElement);
-      });
-
-      // Query for messages sent from the friend to the current user
-      const receivedMessagesQuerySnapshot = await getDocs(
-              query(messagesRef,
-                      where('senderId', '==', friendId),
-                      where('receiverId', '==', userId)
+      // Query the conversation document where the current user is user2 and the friend is user1
+      const conversationQuerySnapshot2 = await getDocs(
+              query(
+                      collection(db, 'conversations'),
+                      where('user1Id', '==', friendId),
+                      where('user2Id', '==', userId)
               )
       );
 
-      console.log("Received messages:", receivedMessagesQuerySnapshot.docs.map(doc => doc.data()));
+      let conversationId;
 
-      // Iterate over received messages and display them
-      receivedMessagesQuerySnapshot.forEach(doc => {
+      if (!conversationQuerySnapshot1.empty) {
+        conversationId = conversationQuerySnapshot1.docs[0].id;
+      } else if (!conversationQuerySnapshot2.empty) {
+        conversationId = conversationQuerySnapshot2.docs[0].id;
+      } else {
+        console.log("No conversation found between the current user and the friend.");
+        return;
+      }
+
+      // Query messages for the conversation
+      const messagesQuerySnapshot = await getDocs(collection(db, 'conversations', conversationId, 'messages'));
+
+      messagesQuerySnapshot.forEach(doc => {
         const messageData = doc.data();
-        const messageElement = createMessageElement(messageData.message, 'received-message');
+        console.log("Message:", messageData.content); // Log the message content
+        const messageElement = createMessageElement(messageData.content, userId === messageData.senderId ? 'sent-message' : 'received-message');
         messageThread.appendChild(messageElement);
       });
-
-      console.log("Message thread opened successfully.");
 
       // Scroll to the bottom of the message thread to show the latest message
       messageThread.scrollTop = messageThread.scrollHeight;
 
       // Initialize real-time listener to update message thread when new messages arrive
-      window.messageListener = initializeMessageListener(userId, friendId);
+      window.messageListener = initializeMessageListener(userId, friendId, conversationId);
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error('Error opening message thread:', error);
     }
   }
+
+
 
   // Helper function to create a message element
   function createMessageElement(messageText, messageClass) {
@@ -459,60 +475,44 @@
   // Function to send a message
   async function sendMessage() {
     const messageInput = document.getElementById('messageInput');
-    const message = messageInput.value.trim(); // Trim whitespace from the message
+    const messageContent = messageInput.value.trim();
 
-    if (message === '') {
+    if (messageContent === '') {
       alert('Please enter a message.');
       return;
     }
 
     try {
-      const userId = auth.currentUser.uid;
-      const friendId = window.currentFriendId;
+      const conversationQuerySnapshot = await getDocs(
+              query(
+                      collection(db, 'conversations'),
+                      where('user1Id', '==', auth.currentUser.uid),
+                      where('user2Id', '==', window.currentFriendId)
+              )
+      );
 
-      if (!userId || !friendId) {
-        console.error('User ID or friend ID is undefined.');
-        return;
-      }
+      let conversationId;
 
-      const messageRef = collection(db, 'MESSAGE');
-      const messageDocRef = doc(db, 'MESSAGE', `${userId}_${friendId}`);
-
-      // Check if the message document already exists
-      const messageDocSnapshot = await getDoc(messageDocRef);
-
-      if (messageDocSnapshot.exists()) {
-        // If the document exists, update it with the new message
-        await updateDoc(messageDocRef, {
-          messages: arrayUnion({
-            senderId: userId,
-            receiverId: friendId,
-            message: message
-          })
-        });
+      if (!conversationQuerySnapshot.empty) {
+        conversationId = conversationQuerySnapshot.docs[0].id;
       } else {
-        // If the document doesn't exist, create it with the new message
-        await setDoc(messageDocRef, {
-          messages: [{
-            senderId: userId,
-            receiverId: friendId,
-            message: message
-          }]
+        const newConversationRef = await addDoc(collection(db, 'conversations'), {
+          user1Id: auth.currentUser.uid,
+          user2Id: window.currentFriendId
         });
+        conversationId = newConversationRef.id;
       }
 
-      // Append the new message to the message container
-      const messageThread = document.getElementById('messageContainer');
-      const messageElement = document.createElement('div');
-      messageElement.classList.add('message');
-      messageElement.textContent = message;
-      messageElement.classList.add('sent-message');
-      messageThread.insertBefore(messageElement, messageThread.querySelector('.input-container'));
+      await addDoc(collection(db, 'conversations', conversationId, 'messages'), {
+        senderId: auth.currentUser.uid,
+        receiverId: window.currentFriendId,
+        content: messageContent,
+        timestamp: new Date()
+      });
 
-// Clear the message input after sending
       messageInput.value = '';
 
-      // Scroll to the bottom of the message thread to show the latest message
+      const messageThread = document.getElementById('messageContainer');
       messageThread.scrollTop = messageThread.scrollHeight;
     } catch (error) {
       console.error('Error sending message:', error);
