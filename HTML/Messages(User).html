@@ -221,7 +221,9 @@
     updateDoc,
     getDoc,
     setDoc,// Import setDoc function
-    arrayUnion // Import arrayUnion function
+    arrayUnion,// Import arrayUnion function
+    orderBy, // Add orderBy to the import statement
+    onSnapshot // Import onSnapshot function
   } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
@@ -241,6 +243,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
+  const messagesRef = collection(db, 'MESSAGE'); // Define messagesRef here
 
   function checkAuthState() {
     auth.onAuthStateChanged(user => {
@@ -356,11 +359,15 @@
               const friendItem = document.createElement('div');
               friendItem.classList.add('friend');
               friendItem.innerHTML = `
-    <img src="${friendData.Photo}" alt="${friendData.Name}">
-    <p>${friendData.Name}</p>
-  `;
+                <img src="${friendData.Photo}" alt="${friendData.Name}">
+                <p>${friendData.Name}</p>
+              `;
               // Add event listener to each friend item
-              friendItem.addEventListener('click', () => openMessageThread(friendData.userId, friendData.Name));
+              friendItem.addEventListener('click', () => {
+                // Set the currentFriendId before opening the message thread
+                window.currentFriendId = friendId;
+                openMessageThread(userId, friendData.userId, friendData.Name);
+              });
               friendsList.appendChild(friendItem);
             }
           });
@@ -378,21 +385,77 @@
 
 
 
-  function openMessageThread(friendId, friendName) {
-    // Update message thread display with the selected friend's information
+
+  async function openMessageThread(userId, friendId, friendName) {
+    console.log("Opening message thread for:", friendName);
+
     const messageThread = document.getElementById('messageContainer');
     messageThread.innerHTML = `<p>You are now chatting with ${friendName}</p>`;
-    // You can also display previous messages or any other relevant information
 
-    // Show the message input area with the friend's name pre-filled
-    const messageInput = document.getElementById('messageInput');
-    messageInput.placeholder = `Type your message to ${friendName}...`;
+    try {
+      const messagesRef = collection(db, 'MESSAGE');
 
-    // Store the friend's ID and name in a global variable for sending messages
-    window.currentFriendId = friendId;
-    window.currentFriendName = friendName;
+      // Query for messages sent from the current user to the friend
+      const sentMessagesQuerySnapshot = await getDocs(
+              query(messagesRef,
+                      where('senderId', '==', userId),
+                      where('receiverId', '==', friendId)
+              )
+      );
+
+      console.log("Sent messages:", sentMessagesQuerySnapshot.docs.map(doc => doc.data()));
+
+      // Iterate over sent messages and display them
+      sentMessagesQuerySnapshot.forEach(doc => {
+        const messageData = doc.data();
+        const messageElement = createMessageElement(messageData.message, 'sent-message');
+        messageThread.appendChild(messageElement);
+      });
+
+      // Query for messages sent from the friend to the current user
+      const receivedMessagesQuerySnapshot = await getDocs(
+              query(messagesRef,
+                      where('senderId', '==', friendId),
+                      where('receiverId', '==', userId)
+              )
+      );
+
+      console.log("Received messages:", receivedMessagesQuerySnapshot.docs.map(doc => doc.data()));
+
+      // Iterate over received messages and display them
+      receivedMessagesQuerySnapshot.forEach(doc => {
+        const messageData = doc.data();
+        const messageElement = createMessageElement(messageData.message, 'received-message');
+        messageThread.appendChild(messageElement);
+      });
+
+      console.log("Message thread opened successfully.");
+
+      // Scroll to the bottom of the message thread to show the latest message
+      messageThread.scrollTop = messageThread.scrollHeight;
+
+      // Initialize real-time listener to update message thread when new messages arrive
+      window.messageListener = initializeMessageListener(userId, friendId);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
   }
 
+  // Helper function to create a message element
+  function createMessageElement(messageText, messageClass) {
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message');
+    messageElement.textContent = messageText;
+    messageElement.classList.add(messageClass);
+    return messageElement;
+  }
+
+
+
+
+
+
+  // Function to send a message
   // Function to send a message
   async function sendMessage() {
     const messageInput = document.getElementById('messageInput');
@@ -404,33 +467,70 @@
     }
 
     try {
-      // Add the message to the MESSAGE collection
-      await setDoc(doc(db, 'MESSAGE'), {
-        senderId: auth.currentUser.uid,
-        receiverId: window.currentFriendId, // Use the friend's ID from the current message thread
-        message: message,
-        timestamp: new Date()
-      });
+      const userId = auth.currentUser.uid;
+      const friendId = window.currentFriendId;
 
-      // Clear the message input after sending
+      if (!userId || !friendId) {
+        console.error('User ID or friend ID is undefined.');
+        return;
+      }
+
+      const messageRef = collection(db, 'MESSAGE');
+      const messageDocRef = doc(db, 'MESSAGE', `${userId}_${friendId}`);
+
+      // Check if the message document already exists
+      const messageDocSnapshot = await getDoc(messageDocRef);
+
+      if (messageDocSnapshot.exists()) {
+        // If the document exists, update it with the new message
+        await updateDoc(messageDocRef, {
+          messages: arrayUnion({
+            senderId: userId,
+            receiverId: friendId,
+            message: message
+          })
+        });
+      } else {
+        // If the document doesn't exist, create it with the new message
+        await setDoc(messageDocRef, {
+          messages: [{
+            senderId: userId,
+            receiverId: friendId,
+            message: message
+          }]
+        });
+      }
+
+      // Append the new message to the message container
+      const messageThread = document.getElementById('messageContainer');
+      const messageElement = document.createElement('div');
+      messageElement.classList.add('message');
+      messageElement.textContent = message;
+      messageElement.classList.add('sent-message');
+      messageThread.insertBefore(messageElement, messageThread.querySelector('.input-container'));
+
+// Clear the message input after sending
       messageInput.value = '';
 
-      // You can also update the message thread display to show the sent message immediately
-      // However, this implementation does not include real-time updates from the database
-      // You may want to implement a real-time listener to update the message thread
-      // with new messages as they arrive from the database
+      // Scroll to the bottom of the message thread to show the latest message
+      messageThread.scrollTop = messageThread.scrollHeight;
     } catch (error) {
       console.error('Error sending message:', error);
     }
   }
 
+
+
+
+
+
+  // Function to initialize real-time message listener
   // Function to initialize real-time message listener
   function initializeMessageListener(userId, friendId) {
     const messageThreadRef = collection(db, 'MESSAGE');
     const querySnapshot = query(
             messageThreadRef,
             where('senderId', 'in', [userId, friendId]), // Filter messages by senderId and receiverId
-            where('receiverId', 'in', [userId, friendId]),
             orderBy('timestamp') // Order messages by timestamp
     );
 
@@ -457,50 +557,7 @@
     return unsubscribe; // Return the unsubscribe function to stop listening when needed
   }
 
-  // Function to open a message thread and initialize message listener
-  function openMessageThread(friendId, friendName) {
-    // Update message thread display with the selected friend's information
-    const messageThread = document.getElementById('messageContainer');
-    messageThread.innerHTML = `<p>You are now chatting with ${friendName}</p>`;
-    // You can also display previous messages or any other relevant information
 
-    // Show the message input area with the friend's name pre-filled
-    const messageInput = document.getElementById('messageInput');
-    messageInput.placeholder = `Type your message to ${friendName}...`;
-
-    // Store the friend's ID and name in a global variable for sending messages
-    window.currentFriendId = friendId;
-    window.currentFriendName = friendName;
-
-    // Initialize real-time message listener
-    window.messageListener = initializeMessageListener(auth.currentUser.uid, friendId);
-  }
-
-  // Function to send a message
-  async function sendMessage() {
-    const messageInput = document.getElementById('messageInput');
-    const message = messageInput.value.trim(); // Trim whitespace from the message
-
-    if (message === '') {
-      alert('Please enter a message.');
-      return;
-    }
-
-    try {
-      // Add the message to the MESSAGE collection
-      await setDoc(collection(db, 'MESSAGE').doc(), {
-        senderId: auth.currentUser.uid,
-        receiverId: window.currentFriendId, // Use the friend's ID from the current message thread
-        message: message,
-        timestamp: new Date()
-      });
-
-      // Clear the message input after sending
-      messageInput.value = '';
-    } catch (error) {
-      console.error('Error sending message:', error);
-    }
-  }
 
   // Function to stop listening for messages
   function stopListening() {
@@ -512,6 +569,9 @@
   // Call stopListening when the user navigates away from the message thread or logs out
   // For example:
   // window.addEventListener('beforeunload', stopListening);
+
+  // Add an event listener to the "Send" button to call sendMessage() when clicked
+  document.getElementById('sendMessageButton').addEventListener('click', sendMessage);
 
 
 </script>
