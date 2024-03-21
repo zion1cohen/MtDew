@@ -64,7 +64,7 @@ window.onload = function () {
             window.location.href = "home.html";
             break;
           case "admin":
-            window.location.href = "admin.html";
+            window.location.href = "search(ADMIN).html";
             break;
           case "support":
             window.location.href = "support.html";
