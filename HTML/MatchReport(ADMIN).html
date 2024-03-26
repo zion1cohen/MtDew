@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Connection Reports</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #ececec;
+      color: #333;
+    }
+
+    .navbar {
+      background-color: #00457c;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .navbar h1 {
+      margin: 0;
+      font-size: 1.5em;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #00457c;
+    }
+
+    .report-form {
+      margin: 20px 0;
+    }
+
+    .report-form label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .report-form input, .report-form button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .report-form button {
+      background-color: #00457c;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .report-form button:hover {
+      background-color: #003366;
+    }
+
+    footer {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+    }
+
+    footer p {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<div class="navbar">
+  <h1>ConnectAbility Admin Dashboard</h1>
+  <nav>
+    <a href="#reports">Reports</a>
+  </nav>
+</div>
+
+<div class="container" id="reports">
+  <h2>Create Report</h2>
+  <div class="report-form">
+    <label for="startDate">Start Date:</label>
+    <input type="date" id="startDate" name="startDate">
+
+    <label for="endDate">End Date:</label>
+    <input type="date" id="endDate" name="endDate">
+
+    <button onclick="generateReport()">Generate Report</button>
+  </div>
+</div>
+
+<script>
+  function generateReport() {
+    var startDate = document.getElementById('startDate').value;
+    var endDate = document.getElementById('endDate').value;
+
+    if (!startDate || !endDate) {
+      alert('Please select both start and end dates.');
+      return;
+    }
+
+    if (startDate > endDate) {
+      alert('Start date must be before end date.');
+      return;
+    }
+
+    // Placeholder for report generation logic
+    alert('Generating report from ' + startDate + ' to ' + endDate + '.');
+    // You would typically handle the report generation with a server-side process
+    // and possibly display the results on the page.
+  }
+</script>
+
+<footer>
+  <p>© 2024 ConnectAbility</p>
+</footer>
+</body>
+</html>
