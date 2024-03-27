@@ -4,12 +4,147 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>User Profile - ConnectAbility</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+    import { getFirestore, doc, getDoc, arrayRemove, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+      authDomain: "connectability-6ee02.firebaseapp.com",
+      projectId: "connectability-6ee02",
+      storageBucket: "connectability-6ee02.appspot.com",
+      messagingSenderId: "908801065257",
+      appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+      measurementId: "G-N8HMEMRV16",
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth();
+
+    // Define the removeFriend function
+    async function removeFriend(userId, friendId) {
+      console.log("Removing friend:", friendId);
+      const userRef = doc(db, "USER", userId);
+      const friendRef = doc(db, "USER", friendId);
+
+      try {
+        // Remove friendId from user's friends array
+        await updateDoc(userRef, {
+          friends: arrayRemove(friendId)
+        });
+
+        // Remove userId from friend's friends array
+        await updateDoc(friendRef, {
+          friends: arrayRemove(userId)
+        });
+
+        console.log("Friend removed successfully");
+      } catch (error) {
+        console.error("Error removing friend: ", error);
+      }
+    }
+
+
+    // Function to get current user and display profile information
+    function getCurrentUser() {
+      onAuthStateChanged(auth, async (user) => {
+        try {
+          if (user) {
+            console.log("User is logged in:", user.email);
+            // Fetch user profile data from Firestore
+            const userRef = doc(db, "USER", user.uid);
+            const userSnapshot = await getDoc(userRef);
+            if (userSnapshot.exists()) {
+              const userData = userSnapshot.data();
+              document.getElementById('profile-name').innerText = userData.Name || 'Unknown';
+              document.getElementById('profile-email').innerText = user.email;
+              document.getElementById('profile-about').innerText = userData.About || 'No information available';
+              document.getElementById('profile-phone').innerText = userData.Phone || 'No information available';
+              document.getElementById('profile-address').innerText = userData.Address || 'No information available';
+              document.getElementById('profile-photo').src = userData.Photo || 'https://via.placeholder.com/100'; // Use placeholder if photo URL not available
+
+              // Display user's friends
+              // Display user's friends
+              const friendsList = document.getElementById('friends-list');
+              friendsList.innerHTML = ''; // Clear previous list
+              for (const friendId of userData.friends) {
+                const friendRef = doc(db, "USER", friendId);
+                const friendSnapshot = await getDoc(friendRef);
+                if (friendSnapshot.exists()) {
+                  const friendData = friendSnapshot.data();
+                  const friendCard = document.createElement('div');
+                  friendCard.classList.add('friend-card');
+                  friendCard.dataset.friendId = friendId; // Set the friend ID as a data attribute
+                  friendCard.innerHTML = `
+      <img src="${friendData.Photo || 'https://via.placeholder.com/50'}" alt="Friend Photo" class="friend-photo">
+      <p class="friend-name">${friendData.Name}</p>
+      <button class="remove-friend-btn">Remove</button>
+    `;
+                  friendsList.appendChild(friendCard);
+                }
+              }
+
+            } else {
+              console.error("User data not found in Firestore");
+            }
+          } else {
+            console.log("No user is logged in.");
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      });
+    }
+
+    // Call getCurrentUser() to fetch current user information
+    getCurrentUser();
+
+    // Event delegation for remove friend button
+    // Event delegation for remove friend button
+    document.addEventListener('click', function(event) {
+      if (event.target && event.target.classList.contains('remove-friend-btn')) {
+        // Get the current user ID
+        const userId = auth.currentUser.uid;
+
+        // Find the parent element of the button (friend card) and extract friend ID from it
+        const friendCard = event.target.closest('.friend-card');
+        if (friendCard) {
+          const friendId = friendCard.dataset.friendId;
+          removeFriend(userId, friendId);
+        }
+      }
+    });
+
+  </script>
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #f0f2f5;
       margin: 0;
       padding: 0;
+    }
+    .main-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+    .sidebar {
+      background-color: #003366;
+      color: white;
+      padding: 20px;
+      width: 200px;
+      box-sizing: border-box;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 10px 0;
     }
     .profile-container {
       width: 80%;
@@ -43,30 +178,34 @@
       color: #666;
       margin: 5px 0;
     }
-    .sidebar {
-      background-color: #003366;
-      color: white;
-      padding: 20px;
-      width: 200px;
-      height: auto; /* Adjust height as necessary */
-      box-sizing: border-box;
+    .profile-details {
+      margin-top: 20px; /* Adjust the top margin as needed */
     }
-
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      display: block;
-      padding: 10px 0;
+    .friend-card {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 10px;
     }
-
-    .content {
-      flex-grow: 1; /* Allows the content area to fill the remaining space */
-      padding: 20px;
+    .friend-photo {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .friend-name {
+      font-weight: bold;
+      margin: 0;
+    }
+    .remove-friend-btn {
+      margin-left: auto;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-
 <div class="main-container">
   <div class="sidebar">
     <a href="home.html">Home</a>
@@ -75,26 +214,33 @@
     <a href="match.html">Matches</a>
     <a href="Announcements(USER).html">Announcements</a>
     <a href="Resources(USER).html">Resources</a>
-    <a href="Feedback(USER).html">Feedback</a>
+    <a href="Feedback(USER).
+.html">Feedback</a>
     <a href="settings.html">Settings</a>
   </div>
 
-<div class="profile-container">
-  <div class="profile-header">
-    <img src="https://via.placeholder.com/100" alt="Profile Photo" class="profile-photo">
-    <div class="profile-info">
-      <h2>John Doe</h2>
-      <p>Email: johndoe@example.com</p>
+  <div class="profile-container">
+    <div class="profile-header">
+      <img id="profile-photo" src="https://via.placeholder.com/100" alt="Profile Photo" class="profile-photo">
+      <div class="profile-info">
+        <h2 id="profile-name">Loading...</h2>
+        <p id="profile-email"></p>
+      </div>
     </div>
-  </div>
-  <div class="profile-details">
-    <h3>About Me:</h3>
-    <p>Hello! I'm John, an enthusiast of technology and accessibility. I enjoy working on projects that make the world a more inclusive place for everyone.</p>
-    <h3>Contact Information:</h3>
-    <p>Phone: (123) 456-7890</p>
-    <p>Address: 123 Main Street, City, Country</p>
+    <div class="profile-details">
+      <h3>About Me:</h3>
+      <p id="profile-about"></p>
+      <h3>Contact Information:</h3>
+      <p id="profile-phone"></p>
+      <p id="profile-address"></p>
+    </div>
+    <h3>Friends:</h3>
+    <div id="friends-list"></div>
   </div>
 </div>
 
+<script>
+  // You can add any additional JavaScript code here if needed
+</script>
 </body>
 </html>

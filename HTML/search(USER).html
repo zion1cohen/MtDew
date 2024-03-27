@@ -127,58 +127,58 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Select the user list container
-            const userList = document.getElementById('userList');
+            document.addEventListener('DOMContentLoaded', function() {
+                // Select the user list container
+                const userList = document.getElementById('userList');
 
-            // Add event listener to the user list container
-            userList.addEventListener('click', function(event) {
-                // Check if the clicked element is a button with the class 'send-friend-request'
-                if (event.target.classList.contains('send-friend-request')) {
-                    // Extract the userId from the data-user-id attribute of the button
-                    const userId = event.target.getAttribute('data-user-id');
-                    // Call the sendFriendRequest function with the userId
-                    sendFriendRequest(userId);
-                }
+                // Add event listener to the user list container
+                userList.addEventListener('click', function(event) {
+                    // Check if the clicked element is a button with the class 'send-friend-request'
+                    if (event.target.classList.contains('send-friend-request')) {
+                        // Extract the userId from the data-user-id attribute of the button
+                        const userId = event.target.getAttribute('data-user-id');
+                        // Call the sendFriendRequest function with the userId
+                        sendFriendRequest(userId);
+                    }
+                });
+
+                // Call searchUser function when the window loads
+                window.onload = function() {
+                    searchUser();
+                };
             });
 
-            // Call searchUser function when the window loads
-            window.onload = function() {
-                searchUser();
-            };
-        });
-
-        // Rest of your code...
+            // Rest of your code...
 
 
-        function parseAgeRange(ageRange) {
-            const [start, end] = ageRange.split("-").map(Number);
-            return { start, end };
-        }
+            function parseAgeRange(ageRange) {
+                const [start, end] = ageRange.split("-").map(Number);
+                return { start, end };
+            }
 
 
-        function filterByAge(ageRange) {
-            console.log("Filtering users by age range:", ageRange);
-            searchUser({ ageRange: parseAgeRange(ageRange) });
-        }
+            function filterByAge(ageRange) {
+                console.log("Filtering users by age range:", ageRange);
+                searchUser({ ageRange: parseAgeRange(ageRange) });
+            }
 
 
-        function filterByGender(gender) {
-            console.log("Filtering users by gender:", gender);
-            searchUser({ gender });
-        }
+            function filterByGender(gender) {
+                console.log("Filtering users by gender:", gender);
+                searchUser({ gender });
+            }
 
 
-        function filterByMaritalStatus(status) {
-            console.log("Filtering users by marital status:", status);
-            searchUser({ maritalStatus: status });
-        }
+            function filterByMaritalStatus(status) {
+                console.log("Filtering users by marital status:", status);
+                searchUser({ maritalStatus: status });
+            }
 
 
-        function filterByDisability(disability) {
-            console.log("Filtering users by disability type:", disability);
-            searchUser({ disability });
-        }
+            function filterByDisability(disability) {
+                console.log("Filtering users by disability type:", disability);
+                searchUser({ disability });
+            }
 
     </script>
     <style>
