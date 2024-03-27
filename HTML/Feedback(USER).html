@@ -78,7 +78,30 @@
     .feedback-form button:hover {
       background-color: #0056b3;
     }
+    #popup {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      z-index: 2; /* Sit on top */
+      padding-top: 100px; /* Location of the box */
+    }
+
+    /* Popup content */
+    #popupContent {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 300px; /* Maximum width */
+      text-align: center;
+    }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js" type="module"></script>
 </head>
 <body>
 
@@ -102,12 +125,73 @@
     <div class="feedback-header">
       <h2>Submit Feedback</h2>
     </div>
-    <form class="feedback-form" action="/submit-feedback" method="post">
+    <form id="feedbackForm" class="feedback-form" action="/submit-feedback" method="post">
       <textarea name="feedback" placeholder="Your feedback..."></textarea>
-      <button type="submit">Submit</button>
+      <button id="submitBtn">Submit Feedback</button>
     </form>
   </div>
 </div>
 
+<div id="popup">
+  <div id="popupContent">
+    <p>Thank you for your feedback!</p>
+  </div>
+</div>
+
+<script>
+  document.getElementById("submitBtn").onclick = function() {
+    // Show the popup
+    document.getElementById("popup").style.display = "block";
+
+    // After 3 seconds, hide the popup
+    setTimeout(function() {
+      document.getElementById("popup").style.display = "none";
+    }, 3000); // 3000 milliseconds = 3 seconds
+  };
+</script>
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+  import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+
+  // Your Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+    authDomain: "connectability-6ee02.firebaseapp.com",
+    projectId: "connectability-6ee02",
+    storageBucket: "connectability-6ee02.appspot.com",
+    messagingSenderId: "908801065257",
+    appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+    measurementId: "G-N8HMEMRV16"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+
+  // Initialize Cloud Firestore and get a reference to the service
+  const db = getFirestore(app);
+
+  document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Prevent the default form submission
+
+    const feedbackText = document.querySelector('[name="feedback"]').value; // Get the feedback
+
+    // Add a new document with a generated ID
+    addDoc(collection(db, "feedback"), {
+      text: feedbackText,
+      // Additional data like timestamp, user ID, etc.
+      createdAt: serverTimestamp()
+    })
+            .then(function(docRef) {
+              console.log("Document written with ID: ", docRef.id);
+              // Success feedback (e.g., clearing the form, showing a message)
+            })
+            .catch(function(error) {
+              console.error("Error adding document: ", error);
+              // Error feedback
+            });
+  });
+</script>
 </body>
 </html>
