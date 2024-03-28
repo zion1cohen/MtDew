@@ -101,6 +101,127 @@
       margin: 0;
     }
   </style>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+    import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js';
+    import { getFirestore, collection, query, where, getDocs, Timestamp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+      authDomain: "connectability-6ee02.firebaseapp.com",
+      projectId: "connectability-6ee02",
+      storageBucket: "connectability-6ee02.appspot.com",
+      messagingSenderId: "908801065257",
+      appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+      measurementId: "G-N8HMEMRV16",
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+      document.getElementById("reportButton").addEventListener("click", generateReport);
+    });
+    async function generateReport() {
+      var startDateInput = document.getElementById('startDate').value;
+      var endDateInput = document.getElementById('endDate').value;
+
+      if (!startDateInput || !endDateInput) {
+        alert('Please select both start and end dates.');
+        return;
+      }
+
+      var startDate = new Date(startDateInput);
+      var endDate = new Date(endDateInput);
+
+      // Set the end date to the end of the day by setting the time to just before midnight
+      endDate.setHours(23, 59, 59, 999);
+
+      if (startDate > endDate) {
+        alert('Start date must be before end date.');
+        return;
+      }
+
+      const db = getFirestore(app);
+      const connectionsCollection = collection(db, "CONNECTION"); // Replace with your actual collection name
+
+      // Convert dates to Firestore Timestamps
+      const startTimestamp = Timestamp.fromDate(startDate);
+      const endTimestamp = Timestamp.fromDate(endDate);
+
+      const q = query(connectionsCollection,
+              where("acceptedAt", ">=", startTimestamp),
+              where("acceptedAt", "<=", endTimestamp));
+
+      const querySnapshot = await getDocs(q);
+
+      // Now you can process querySnapshot to generate your report
+      alert(`Found ${querySnapshot.size} records from ${startDate.toISOString()} to ${endDate.toISOString()}.`);
+      // Further processing...
+
+      const labels = []; // Dates
+      const data = []; // Number of connections per day
+
+      querySnapshot.forEach((doc) => {
+        const docData = doc.data();
+        const timestamp = docData.acceptedAt; // Accessing the correct field
+        const q = query(connectionsCollection,
+                where("acceptedAt", ">=", startTimestamp),
+                where("acceptedAt", "<=", endTimestamp));        const date = timestamp.toDate(); // Convert Firestore Timestamp to JavaScript Date
+        const dateString = date.toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD' format
+
+        // Check if the date is already in the labels array
+        const index = labels.findIndex(label => label === dateString);
+        if (index === -1) {
+          // New date, add it to labels and initialize the count in data
+          labels.push(dateString);
+          data.push(1); // First occurrence of this date
+        } else {
+          // Date already exists, increment the count
+          data[index]++;
+        }
+      });
+
+
+
+      const ctx = document.getElementById('connectionsChart').getContext('2d');
+      const connectionsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Connections',
+            data: data,
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              // Add more colors for each bar if needed
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              // Add more border colors for each bar if needed
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 <body>
 <div class="navbar">
@@ -110,26 +231,6 @@
   </nav>
 </div>
 
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-  import { getAnalytics, doc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js';
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
-    authDomain: "connectability-6ee02.firebaseapp.com",
-    projectId: "connectability-6ee02",
-    storageBucket: "connectability-6ee02.appspot.com",
-    messagingSenderId: "908801065257",
-    appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
-    measurementId: "G-N8HMEMRV16",
-  };
-
-   // Initialize Firebase
-   const app = initializeApp(firebaseConfig);
-   const analytics = getAnalytics(app);
-</script>
 
 
 <div class="sidebar">
@@ -149,31 +250,15 @@
     <label for="endDate">End Date:</label>
     <input type="date" id="endDate" name="endDate">
 
-    <button onclick="generateReport()">Generate Report</button>
+    <button id="reportButton">Generate Report</button>
   </div>
+  <div class="container">
+    <canvas id="connectionsChart" width="400" height="200""></canvas>
+  </div>
+
 </div>
 
-<script>
-  function generateReport() {
-    var startDate = document.getElementById('startDate').value;
-    var endDate = document.getElementById('endDate').value;
 
-    if (!startDate || !endDate) {
-      alert('Please select both start and end dates.');
-      return;
-    }
-
-    if (startDate > endDate) {
-      alert('Start date must be before end date.');
-      return;
-    }
-
-    // Placeholder for report generation logic
-    alert('Generating report from ' + startDate + ' to ' + endDate + '.');
-    // You would typically handle the report generation with a server-side process
-    // and possibly display the results on the page.
-  }
-</script>
 
 <footer>
   <p>© 2024 ConnectAbility</p>
