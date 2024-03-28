@@ -7,7 +7,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-    import { getFirestore, doc, getDoc, arrayRemove, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, arrayRemove, updateDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -48,7 +48,6 @@
       }
     }
 
-
     // Function to get current user and display profile information
     function getCurrentUser() {
       onAuthStateChanged(auth, async (user) => {
@@ -68,26 +67,7 @@
               document.getElementById('profile-photo').src = userData.Photo || 'https://via.placeholder.com/100'; // Use placeholder if photo URL not available
 
               // Display user's friends
-              // Display user's friends
-              const friendsList = document.getElementById('friends-list');
-              friendsList.innerHTML = ''; // Clear previous list
-              for (const friendId of userData.friends) {
-                const friendRef = doc(db, "USER", friendId);
-                const friendSnapshot = await getDoc(friendRef);
-                if (friendSnapshot.exists()) {
-                  const friendData = friendSnapshot.data();
-                  const friendCard = document.createElement('div');
-                  friendCard.classList.add('friend-card');
-                  friendCard.dataset.friendId = friendId; // Set the friend ID as a data attribute
-                  friendCard.innerHTML = `
-      <img src="${friendData.Photo || 'https://via.placeholder.com/50'}" alt="Friend Photo" class="friend-photo">
-      <p class="friend-name">${friendData.Name}</p>
-      <button class="remove-friend-btn">Remove</button>
-    `;
-                  friendsList.appendChild(friendCard);
-                }
-              }
-
+              displayFriendsWithFlags(user.uid);
             } else {
               console.error("User data not found in Firestore");
             }
@@ -104,7 +84,6 @@
     getCurrentUser();
 
     // Event delegation for remove friend button
-    // Event delegation for remove friend button
     document.addEventListener('click', function(event) {
       if (event.target && event.target.classList.contains('remove-friend-btn')) {
         // Get the current user ID
@@ -118,6 +97,125 @@
         }
       }
     });
+
+    // Function to create flag dropdown for a friend
+    // Function to create flag dropdown for a friend
+    function createFlagDropdown(friendId) {
+      // Dropdown options
+      const flagOptions = [
+        'Harassment/Bullying',
+        'Hate Speech',
+        'Violent Content',
+        'Graphic or Disturbing Content',
+        'Spam or Scam',
+        'Other'
+      ];
+
+      // Create dropdown element
+      const dropdown = document.createElement('select');
+      dropdown.classList.add('flag-dropdown');
+
+      // Add options to the dropdown
+      flagOptions.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.textContent = option;
+        dropdown.appendChild(optionElement);
+      });
+
+      // Create button for flag submission
+      const submitButton = document.createElement('button');
+      submitButton.textContent = 'Submit Flag';
+      submitButton.classList.add('submit-flag-btn'); // Add the class for styling
+      submitButton.addEventListener('click', () => submitFlag(friendId, dropdown.value));
+
+      // Create container for dropdown and button
+      const container = document.createElement('div');
+      container.classList.add('flag-container'); // Add a class for styling
+      container.appendChild(dropdown);
+
+      // Create a wrapper for the submit button to add spacing
+      const buttonWrapper = document.createElement('div');
+      buttonWrapper.classList.add('button-wrapper');
+      buttonWrapper.appendChild(submitButton);
+
+      container.appendChild(buttonWrapper); // Append the button wrapper to the container
+
+      return container;
+    }
+
+    // Function to display user's friends with flag dropdowns
+    async function displayFriendsWithFlags(userId) {
+      try {
+        const userRef = doc(db, 'USER', userId);
+        const userSnapshot = await getDoc(userRef);
+        if (userSnapshot.exists()) {
+          const userData = userSnapshot.data();
+          const friendsList = document.getElementById('friends-list');
+          friendsList.innerHTML = ''; // Clear previous list
+
+          if (userData.friends && userData.friends.length > 0) {
+            userData.friends.forEach(async (friendId) => {
+              const friendRef = doc(db, 'USER', friendId);
+              const friendSnapshot = await getDoc(friendRef);
+              if (friendSnapshot.exists()) {
+                const friendData = friendSnapshot.data();
+                const friendCard = document.createElement('div');
+                friendCard.classList.add('friend-card');
+                friendCard.dataset.friendId = friendId; // Set the friend ID as a data attribute
+                friendCard.innerHTML = `
+                  <img src="${friendData.Photo || 'https://via.placeholder.com/50'}" alt="Friend Photo" class="friend-photo">
+                  <p class="friend-name">${friendData.Name}</p>
+                 <button class="remove-friend-btn">Remove</button>
+                `;
+                // Add flag dropdown for each friend
+                const flagDropdown = createFlagDropdown(friendId);
+                friendCard.appendChild(flagDropdown); // Append the dropdown to the friend card
+                friendsList.appendChild(friendCard);
+              }
+            });
+          } else {
+            friendsList.innerHTML = '<p>No friends found.</p>';
+          }
+        } else {
+          console.error('User data not found in Firestore');
+        }
+      } catch (error) {
+        console.error('Error fetching friends:', error);
+      }
+    }
+
+    // Function to submit flag
+    // Function to submit flag
+    // Function to submit flag
+    async function submitFlag(friendId, flagValue) {
+      try {
+        // Get the current user's ID
+        const userId = auth.currentUser.uid;
+
+        // Construct a new flag object
+        const flagData = {
+          userId: userId,
+          friendId: friendId,
+          flagValue: flagValue,
+          timestamp: new Date()
+        };
+
+        // Add the flag to the "FLAG" collection in Firestore
+        const flagDocRef = await addDoc(collection(db, "FLAG"), flagData);
+        console.log("Flag submitted successfully with ID: ", flagDocRef.id);
+
+        // Display a message indicating that the flag was submitted for the user
+        const friendName = document.querySelector(`.friend-card[data-friend-id="${friendId}"] .friend-name`).textContent;
+        const flagMessageContainer = document.getElementById("flag-message-container");
+        const message = document.createElement("div");
+        message.classList.add("flag-message");
+        message.textContent = `Flag submitted successfully for ${friendName}.`;
+        flagMessageContainer.appendChild(message);
+      } catch (error) {
+        console.error("Error submitting flag: ", error);
+      }
+    }
+
 
   </script>
   <style>
@@ -183,11 +281,8 @@
     }
     .friend-card {
       display: flex;
-      align-items: center;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      padding: 10px;
-      margin-bottom: 10px;
+      justify-content: space-between; /* Align items with space between */
+      align-items: center; /* Align items vertically */
     }
     .friend-photo {
       width: 50px;
@@ -199,10 +294,37 @@
       font-weight: bold;
       margin: 0;
     }
-    .remove-friend-btn {
-      margin-left: auto;
+    .remove-friend-btn, .submit-flag-btn {
+      background-color: #dc3545; /* Red color */
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .remove-friend-btn:hover, .submit-flag-btn:hover {
+      background-color: #c82333; /* Darker red color on hover */
+    }
+    /* Adjusted CSS styles */
+    .flag-container {
+      display: flex;
+      justify-content: space-between; /* Align items with space between */
+    }
+
+    .flag-dropdown {
+      margin-right: 10px;
+    }
+
+    .button-wrapper {
+      margin-top: 10px;
+    }
+
+    .flag-container button {
       cursor: pointer;
     }
+
+
   </style>
 </head>
 <body>
@@ -220,8 +342,7 @@
     <a href="match.html">Matches</a>
     <a href="Announcements(USER).html">Announcements</a>
     <a href="Resources(USER).html">Resources</a>
-    <a href="Feedback(USER).
-.html">Feedback</a>
+    <a href="Feedback(USER).html">Feedback</a>
     <a href="settings.html">Settings</a>
   </div>
 
@@ -241,8 +362,12 @@
       <p id="profile-address"></p>
     </div>
     <h3>Friends:</h3>
+    <div id="flag-message-container"></div>
     <div id="friends-list"></div>
+
   </div>
+
+
 </div>
 
 <script>
