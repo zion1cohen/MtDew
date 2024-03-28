@@ -132,8 +132,9 @@
   </style>
 </head>
 <body>
-<div class="header">
+<div class="header d-flex justify-content-between align-items-center">
   <h1>ConnectAbility</h1>
+  <a href="login.html" class="btn btn-light">Logout</a>
 </div>
 
 <div class="main-container">
@@ -204,9 +205,6 @@
 
   async function acceptMatch(userId, otherUserId) {
     try {
-      console.log("User ID:", userId);
-      console.log("Other User ID:", otherUserId);
-
       // Update user documents to add each other to their friends list
       const user1QuerySnapshot = await getDocs(query(collection(db, 'USER'), where('userId', '==', userId)));
       const user1Snapshot = user1QuerySnapshot.docs[0]; // Get the first document with the matching userId
@@ -219,9 +217,6 @@
           user2Snapshot = doc;
         });
 
-        console.log("User 1 Snapshot:", user1Snapshot.data());
-        console.log("User 2 Snapshot:", user2Snapshot?.data());
-
         if (user2Snapshot) {
           // Update friends list for both users
           await Promise.all([
@@ -230,6 +225,24 @@
           ]);
 
           console.log("Friendship created between", userId, "and", otherUserId);
+
+          // Create or update connection document
+          const connectionRef = doc(db, 'CONNECTION', `${userId}_${otherUserId}`);
+          const connectionSnapshot = await getDoc(connectionRef);
+
+          if (!connectionSnapshot.exists()) {
+            // Create the connection document if it doesn't exist
+            await setDoc(connectionRef, {
+              users: [userId, otherUserId],
+              acceptedAt: new Date().toISOString(), // Adding the current date as acceptedAt
+            });
+            console.log("Connection document created:", userId, otherUserId);
+          } else {
+            console.log("Connection document already exists:", userId, otherUserId);
+          }
+
+          // Update accepted matches for both users
+          await updateAcceptedMatches(userId, otherUserId, connectionRef.id);
         } else {
           console.error("User 2 document does not exist.");
         }
@@ -240,6 +253,7 @@
       console.error("Error accepting match:", error);
     }
   }
+
 
 
 

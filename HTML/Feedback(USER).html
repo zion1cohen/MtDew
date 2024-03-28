@@ -105,8 +105,9 @@
 </head>
 <body>
 
-<div class="header">
+<div class="header d-flex justify-content-between align-items-center">
   <h1>ConnectAbility</h1>
+  <a href="login.html" class="btn btn-light">Logout</a>
 </div>
 
 <div class="sidebar">
@@ -169,29 +170,33 @@
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
 
-  // Initialize Cloud Firestore and get a reference to the service
+  // Initialize Cloud Firestore
   const db = getFirestore(app);
 
+  // Event listener for form submission
   document.getElementById('feedbackForm').addEventListener('submit', function(e) {
     e.preventDefault(); // Prevent the default form submission
 
-    const feedbackText = document.querySelector('[name="feedback"]').value; // Get the feedback
+    // Get the feedback text from the form
+    const feedbackText = document.querySelector('[name="feedback"]').value;
 
-    // Add a new document with a generated ID
-    addDoc(collection(db, "feedback"), {
+    // Add a new document to the FEEDBACK collection
+    addDoc(collection(db, "FEEDBACK"), {
       text: feedbackText,
-      // Additional data like timestamp, user ID, etc.
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp() // Include server timestamp for when the feedback was submitted
     })
             .then(function(docRef) {
               console.log("Document written with ID: ", docRef.id);
-              // Success feedback (e.g., clearing the form, showing a message)
+              // Show success feedback to the user (e.g., clear the form, display a message)
             })
             .catch(function(error) {
               console.error("Error adding document: ", error);
-              // Error feedback
+              // Show error feedback to the user
             });
   });
+</script>
+</body>
+</html>
 </script>
 </body>
 </html>
