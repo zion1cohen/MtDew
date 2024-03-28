@@ -43,9 +43,30 @@
         });
 
         console.log("Friend removed successfully");
+
+        // Remove the friend card from the DOM
+        document.querySelector(`.friend-card[data-friend-id="${friendId}"]`).remove();
+
+        // Display success message
+        displaySuccessMessage(friendId);
       } catch (error) {
         console.error("Error removing friend: ", error);
       }
+
+    }
+
+    // Function to display a success message
+    function displaySuccessMessage(friendId) {
+      const messageContainer = document.getElementById('flag-message-container');
+      const message = document.createElement('div');
+      message.textContent = `Friend successfully removed.`;
+      message.style.color = 'green'; // Styling example, customize as needed
+      messageContainer.appendChild(message);
+
+      // Optionally, remove the message after a few seconds
+      setTimeout(() => {
+        message.remove();
+      }, 3000); // Adjust time as needed
     }
 
     // Function to get current user and display profile information
