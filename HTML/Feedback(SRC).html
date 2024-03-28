@@ -94,30 +94,62 @@
 <div class="main-content">
   <div class="feedback-container">
     <h2 class="feedback-header">Feedback</h2>
-    <!-- Example Feedback Item -->
-    <div class="feedback-item">
-      <p>"Connectability has revolutionized the way I manage my professional connections! The intuitive interface and seamless integration with various platforms make networking a breeze..." - Sarah M. <span>8:45pm</span></p>
-      <button class="feedback-response">Respond</button>
-    </div>
-    <!-- More Feedback Items -->
-    <div class="feedback-item">
-      <p>"I've tried several connectivity apps, but Connectability stands out with its user-friendly design and robust features..." - Alex P. <span>7:23pm</span></p>
-      <button class="feedback-response">Respond</button>
-    </div>
-    <div class="feedback-item">
-    <p>"I've tried several connectivity apps, but Connectability stands out with its user-friendly design and robust features..." - Alex P. <span>7:23pm</span></p>
-    <button class="feedback-response">Respond</button>
-  </div>
-    <div class="feedback-item">
-      <p>"I've tried several connectivity apps, but Connectability stands out with its user-friendly design and robust features..." - Alex P. <span>7:23pm</span></p>
-      <button class="feedback-response">Respond</button>
-    </div><div class="feedback-item">
-    <p>"I've tried several connectivity apps, but Connectability stands out with its user-friendly design and robust features..." - Alex P. <span>7:23pm</span></p>
-    <button class="feedback-response">Respond</button>
-  </div>
-    <!-- Add additional feedback items here -->
+    <div id="feedbackList"></div>
   </div>
 </div>
+
+<!-- Firebase JavaScript SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js" type="module"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js" type="module"></script>
+<script type="module">
+  // Import necessary Firebase modules
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+ // Your Firebase configuration
+ const firebaseConfig = {
+    apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+    authDomain: "connectability-6ee02.firebaseapp.com",
+    projectId: "connectability-6ee02",
+    storageBucket: "connectability-6ee02.appspot.com",
+    messagingSenderId: "908801065257",
+    appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+    measurementId: "G-N8HMEMRV16"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Reference to the feedback collection in Firestore
+  const feedbackRef = collection(db, 'FEEDBACK');
+
+  // Function to display feedback items
+  async function displayFeedbackItems() {
+    const feedbackList = document.getElementById('feedbackList');
+
+    // Clear existing feedback items
+    feedbackList.innerHTML = '';
+
+    // Fetch feedback documents from Firestore
+    const querySnapshot = await getDocs(feedbackRef);
+    querySnapshot.forEach((doc) => {
+      const feedbackData = doc.data();
+      const createdAt = feedbackData.createdAt.toDate(); // Convert Firestore timestamp to JavaScript Date object
+      const formattedDate = createdAt.toLocaleString("en-US", { timeZone: "UTC" });
+      const feedbackItem = document.createElement('div');
+      feedbackItem.classList.add('feedback-item');
+      feedbackItem.innerHTML = `
+        <p>createdAt<br>${formattedDate}<br>(timestamp)</p>
+        <p>text<br>"${feedbackData.text}"</p>
+      `;
+      feedbackList.appendChild(feedbackItem);
+    });
+  }
+
+  // Display feedback items when the page loads
+  displayFeedbackItems();
+</script>
 
 </body>
 </html>
