@@ -26,7 +26,8 @@
     const auth = getAuth();
 
     // Function to fetch and display flagged users and their reports
-    async function displayFlaggedUsers() {
+    // Function to fetch and display flagged users based on search query
+    async function displayFlaggedUsers(searchQuery = '') {
       const reportList = document.getElementById('report-list');
       // Clear existing report items
       reportList.innerHTML = '';
@@ -50,34 +51,58 @@
           const friendSnapshot = await getDocs(query(userQuery, where("userId", "==", flaggedUser.friendId)));
           const friendData = friendSnapshot.docs[0].data();
 
-          // Create report item HTML
-          const reportItem = `
-            <li class="report-item">
-              <strong>Report ${doc.id}: ${flaggedUser.flagValue}</strong><br>
-              User ID: ${flaggedUser.userId}<br>
-              User Name: ${userData ? userData.Name : 'Unknown'}<br>
-              Friend ID: ${flaggedUser.friendId}<br>
-              Friend Name: ${friendData ? friendData.Name : 'Unknown'}<br>
-              Date/Time: ${timestamp}<br>
-              Description: ${flaggedUser.flagValue}
-            </li>
-          `;
+          // Check if the flagged user matches the search query
+          if (searchQuery.trim() === '' ||
+                  userData.Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  friendData.Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  flaggedUser.flagValue.toLowerCase().includes(searchQuery.toLowerCase())) {
+            // Create report item HTML
+            const reportItem = `
+          <li class="report-item">
+            <strong>Report ${doc.id}: ${flaggedUser.flagValue}</strong><br>
+            User ID: ${flaggedUser.userId}<br>
+            User Name: ${userData ? userData.Name : 'Unknown'}<br>
+            Friend ID: ${flaggedUser.friendId}<br>
+            Friend Name: ${friendData ? friendData.Name : 'Unknown'}<br>
+            Date/Time: ${timestamp}<br>
+            Description: ${flaggedUser.flagValue}
+          </li>
+        `;
 
-          // Append report item to the report list
-          reportList.innerHTML += reportItem;
+            // Append report item to the report list
+            reportList.innerHTML += reportItem;
+          }
         }
       } catch (error) {
         console.error('Error fetching flagged users:', error);
       }
     }
 
+
     // Function to handle the "Generate Report" button click
     function handleGenerateReportButtonClick() {
       displayFlaggedUsers();
     }
 
+    // Function to handle the search button click
+    function handleSearchButtonClick() {
+      const searchInput = document.getElementById('search-input');
+      const searchQuery = searchInput.value.trim();
+      displayFlaggedUsers(searchQuery);
+    }
+
     // Add event listener to the "Generate Report" button
     document.querySelector('.generate-report').addEventListener('click', handleGenerateReportButtonClick);
+
+    // Add event listener to the search button
+    document.getElementById('search-button').addEventListener('click', handleSearchButtonClick);
+
+    // Add event listener to the search input for handling Enter key press
+    document.getElementById('search-input').addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        handleSearchButtonClick();
+      }
+    });
   </script>
   <style>
     body {
@@ -150,7 +175,9 @@
       color: #007bff;
       text-decoration: underline;
     }
-
+    .search-bar {
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
@@ -174,7 +201,12 @@
 
 <div class="main-content">
   <div class="report-container">
+
     <h2 class="report-header">User Reports</h2>
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Search by Name or Flag Value">
+      <button id="search-button">Search</button>
+    </div>
     <button class="generate-report">Generate Report</button>
     <ul class="report-list" id="report-list">
       <!-- Report items will be dynamically added here -->
