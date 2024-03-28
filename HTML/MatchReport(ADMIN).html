@@ -110,6 +110,27 @@
   </nav>
 </div>
 
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+  import { getAnalytics, doc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js';
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+    authDomain: "connectability-6ee02.firebaseapp.com",
+    projectId: "connectability-6ee02",
+    storageBucket: "connectability-6ee02.appspot.com",
+    messagingSenderId: "908801065257",
+    appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+    measurementId: "G-N8HMEMRV16",
+  };
+
+   // Initialize Firebase
+   const app = initializeApp(firebaseConfig);
+   const analytics = getAnalytics(app);
+</script>
+
 
 <div class="sidebar">
   <a href="admin.html">User Search</a>
