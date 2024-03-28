@@ -188,7 +188,9 @@
     })
             .then(function(docRef) {
               console.log("Document written with ID: ", docRef.id);
-              // Show success feedback to the user (e.g., clear the form, display a message)
+              // Clear the feedback text box
+              document.querySelector('[name="feedback"]').value = '';
+              // Show success feedback to the user (e.g., display a message)
             })
             .catch(function(error) {
               console.error("Error adding document: ", error);
