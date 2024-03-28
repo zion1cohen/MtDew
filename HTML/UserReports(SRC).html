@@ -4,6 +4,81 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>User Reports - ConnectAbility</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+    import { getFirestore, doc, getDocs, getDoc, arrayRemove, updateDoc, addDoc, collection, query, where } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+      authDomain: "connectability-6ee02.firebaseapp.com",
+      projectId: "connectability-6ee02",
+      storageBucket: "connectability-6ee02.appspot.com",
+      messagingSenderId: "908801065257",
+      appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+      measurementId: "G-N8HMEMRV16",
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth();
+
+    // Function to fetch and display flagged users and their reports
+    async function displayFlaggedUsers() {
+      const reportList = document.getElementById('report-list');
+      // Clear existing report items
+      reportList.innerHTML = '';
+
+      try {
+        // Query the FLAG collection
+        const querySnapshot = await getDocs(collection(db, 'FLAG'));
+        for (const doc of querySnapshot.docs) {
+          // Get data for each flagged user
+          const flaggedUser = doc.data();
+
+          // Format the timestamp into a readable format
+          const timestamp = new Date(flaggedUser.timestamp.toDate());
+
+          // Retrieve the user's name from the USER collection using their ID
+          const userQuery = collection(db, 'USER');
+          const userSnapshot = await getDocs(query(userQuery, where("userId", "==", flaggedUser.userId)));
+          const userData = userSnapshot.docs[0].data();
+
+          // Retrieve the friend's name from the USER collection using their ID
+          const friendSnapshot = await getDocs(query(userQuery, where("userId", "==", flaggedUser.friendId)));
+          const friendData = friendSnapshot.docs[0].data();
+
+          // Create report item HTML
+          const reportItem = `
+            <li class="report-item">
+              <strong>Report ${doc.id}: ${flaggedUser.flagValue}</strong><br>
+              User ID: ${flaggedUser.userId}<br>
+              User Name: ${userData ? userData.Name : 'Unknown'}<br>
+              Friend ID: ${flaggedUser.friendId}<br>
+              Friend Name: ${friendData ? friendData.Name : 'Unknown'}<br>
+              Date/Time: ${timestamp}<br>
+              Description: ${flaggedUser.flagValue}
+            </li>
+          `;
+
+          // Append report item to the report list
+          reportList.innerHTML += reportItem;
+        }
+      } catch (error) {
+        console.error('Error fetching flagged users:', error);
+      }
+    }
+
+    // Function to handle the "Generate Report" button click
+    function handleGenerateReportButtonClick() {
+      displayFlaggedUsers();
+    }
+
+    // Add event listener to the "Generate Report" button
+    document.querySelector('.generate-report').addEventListener('click', handleGenerateReportButtonClick);
+  </script>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -72,6 +147,7 @@
 </head>
 <body>
 
+<!-- HTML body content -->
 <div class="header d-flex justify-content-between align-items-center">
   <h1>ConnectAbility</h1>
   <a href="login.html" class="btn btn-light">Logout</a>
@@ -91,32 +167,8 @@
   <div class="report-container">
     <h2 class="report-header">User Reports</h2>
     <button class="generate-report">Generate Report</button>
-    <ul class="report-list">
-      <!-- Example Report Item -->
-      <li class="report-item">
-        <strong>Report 001: Offensive Language</strong><br>
-        User ID: #10596<br>
-        Date/Time: March 15, 2024 - 09:45 AM<br>
-        Description: User #12345 posted offensive language in a comment. This violates our community guidelines.
-      </li>
-      <li class="report-item">
-        <strong>Report 002: Harassment</strong><br>
-        User ID: #54057<br>
-        Date/Time: March 15, 2024 - 09:45 AM<br>
-        Description: User #12345 posted offensive language in a comment. This violates our community guidelines.
-      </li><li class="report-item">
-      <strong>Report 003: Inappropiate Content</strong><br>
-      User ID: #24039<br>
-      Date/Time: March 15, 2024 - 09:45 AM<br>
-      Description: User #48569 posted offensive language in a comment. This violates our community guidelines.
-    </li><li class="report-item">
-      <strong>Report 004: Hate Speech</strong><br>
-      User ID: #74644<br>
-      Date/Time: March 15, 2024 - 09:45 AM<br>
-      Description: User #12345 posted offensive language in a comment. This violates our community guidelines.
-    </li>
-      <!-- More Report Items -->
-      <!-- Add additional report items here -->
+    <ul class="report-list" id="report-list">
+      <!-- Report items will be dynamically added here -->
     </ul>
   </div>
 </div>
