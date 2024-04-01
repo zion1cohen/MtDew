@@ -26,7 +26,7 @@ window.onload = function () {
 
     const name = document.getElementById("name").value;
     const psw = document.getElementById("psw").value;
-    const role = document.getElementById("role").value;
+    const role = document.getElementById("role").value; // Get selected role
     const age = document.getElementById("age").value;
     const maritalStatus = document.getElementById("MaritalStatus").value;
     const disability = document.getElementById("disability").value;
@@ -74,8 +74,25 @@ window.onload = function () {
         SentMessages: [],
       };
 
-      // Save user information to Firestore with UID as document ID
-      await setDoc(doc(db, "USER", userCredential.user.uid), {
+      // Determine the collection name and role based on the role selected
+      let collectionName = '';
+      let roleType = '';
+      switch (role) {
+        case "admin":
+          collectionName = "ADMIN";
+          roleType = "ADMIN";
+          break;
+        case "support":
+          collectionName = "SUPPORT_ROLE";
+          roleType = "SUPPORT_ROLE";
+          break;
+        default:
+          collectionName = "USER";
+          roleType = "USER";
+      }
+
+      // Save user information to Firestore with UID as document ID in the corresponding collection
+      await setDoc(doc(db, collectionName, userCredential.user.uid), {
         userId: userCredential.user.uid,
         Name: name,
         email: email,
@@ -84,6 +101,7 @@ window.onload = function () {
         Disability: disability,
         Gender: gender,
         Photo: photoURL, // Add photo URL to document data
+        role: roleType, // Include role field with selected role
         ...defaultFields, // Merge default fields into document data
       });
 
