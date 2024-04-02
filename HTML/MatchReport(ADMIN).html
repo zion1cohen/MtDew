@@ -97,8 +97,14 @@
       width: 100%;
     }
 
-    footer p {
-      margin: 0;
+    footer {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      position: fixed; /* Fixed positioning */
+      bottom: 0;
+      width: 100%;
     }
   </style>
 </head>
@@ -242,15 +248,14 @@
   <a href="DisabilityReport(ADMIN).html">Disability Report</a>
   <a href="MatchReport(ADMIN).html">Match Report</a>
 </div>
+
 <div class="container" id="reports">
   <h2>Create Report</h2>
   <div class="report-form">
     <label for="startDate">Start Date:</label>
     <input type="date" id="startDate" name="startDate">
-
     <label for="endDate">End Date:</label>
     <input type="date" id="endDate" name="endDate">
-
     <button id="reportButton">Generate Report</button>
   </div>
   <div class="container">
@@ -258,8 +263,7 @@
   </div>
 </div>
 
-<footer>
-  <p>© 2024 ConnectAbility</p>
-</footer>
+
+</div>
 </body>
 </html>

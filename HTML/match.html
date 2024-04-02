@@ -234,8 +234,9 @@
           if (!connectionSnapshot.exists()) {
             // Create the connection document if it doesn't exist
             await setDoc(connectionRef, {
-              users: [userId, otherUserId],
-              acceptedAt: new Date().toISOString(), // Adding the current date as acceptedAt
+              user1Id: userId,
+              user2Id: otherUserId,
+              acceptedAt: new Date() // Adding the current date as acceptedAt
             });
             console.log("Connection document created:", userId, otherUserId);
           } else {
