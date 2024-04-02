@@ -127,7 +127,7 @@
   // Import the functions you need from the SDKs you need
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
   import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js';
-  import { getFirestore, collection, query, where, getDocs, Timestamp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+  import { getFirestore, collection, query, where, getDocs, Timestamp, addDoc } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
   // https://firebase.google.com/docs/web/setup#available-libraries
 
   const firebaseConfig = {
@@ -168,7 +168,7 @@
     }
 
     const db = getFirestore(app);
-    const connectionsCollection = collection(db, "CONNECTION"); // Replace with your actual collection name
+    const connectionsCollection = collection(db, "CONNECTION");
 
     // Convert dates to Firestore Timestamps
     const startTimestamp = Timestamp.fromDate(startDate);
@@ -180,34 +180,23 @@
 
     const querySnapshot = await getDocs(q);
 
-    // Now you can process querySnapshot to generate your report
-    alert(`Found ${querySnapshot.size} records from ${startDate.toISOString()} to ${endDate.toISOString()}.`);
-    // Further processing...
-
-    const labels = []; // Dates
-    const data = []; // Number of connections per day
+    const labels = [];
+    const data = [];
 
     querySnapshot.forEach((doc) => {
       const docData = doc.data();
-      const timestamp = docData.acceptedAt; // Accessing the correct field
-      const q = query(connectionsCollection,
-              where("acceptedAt", ">=", startTimestamp),
-              where("acceptedAt", "<=", endTimestamp));        const date = timestamp.toDate(); // Convert Firestore Timestamp to JavaScript Date
-      const dateString = date.toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD' format
+      const timestamp = docData.acceptedAt;
+      const date = timestamp.toDate();
+      const dateString = date.toISOString().split('T')[0];
 
-      // Check if the date is already in the labels array
       const index = labels.findIndex(label => label === dateString);
       if (index === -1) {
-        // New date, add it to labels and initialize the count in data
         labels.push(dateString);
-        data.push(1); // First occurrence of this date
+        data.push(1);
       } else {
-        // Date already exists, increment the count
         data[index]++;
       }
     });
-
-
 
     const ctx = document.getElementById('connectionsChart').getContext('2d');
     const connectionsChart = new Chart(ctx, {
@@ -221,13 +210,11 @@
             'rgba(255, 99, 132, 0.2)',
             'rgba(54, 162, 235, 0.2)',
             'rgba(255, 206, 86, 0.2)',
-            // Add more colors for each bar if needed
           ],
           borderColor: [
             'rgba(255, 99, 132, 1)',
             'rgba(54, 162, 235, 1)',
             'rgba(255, 206, 86, 1)',
-            // Add more border colors for each bar if needed
           ],
           borderWidth: 1
         }]
@@ -240,7 +227,30 @@
         }
       }
     });
+
+    // Construct the report data
+    const reportData = {
+      startDate: startDateInput,
+      endDate: endDateInput,
+      totalConnections: querySnapshot.size,
+      // You can add more data as needed
+    };
+
+    try {
+      // Get a reference to the REPORT collection
+      const reportCollection = collection(db, "REPORT");
+
+      // Add the report data to the REPORT collection
+      await addDoc(reportCollection, reportData);
+
+      // Success message
+      alert('Report logged successfully!');
+    } catch (error) {
+      console.error('Error logging report:', error);
+      alert('An error occurred while logging the report. Please try again.');
+    }
   }
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
