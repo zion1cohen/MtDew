@@ -15,18 +15,14 @@
 
     /* Header styles */
     .header {
-      background-color: #007bff;
+      background: linear-gradient(45deg, #007bff, #0056b3);
       color: white;
-      padding: 10px 20px;
+      padding: 15px 20px;
       text-align: center;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
 
-    /* Sidebar styles */
     .sidebar {
-      background-color: #003366;
+      background: linear-gradient(180deg, #0056b3, #003366);
       color: white;
       padding: 10px;
       position: fixed;
@@ -163,6 +159,16 @@
       margin-top: 5px; /* Add some space between the image and the name */
       text-align: center; /* Center the name */
     }
+    .background-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-radial-gradient(circle at 0 0, transparent 0, #e5e5f7 10px), repeating-linear-gradient(#444cf755, #444cf7);
+      z-index: -1; /* Set a lower z-index to keep it behind the content */
+      opacity: 0.4; /* Adjust opacity as needed */
+    }
   </style>
 </head>
 <body>
@@ -184,6 +190,7 @@
   <a href="login.html" class="btn btn-light" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">Logout</a>
 </div>
 
+<div class="background-overlay"></div>
 
 <div class="main-content">
   <div class="friends-list" id="friendRequestsList">

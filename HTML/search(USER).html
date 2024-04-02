@@ -279,6 +279,16 @@
         .user-card h3 {
             margin-top: 0;
         }
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-radial-gradient(circle at 0 0, transparent 0, #e5e5f7 10px), repeating-linear-gradient(#444cf755, #444cf7);
+            z-index: -1; /* Set a lower z-index to keep it behind the content */
+            opacity: 0.4; /* Adjust opacity as needed */
+        }
     </style>
 </head>
 <body>
@@ -296,6 +306,8 @@
     <a href="Feedback(USER).html">Feedback</a>
     <a href="settings.html">Settings</a>
 </div>
+<div class="background-overlay"></div>
+
 <div class="content">
     <div class="search-box">
         <input type="text" placeholder="Search for a User" id="searchInput" />

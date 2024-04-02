@@ -60,13 +60,13 @@
         background: #f0f2f5;
       }
       .header {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
+          background: linear-gradient(45deg, #007bff, #0056b3);
+          color: white;
+          padding: 15px 20px;
+          text-align: center;
       }
       .sidebar {
-        background-color: #003366;
+          background: linear-gradient(180deg, #0056b3, #003366);
         color: white;
         padding: 10px;
         position: fixed;
@@ -120,6 +120,16 @@
       .resource-list a:hover {
         text-decoration: underline;
       }
+      .background-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: repeating-radial-gradient(circle at 0 0, transparent 0, #e5e5f7 10px), repeating-linear-gradient(#444cf755, #444cf7);
+          z-index: -1; /* Set a lower z-index to keep it behind the content */
+          opacity: 0.4; /* Adjust opacity as needed */
+      }
     </style>
   </head>
   <body>
@@ -139,8 +149,9 @@
       <a href="Feedback(USER).html">Feedback</a>
       <a href="settings.html">Settings</a>
     </div>
+  <div class="background-overlay"></div>
 
-    <div class="main-content">
+  <div class="main-content">
       <div class="resource-container">
         <div class="resource-header">Resources</div>
         <ul class="resource-list">

@@ -13,10 +13,10 @@
     }
 
     .header {
-      background-color: #005a9c;
+      background: linear-gradient(45deg, #007bff, #0056b3);
       color: white;
+      padding: 15px 20px;
       text-align: center;
-      padding: 10px 0;
     }
 
     .main-container {
@@ -25,7 +25,7 @@
     }
 
     .sidebar {
-      background-color: #003366;
+      background: linear-gradient(180deg, #0056b3, #003366);
       color: white;
       padding: 20px;
       width: 200px;
@@ -129,6 +129,16 @@
     .match-card .buttons button.skip:hover {
       background-color: #c82333;
     }
+    .background-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-radial-gradient(circle at 0 0, transparent 0, #e5e5f7 10px), repeating-linear-gradient(#444cf755, #444cf7);
+      z-index: -1; /* Set a lower z-index to keep it behind the content */
+      opacity: 0.4; /* Adjust opacity as needed */
+    }
   </style>
 </head>
 <body>
@@ -149,6 +159,9 @@
     <a href="Feedback(USER).html">Feedback</a>
     <a href="settings.html">Settings</a>
   </div>
+
+  <div class="background-overlay"></div>
+
 
   <div class="content">
     <h2 style="text-align: center; font-family: Arial, sans-serif">

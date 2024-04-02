@@ -252,12 +252,20 @@
       justify-content: flex-start;
       align-items: flex-start;
     }
-    .sidebar {
-      background-color: #003366;
+    .header {
+      background: linear-gradient(45deg, #007bff, #0056b3);
       color: white;
-      padding: 20px;
+      padding: 15px 20px;
+      text-align: center;
+    }
+    .sidebar {
+      background: linear-gradient(180deg, #0056b3, #003366);
+      color: white;
+      padding: 10px;
+      position: fixed;
       width: 200px;
-      box-sizing: border-box;
+      height: 100%;
+      overflow: auto;
     }
     .sidebar a {
       color: white;
@@ -344,7 +352,16 @@
     .flag-container button {
       cursor: pointer;
     }
-
+    .background-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-radial-gradient(circle at 0 0, transparent 0, #e5e5f7 10px), repeating-linear-gradient(#444cf755, #444cf7);
+      z-index: -1; /* Set a lower z-index to keep it behind the content */
+      opacity: 0.4; /* Adjust opacity as needed */
+    }
 
   </style>
 </head>
@@ -367,6 +384,9 @@
     <a href="Feedback(USER).html">Feedback</a>
     <a href="settings.html">Settings</a>
   </div>
+
+  <div class="background-overlay"></div>
+
 
   <div class="profile-container">
     <div class="profile-header">
