@@ -11,24 +11,19 @@
       margin: 0;
       padding: 0;
       background: #f4f4f4;
+      display: flex; /* Added to use flexbox */
     }
-
-    /* Header styles */
-    .header {
-      background: linear-gradient(45deg, #007bff, #0056b3);
-      color: white;
-      padding: 15px 20px;
-      text-align: center;
-    }
-
+    /* Sidebar styles */
     .sidebar {
       background: linear-gradient(180deg, #0056b3, #003366);
       color: white;
       padding: 10px;
-      position: fixed;
       width: 200px;
-      height: 100%;
       overflow: auto;
+      margin-top: 80px; /* Adjusted margin-top value */
+      position: sticky;
+      top: 0;
+      height: 100vh;
     }
     .sidebar a {
       color: white;
@@ -41,124 +36,17 @@
     .sidebar a:hover {
       background-color: #0056b3;
     }
-
-    /* Main content styles */
-    .main-content {
-      margin-left: 200px;
-      padding: 20px;
-      display: flex;
-      justify-content: space-between; /* Adjust alignment of columns */
-    }
-
-    /* Friends list styles */
-    .friends-list {
-      flex: 1; /* Take up remaining space */
-      margin-right: 20px;
-      background-color: #fff;
-      border-radius: 5px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-      padding: 20px; /* Add some padding */
-    }
-    /* Updated friend item styles */
-    .friend {
-      display: flex;
-      flex-direction: column; /* Arrange items vertically */
-      align-items: center; /* Center items horizontally */
-      padding: 10px;
-      border-radius: 5px;
-      background-color: #007bff; /* Button background color */
-      color: white; /* Text color */
-      margin-bottom: 10px;
-      cursor: pointer; /* Change cursor to pointer on hover */
-      transition: background-color 0.3s;
-    }
-
-    /* Hover effect */
-    .friend:hover {
-      background-color: #0056b3; /* Darker background color on hover */
-    }
-
-    /* Messages list styles */
-    .messages-list {
-      width: 250px;
-      background-color: #fff;
-      border-radius: 5px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-      padding: 20px; /* Add some padding */
-    }
-
-    /* Updated Message thread styles */
-    .message-thread {
-      background-color: #fff;
-      border-radius: 5px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      overflow-y: auto; /* Allow vertical scrolling */
-    }
-
-    /* Message container styles */
-    .message-container {
-      max-height: 400px; /* Limit height and enable scrolling */
-      overflow-y: auto;
-    }
-
-    /* Individual message styles */
-    .message {
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 10px;
-    }
-
-    /* Sent message styles */
-    .sent-message {
-      background-color: #007bff;
+    /* Header styles */
+    .header {
+      background: linear-gradient(45deg, #007bff, #0056b3);
       color: white;
-      align-self: flex-end;
+      text-align: center;
+      width: 100%; /* Occupy full width */
+      position: fixed; /* Fix the header position */
+      top: 0; /* Position the header at the top */
+      z-index: 1000; /* Ensure the header stays above other elements */
     }
-
-    /* Received message styles */
-    .received-message {
-      background-color: #f0f0f0;
-      color: #333;
-      align-self: flex-start;
-    }
-
-    /* Input container styles */
-    .input-container {
-      margin-top: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* Textarea styles */
-    #messageInput {
-      flex-grow: 1;
-      padding: 8px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      resize: none;
-    }
-
-    /* Send button styles */
-    #sendMessageButton {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    /* Button hover effect */
-    #sendMessageButton:hover {
-      background-color: #0056b3;
-    }
-    .friend p {
-      margin-top: 5px; /* Add some space between the image and the name */
-      text-align: center; /* Center the name */
-    }
+    /* Background overlay styles */
     .background-overlay {
       position: fixed;
       top: 0;
@@ -166,15 +54,75 @@
       right: 0;
       bottom: 0;
       background: repeating-radial-gradient(circle at 0 0, transparent 0, #e5e5f7 10px), repeating-linear-gradient(#444cf755, #444cf7);
-      z-index: -1; /* Set a lower z-index to keep it behind the content */
-      opacity: 0.4; /* Adjust opacity as needed */
+      z-index: -1;
+      opacity: 0.4;
+      margin-top: 20px;
+    }
+    /* Main content styles */
+    .main-content {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 80px; /* Adjust the top margin to make space for the header */
+      flex-grow: 1; /* Allow main content to grow to fill available space */
+      padding-left: 20px; /* Add padding to separate content from sidebar */
+    }
+    /* Individual section styles */
+    .content-section {
+      flex: 1 1 300px; /* Set the width of each section */
+      margin: 20px; /* Add margin around each section */
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    /* Admin message styles */
+    .admin-message {
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      background-color: #007bff;
+      color: white;
+    }
+    .message-thread {
+      display: block; /* or display: flex; */
+    }
+    .input-container {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    #messageInput {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+      resize: none; /* Prevent textarea resizing */
+    }
+
+    #sendMessageButton {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #sendMessageButton:hover {
+      background-color: #0056b3; /* Darker shade of blue on hover */
     }
   </style>
 </head>
 <body>
 
-
-
+<div class="header d-flex justify-content-between align-items-center">
+  <h1>ConnectAbility</h1>
+  <a href="login.html" class="btn btn-light" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">Logout</a>
+</div>
 <div class="sidebar">
   <a href="home.html">Home</a>
   <a href="profile(USER).html">Profile</a>
@@ -185,36 +133,31 @@
   <a href="Feedback(USER).html">Feedback</a>
   <a href="settings.html">Settings</a>
 </div>
-<div class="header d-flex justify-content-between align-items-center">
-  <h1>ConnectAbility</h1>
-  <a href="login.html" class="btn btn-light" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">Logout</a>
-</div>
-
 <div class="background-overlay"></div>
-
 <div class="main-content">
-  <div class="friends-list" id="friendRequestsList">
-    <ul>
-      <!-- Friend requests will be dynamically populated here -->
-    </ul>
+  <div class="content-section friends-list" id="friendRequestsList">
+    <!-- Friend requests will be dynamically populated here -->
   </div>
-  <div class="messages-list">
+  <div class="content-section messages-list">
     <!-- Message threads go here -->
-    <p>Hemma</p>
   </div>
-  <div class="message-thread">
-    <div class="message-container" id="messageContainer">
-      <!-- Message thread display goes here -->
+
+  <!-- Updated container for the message thread -->
+  <!-- Container for the message thread -->
+  <div class="content-section message-thread" id="messageThreadBox" style="display: none;">
+    <div class="message-container" id="messageThread">
+      <!-- Separate message thread display goes here -->
     </div>
     <div class="input-container">
       <textarea id="messageInput" rows="3" placeholder="Type your message..."></textarea>
       <button id="sendMessageButton">Send</button>
     </div>
   </div>
-  <!-- Updated container for the message thread -->
-  <div class="message-thread" id="messageThreadContainer" style="display: none;">
-    <div class="message-container" id="messageThread">
-      <!-- Separate message thread display goes here -->
+  <!-- Container for admin messages -->
+  <div class="content-section admin-messages">
+    <h2>Admin Messages</h2>
+    <div class="admin-message-container" id="adminMessageContainer">
+      <!-- Admin messages will be displayed here -->
     </div>
   </div>
 </div>
@@ -268,8 +211,9 @@
     auth.onAuthStateChanged(user => {
       if (user) {
         console.log("User is logged in:", user.uid);
-        fetchFriendRequests(user.uid); // Call fetchFriendRequests with the user's UID
-        displayFriends(user.uid); // Call displayFriends with the user's UID
+        fetchFriendRequests(user.uid);
+        displayFriends(user.uid);
+        fetchAdminMessages(); // Move the call inside the callback
       } else {
         console.log("No user is logged in.");
         // Redirect to login page or handle no user scenario
@@ -385,12 +329,17 @@
 
             if (friendSnapshot.exists()) {
               const friendData = friendSnapshot.data();
-              const friendItem = document.createElement('div');
+              const friendItem = document.createElement('button'); // Change div to button
               friendItem.classList.add('friend');
+              friendItem.style.backgroundColor = '#007bff'; // Set button background color
+              friendItem.style.color = 'white'; // Set button text color
+              friendItem.style.border = 'none'; // Remove button border
+              friendItem.style.padding = '10px'; // Add padding to the button
+              friendItem.style.borderRadius = '4px'; // Add border radius to the button
               friendItem.innerHTML = `
-                <img src="${friendData.Photo}" alt="${friendData.Name}">
-                <p>${friendData.Name}</p>
-              `;
+              <img src="${friendData.Photo}" alt="${friendData.Name}" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
+              <span>${friendData.Name}</span>
+            `;
               // Add event listener to each friend item
               friendItem.addEventListener('click', () => {
                 // Set the currentFriendId before opening the message thread
@@ -415,13 +364,20 @@
 
 
 
+
   async function openMessageThread(userId, friendId, friendName) {
     console.log("Opening message thread for:", friendName);
 
-    const messageThreadContainer = document.getElementById('messageThreadContainer');
-    messageThreadContainer.style.display = 'block'; // Show the message thread container
+    // Get the message thread container
+    const messageThreadBox = document.getElementById('messageThreadBox');
+    // Show the message thread container
+    messageThreadBox.style.display = 'block';
 
+    // Get the message thread element
     const messageThread = document.getElementById('messageThread');
+    // Clear previous messages
+    messageThread.innerHTML = '';
+    // Display the friend's name in the message thread
     messageThread.innerHTML = `<p>You are now chatting with ${friendName}</p>`;
 
     try {
@@ -460,7 +416,9 @@
       messagesQuerySnapshot.forEach(doc => {
         const messageData = doc.data();
         console.log("Message:", messageData.content); // Log the message content
+        // Create a message element based on whether it's sent or received
         const messageElement = createMessageElement(messageData.content, userId === messageData.senderId ? 'sent-message' : 'received-message');
+        // Append the message element to the message thread
         messageThread.appendChild(messageElement);
       });
 
@@ -473,6 +431,8 @@
       console.error('Error opening message thread:', error);
     }
   }
+
+
 
 
 
@@ -591,7 +551,54 @@
 
   // Add an event listener to the "Send" button to call sendMessage() when clicked
   document.getElementById('sendMessageButton').addEventListener('click', sendMessage);
+  async function fetchAdminMessages() {
+    try {
+      // Get the currently logged-in user
+      const currentUser = auth.currentUser;
 
+      if (currentUser) {
+        // Query the USER collection to get the user's ID
+        const userDocRef = doc(db, 'USER', currentUser.uid);
+        const userDocSnapshot = await getDoc(userDocRef);
+
+        if (userDocSnapshot.exists()) {
+          const userData = userDocSnapshot.data();
+          const userId = userData.userId; // Assuming 'userId' is the field containing the user's ID
+
+          // Query admin messages collection
+          const adminMessagesRef = collection(db, 'messages');
+          const querySnapshot = await getDocs(adminMessagesRef);
+
+          // Reference to the container where admin messages will be displayed
+          const adminMessageContainer = document.getElementById('adminMessageContainer');
+          adminMessageContainer.innerHTML = ''; // Clear previous messages
+
+          // Loop through each admin message document
+          querySnapshot.forEach((doc) => {
+            const messageData = doc.data();
+            // Check if the message is intended for the current user
+            if (messageData.userId === userId) {
+              const messageElement = document.createElement('div');
+              messageElement.classList.add('admin-message');
+              messageElement.textContent = messageData.message;
+              // Append the message element to the container
+              adminMessageContainer.appendChild(messageElement);
+            }
+          });
+        } else {
+          console.log("User document does not exist.");
+        }
+      } else {
+        console.log("No user is logged in.");
+        // Handle the scenario where no user is logged in
+      }
+    } catch (error) {
+      console.error('Error fetching admin messages:', error);
+    }
+  }
+
+  // Call the function to fetch and display admin messages
+  fetchAdminMessages();
 
 </script>
 

@@ -1,256 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard - ConnectAbility</title>
-    <script type="module">
-      // Import the functions you need from the SDKs you need
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-      import {
-        getFirestore,
-        collection,
-        where,
-        query,
-        getDocs,
-      } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - ConnectAbility</title>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      where,
+      query,
+      getDocs,
+      doc,
+      setDoc
+    } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-      // Your web app's Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
-        authDomain: "connectability-6ee02.firebaseapp.com",
-        projectId: "connectability-6ee02",
-        storageBucket: "connectability-6ee02.appspot.com",
-        messagingSenderId: "908801065257",
-        appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
-        measurementId: "G-N8HMEMRV16",
-      };
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+      authDomain: "connectability-6ee02.firebaseapp.com",
+      projectId: "connectability-6ee02",
+      storageBucket: "connectability-6ee02.appspot.com",
+      messagingSenderId: "908801065257",
+      appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+      measurementId: "G-N8HMEMRV16",
+    };
 
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-      async function searchUser(filterParams = {}) {
-        const searchInput = document.getElementById("searchInput").value.trim();
-        const userList = document.getElementById("userList");
-        userList.innerHTML = ""; // Clear previous search results
+    async function searchUser(filterParams = {}) {
+      const searchInput = document.getElementById("searchInput").value.trim();
+      const userList = document.getElementById("userList");
+      userList.innerHTML = ""; // Clear previous search results
 
-        let usersRef = collection(db, "USER");
-        let queries = [];
-        if (searchInput) {
-          queries.push(where("Name", "==", searchInput));
-        }
-
-        // Adding filters based on function parameters
-        if (filterParams.ageRange) {
-          queries.push(where("Age", ">=", filterParams.ageRange.start));
-          queries.push(where("Age", "<=", filterParams.ageRange.end));
-        }
-        if (filterParams.gender) {
-          queries.push(where("Gender", "==", filterParams.gender));
-        }
-        if (filterParams.maritalStatus) {
-          queries.push(
-                  where("MaritalStatus", "==", filterParams.maritalStatus)
-          );
-        }
-        if (filterParams.disability) {
-          queries.push(where("Disability", "==", filterParams.disability));
-        }
-
-        const q = query(usersRef, ...queries);
-
-        const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) {
-          console.log("No matching user found.");
-          userList.innerHTML = "<p>No matching user found.</p>";
-        } else {
-          querySnapshot.forEach((doc) => {
-            const userData = doc.data();
-            console.log(`Document found: `, userData);
-            const userCard = document.createElement("div");
-            userCard.classList.add("user-card");
-            userCard.innerHTML = `<h3>${userData.Name}</h3>`;
-            userList.appendChild(userCard);
-          });
-        }
+      let usersRef = collection(db, "USER");
+      let queries = [];
+      if (searchInput) {
+        queries.push(where("Name", "==", searchInput));
       }
 
-      function parseAgeRange(ageRange) {
-        const [start, end] = ageRange.split("-").map(Number);
-        return { start, end };
+      // Adding filters based on function parameters
+      if (filterParams.ageRange) {
+        queries.push(where("Age", ">=", filterParams.ageRange.start));
+        queries.push(where("Age", "<=", filterParams.ageRange.end));
       }
-
-      function filterByAge(ageRange) {
-        console.log("Filtering users by age range:", ageRange);
-        searchUser({ ageRange: parseAgeRange(ageRange) });
+      if (filterParams.gender) {
+        queries.push(where("Gender", "==", filterParams.gender));
       }
-
-      function filterByGender(gender) {
-        console.log("Filtering users by gender:", gender);
-        searchUser({ gender });
-      }
-
-      function filterByMaritalStatus(status) {
-        console.log("Filtering users by marital status:", status);
-        searchUser({ maritalStatus: status });
-      }
-
-      function filterByDisability(disability) {
-        console.log("Filtering users by disability type:", disability);
-        searchUser({ disability });
-      }
-
-      function toggleFilterOptions() {
-        const filterOptions = document.getElementById("filterOptions");
-        filterOptions.classList.toggle("show");
-      }
-
-      function showAgeOptions() {
-        const ageOptions = prompt(
-                "Enter age range (e.g., 18-22, 22-30, 31-40, 40-55, 55+):"
+      if (filterParams.maritalStatus) {
+        queries.push(
+                where("MaritalStatus", "==", filterParams.maritalStatus)
         );
-        if (ageOptions) {
-          filterByAge(ageOptions);
-        }
+      }
+      if (filterParams.disability) {
+        queries.push(where("Disability", "==", filterParams.disability));
       }
 
-      function showMaritalStatusOptions() {
-        const statusOptions = prompt(
-                "Enter marital status (Single, Married, Divorced):"
-        );
-        if (statusOptions) {
-          filterByMaritalStatus(statusOptions);
-        }
-      }
+      const q = query(usersRef, ...queries);
 
-      function showGenderOptions() {
-        const genderOptions = prompt("Enter gender (Male or Female):");
-        if (genderOptions) {
-          filterByGender(genderOptions);
-        }
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        console.log("No matching user found.");
+        userList.innerHTML = "<p>No matching user found.</p>";
+      } else {
+        querySnapshot.forEach((doc) => {
+          const userData = doc.data();
+          console.log(`Document found: `, userData);
+          const userCard = document.createElement("div");
+          userCard.classList.add("user-card");
+          userCard.innerHTML = `
+              <img src="${userData.Photo}" alt="${userData.Name}" class="user-photo" />
+              <h3>${userData.Name}</h3>
+            `;
+          userCard.addEventListener("click", () => sendMessage(userData.Name, doc.id));
+          userList.appendChild(userCard);
+        });
       }
+    }
 
-      function showDisabilityOptions() {
-        const disabilityOptions = prompt("Enter disability type:");
-        if (disabilityOptions) {
-          filterByDisability(disabilityOptions);
-        }
-      }
+    function parseAgeRange(ageRange) {
+      const [start, end] = ageRange.split("-").map(Number);
+      return { start, end };
+    }
 
-      window.searchUser = searchUser;
-      window.toggleFilterOptions = toggleFilterOptions;
-      window.showAgeOptions = showAgeOptions;
-      window.showMaritalStatusOptions = showMaritalStatusOptions;
-      window.showGenderOptions = showGenderOptions;
-      window.showDisabilityOptions = showDisabilityOptions;
-    </script>
+    function filterByAge(ageRange) {
+      console.log("Filtering users by age range:", ageRange);
+      searchUser({ ageRange: parseAgeRange(ageRange) });
+    }
 
-    <style>
-      body {
-        font-family: "Arial", sans-serif;
-        margin: 0;
-        padding: 0;
-        background: #f0f0f0;
+    function filterByGender(gender) {
+      console.log("Filtering users by gender:", gender);
+      searchUser({ gender });
+    }
+
+    function filterByMaritalStatus(status) {
+      console.log("Filtering users by marital status:", status);
+      searchUser({ maritalStatus: status });
+    }
+
+    function filterByDisability(disability) {
+      console.log("Filtering users by disability type:", disability);
+      searchUser({ disability });
+    }
+
+    function toggleFilterOptions() {
+      const filterOptions = document.getElementById("filterOptions");
+      filterOptions.classList.toggle("show");
+    }
+
+    function showAgeOptions() {
+      const ageOptions = prompt(
+              "Enter age range (e.g., 18-22, 22-30, 31-40, 40-55, 55+):"
+      );
+      if (ageOptions) {
+        filterByAge(ageOptions);
       }
-      .header {
-        background-color: #005a9c;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
+    }
+
+    function showMaritalStatusOptions() {
+      const statusOptions = prompt(
+              "Enter marital status (Single, Married, Divorced):"
+      );
+      if (statusOptions) {
+        filterByMaritalStatus(statusOptions);
       }
-      .sidebar {
-        background-color: #003366;
-        color: white;
-        padding: 20px;
-        position: fixed;
-        width: 250px;
-        height: 100%;
+    }
+
+    function showGenderOptions() {
+      const genderOptions = prompt("Enter gender (Male or Female):");
+      if (genderOptions) {
+        filterByGender(genderOptions);
       }
-      .sidebar a {
-        color: white;
-        text-decoration: none;
-        display: block;
-        padding: 10px;
-        margin: 5px 0;
+    }
+
+    function showDisabilityOptions() {
+      const disabilityOptions = prompt("Enter disability type:");
+      if (disabilityOptions) {
+        filterByDisability(disabilityOptions);
       }
-      .content {
-        margin-left: 250px;
-        padding: 20px;
+    }
+
+    function sendMessage(userName, userId) {
+      const message = prompt("Enter your message:");
+      if (message) {
+        // Add the message to the database
+        const messageRef = collection(db, "messages");
+        setDoc(doc(messageRef), {
+          userName: userName,
+          userId: userId, // Include the user's ID
+          message: message
+        }).then(() => {
+          console.log("Message sent successfully!");
+          // You can add further actions here if needed
+        }).catch((error) => {
+          console.error("Error sending message: ", error);
+        });
       }
-      .search-box {
-        display: flex;
-        justify-content: space-between;
-        padding: 20px;
-        background-color: white;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      }
-      .search-box input[type="text"] {
-        border: 1px solid #ccc;
-        padding: 10px;
-        width: 80%;
-        border-radius: 5px;
-      }
-      .search-box button {
-        padding: 10px 20px;
-        border: none;
-        background-color: #4caf50;
-        color: white;
-        cursor: pointer;
-        border-radius: 5px;
-      }
-      .user-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-      }
-      .user-card {
-        background-color: white;
-        border-radius: 10px;
-        overflow: hidden;
-        text-align: center;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        width: calc(100% / 3 - 20px);
-      }
-      .user-card h3 {
-        margin: 0;
-        padding: 15px;
-      }
-      .user-card button {
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        width: 100%;
-        display: block;
-        cursor: pointer;
-      }
-    </style>
-  </head>
-  <body>
-  <div class="header d-flex justify-content-between align-items-center">
-    <h1>ConnectAbility</h1>
-    <a href="login.html" class="btn btn-light" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">Logout</a>
+    }
+
+    window.searchUser = searchUser;
+    window.toggleFilterOptions = toggleFilterOptions;
+    window.showAgeOptions = showAgeOptions;
+    window.showMaritalStatusOptions = showMaritalStatusOptions;
+    window.showGenderOptions = showGenderOptions;
+    window.showDisabilityOptions = showDisabilityOptions;
+  </script>
+
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f0f0;
+    }
+    .header {
+      background-color: #005a9c;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+    }
+    .sidebar {
+      background-color: #003366;
+      color: white;
+      padding: 20px;
+      position: fixed;
+      width: 250px;
+      height: 100%;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 10px;
+      margin: 5px 0;
+    }
+    .content {
+      margin-left: 250px;
+      padding: 20px;
+    }
+    .search-box {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+      background-color: white;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    .search-box input[type="text"] {
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 80%;
+      border-radius: 5px;
+    }
+    .search-box button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .user-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .user-card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      width: calc(100% / 3 - 20px);
+      cursor: pointer; /* Add cursor pointer */
+    }
+    .user-card h3 {
+      margin: 0;
+      padding: 15px;
+    }
+    .user-card img {
+      width: 100%;
+      height: 200px; /* Adjust height as needed */
+      object-fit: cover;
+    }
+    .user-card button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      width: 100%;
+      display: block;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div class="header d-flex justify-content-between align-items-center">
+  <h1>ConnectAbility</h1>
+  <a href="login.html" class="btn btn-light" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">Logout</a>
+</div>
+
+<div class="sidebar">
+  <a href="admin.html">User Search</a>
+  <a href="MessageMonitoring(ADMIN).html">Message Monitoring</a>
+  <a href="AnnouncementsPost1(ADMIN).html">Announcements</a>
+  <a href="maintenance.html">Maintenance</a>
+  <a href="DisabilityReport(ADMIN).html">Disability Report</a>
+  <a href="MatchReport(ADMIN).html">Match Report</a>
+</div>
+<div class="content">
+  <div class="search-box">
+    <input type="text" placeholder="Search for a User" id="searchInput" />
+    <button onclick="searchUser()">Search</button>
   </div>
-
-  <div class="sidebar">
-      <a href="admin.html">User Search</a>
-      <a href="MessageMonitoring(ADMIN).html">Message Monitoring</a>
-      <a href="AnnouncementsPost1(ADMIN).html">Announcements</a>
-      <a href="maintenance.html">Maintenance</a>
-      <a href="DisabilityReport(ADMIN).html">Disability Report</a>
-      <a href="MatchReport(ADMIN).html">Match Report</a>
+  <div class="user-list" id="userList">
+    <!-- User list will be displayed here -->
   </div>
-    <div class="content">
-      <div class="search-box">
-        <input type="text" placeholder="Search for a User" id="searchInput" />
-        <button onclick="searchUser()">Search</button>
-      </div>
-      <div class="user-list" id="userList">
-        <!-- User list will be displayed here -->
-      </div>
-    </div>
-  </body>
+</div>
+</body>
 </html>
