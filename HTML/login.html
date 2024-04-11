@@ -5,42 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ConnectAbility Sign In</title>
   <style>
-    body,
-    h html {
-      height: 100%;
+    body {
+      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+      height: 100vh;
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background-color: #a6dcef; /* Baby blue background */
     }
 
-    body {
-      position: relative;
-      overflow: hidden;
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
     }
 
-    .logo {
+    #label1,
+    #label2 {
       position: absolute;
       width: 300px;
       height: 56px;
-      font-size: 32px;
-      font-weight: bold;
-      fill: #003366;
-    }
-
-    #label1 {
-      left: calc(50vw - 150px);
-      top: calc(50vh - 28px);
-    }
-
-    #label2 {
-      left: calc(50vw - 150px);
-      top: calc(50vh - 28px);
     }
 
     .content {
       position: relative;
       z-index: 1;
       text-align: center;
+      color: white;
     }
 
     .login-container {
@@ -52,6 +49,7 @@
       margin: auto;
       position: relative;
       z-index: 2;
+      color: black; /* Add this line to change the text color to black */
     }
 
     .login-container h2 {
@@ -98,12 +96,12 @@
   </style>
 </head>
 <body>
-<svg xmlns="http://www.w3.org/2000/svg" id="label1" class="logo" viewBox="0 0 300 45" fill="#0f0f13" stroke="#0f0f13" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-  <text x="7" y="29">CONNECT-ABILITY</text>
+<svg xmlns="http://www.w3.org/2000/svg" id="label1" viewBox="0 0 300 45" fill="#0f0f13" stroke="#0f0f13" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+  <text x="7" y="29" font-size="32" font-weight="bold" fill="#003366" stroke-width="1">CONNECT-ABILITY</text>
 </svg>
 
-<svg xmlns="http://www.w3.org/2000/svg" id="label2" class="logo" viewBox="0 0 300 45" fill="#0f0f13" stroke="#0f0f13" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-  <text x="7" y="29">CONNECT-ABILITY</text>
+<svg xmlns="http://www.w3.org/2000/svg" id="label2" viewBox="0 0 300 45" fill="#0f0f13" stroke="#0f0f13" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+  <text x="7" y="29" font-size="32" font-weight="bold" fill="#003366" stroke-width="1">CONNECT-ABILITY</text>
 </svg>
 
 <div class="content">
@@ -145,7 +143,7 @@
   let colors = ['#26de81', '#fc5c65', '#fd9644', '#fed330', '#2bcbba', '#45aaf2', '#4b7bec', '#a55eea', '#ffc1f3', '#76ead7', '#ff9c71', '#32e0c4', '#d291bc', '#fa744f'];
 
   let FPS = 60;
-  let width, height, velocityX1 = 1, velocityY1 = 1, velocityX2 = -0.7, velocityY2 = 0.7, pause = true, previousColor = 0;
+  let width, height, velocityX1 = 1, velocityY1 = 1, velocityX2 = 0.5, velocityY2 = 0.5, pause = true, previousColor = 0;
 
   setInterval(() => {
     if (pause) return;
@@ -187,38 +185,52 @@
 
     label2.style.left = rect2.x + velocityX2 + 'px';
     label2.style.top = rect2.y + velocityY2 + 'px';
-  }, 1000 / FPS);
+  });
 
   const reset = () => {
-    width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    pause = width <= label1.getBoundingClientRect().width || height <= label1.getBoundingClientRect().height;
+    width =
+            window.innerWidth ||
+            document.documentElement.clientWidth ||
+            document.body.clientWidth
+    ;
+
+    height =
+            window.innerHeight ||
+            document.documentElement.clientHeight ||
+            document.body.clientHeight
+    ;
+
+    pause =
+            width <= label1.getBoundingClientRect().width ||
+            height <= label1.getBoundingClientRect().height ||
+            width <= label2.getBoundingClientRect().width ||
+            height <= label2.getBoundingClientRect().height
+    ;
+
     label1.style.left = 'calc(50vw - 150px)';
     label1.style.top = 'calc(50vh - 28px)';
+    label1.style.fill = colors[0];
+
     label2.style.left = 'calc(50vw - 150px)';
     label2.style.top = 'calc(50vh - 28px)';
-    label1.style.fill = colors[0];
     label2.style.fill = colors[0];
-  }
+  };
 
   const getRandomColor = () => {
     let currentColor = -1;
+
     do {
       currentColor = Math.floor(Math.random() * colors.length);
     } while (previousColor == currentColor);
+
     previousColor = currentColor;
+
     return colors[currentColor];
-  }
+  };
 
   reset();
+
   window.addEventListener('resize', reset, true);
 </script>
-
-<!-- Firebase SDK -->
-<script type="module" src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
-
-<!-- Your Firebase configuration and login script -->
-<script type="module" src="firebase-config.js"></script>
-<script type="module" src="login.js"></script>
 </body>
 </html>
