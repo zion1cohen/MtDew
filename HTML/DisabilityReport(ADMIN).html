@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Disability Report - ConnectAbility</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
     <!-- Link to Chart.js CDN -->
     <style>
       body {
@@ -104,40 +104,95 @@
       </div>
     </div>
 
-    <script>
-      const data = {
-        labels: [
-          "Visual Impairment",
-          "Hearing Impairment",
-          "Mobility Impairment",
-          "Cognitive Disabilities",
-          "Neurological Disorders",
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js" type="module"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js" type="module"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js" type="module"></script>
+  <script type="module">
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+      authDomain: "connectability-6ee02.firebaseapp.com",
+      projectId: "connectability-6ee02",
+      storageBucket: "connectability-6ee02.appspot.com",
+      messagingSenderId: "908801065257",
+      appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+      measurementId: "G-N8HMEMRV16"
+    };
+
+    // Initialize Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let disabilityChart; // Declare outside to ensure it is accessible throughout
+
+    const data = {
+      labels: [
+            "Physical Disability",
+            "Visual Impairment",
+            "Hearing Impairment",
+            "Intellectual Disability",
+            "Psychiatric Disability",
+            "Learning Disability",
+        // ... any other categories you have
+      ],
+      datasets: [{
+        label: 'Disability Distribution',
+        data: [], // Initialize with an empty array
+        backgroundColor: [
+          'rgb(255, 99, 132)',
+          'rgb(54, 162, 235)',
+          'rgb(255, 205, 86)',
+          'rgb(75, 192, 192)',
+          'rgb(153, 102, 255)',
+          // ... additional colors as needed
         ],
-        datasets: [
-          {
-            label: "Disability Distribution",
-            data: [150, 80, 120, 90, 60], // Random data
-            backgroundColor: [
-              "rgb(255, 99, 132)",
-              "rgb(54, 162, 235)",
-              "rgb(255, 205, 86)",
-              "rgb(75, 192, 192)",
-              "rgb(153, 102, 255)",
-            ],
-            hoverOffset: 4,
-          },
-        ],
+        hoverOffset: 4
+      }]
+    };
+
+    const config = {
+      type: 'pie',
+      data: data,
+      options: {} // Specify your chart options here
+    };
+
+    window.onload = function() {
+      var ctx = document.getElementById('disabilityChart').getContext('2d');
+      disabilityChart = new Chart(ctx, config);
+    };
+
+    async function fetchAndUpdateChart() {
+      const USERRef = collection(db, 'USER');
+      const querySnapshot = await getDocs(USERRef);
+      const disabilityCounts = {
+        "Physical Disability": 0,
+        "Visual Impairment": 0,
+        "Hearing Impairment": 0,
+        "Intellectual Disability": 0,
+        "Psychiatric Disability": 0,
+        "Learning Disability": 0,
+        // Ensure you have all categories accounted for
       };
 
-      const config = {
-        type: "pie",
-        data: data,
-      };
+      querySnapshot.forEach((doc) => {
+        const userData = doc.data();
+        const disabilityType = userData.Disability;
+        if (disabilityCounts.hasOwnProperty(disabilityType)) {
+          disabilityCounts[disabilityType]++;
+        } else {
+          // Optionally handle unexpected disability categories
+        }
+      });
 
-      const disabilityChart = new Chart(
-        document.getElementById("disabilityChart"),
-        config
-      );
-    </script>
+      disabilityChart.data.datasets[0].data = Object.values(disabilityCounts);
+      disabilityChart.update();
+    }
+
+    document.querySelector('.generate-report-btn').addEventListener('click', fetchAndUpdateChart);
+  </script>
+
   </body>
 </html>
