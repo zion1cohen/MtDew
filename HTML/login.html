@@ -5,29 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ConnectAbility Sign In</title>
   <style>
-    body,
-    html {
-      height: 100%;
+    body {
+      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+      height: 100vh;
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    .bg {
-      background-image: url("https://via.placeholder.com/1200x800");
-      background-size: cover;
-      background-position: center;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #e5e5f7;
-      opacity: 0.8;
-      background-image: repeating-radial-gradient(
-              circle at 0 0,
-              transparent 0,
-              #e5e5f7 10px
-      ),
-      repeating-linear-gradient(#444cf755, #444cf7);
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    #label1,
+    #label2 {
+      position: absolute;
+      width: 300px;
+      height: 56px;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      color: white;
     }
 
     .login-container {
@@ -36,7 +46,10 @@
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       width: 300px;
-      position: relative; /* Added position relative */
+      margin: auto;
+      position: relative;
+      z-index: 2;
+      color: black; /* Add this line to change the text color to black */
     }
 
     .login-container h2 {
@@ -80,20 +93,18 @@
       text-align: center;
       margin-top: 20px;
     }
-
-    /* Added Google logo styling */
-    .google-logo {
-      width: 30px;
-      height: 30px;
-      position: absolute;
-      top: 100%;
-      right: 10px;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
-<div class="bg">
+<svg xmlns="http://www.w3.org/2000/svg" id="label1" viewBox="0 0 300 45" fill="#0f0f13" stroke="#0f0f13" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+  <text x="7" y="29" font-size="32" font-weight="bold" fill="#003366" stroke-width="1">CONNECT-ABILITY</text>
+</svg>
+
+<svg xmlns="http://www.w3.org/2000/svg" id="label2" viewBox="0 0 300 45" fill="#0f0f13" stroke="#0f0f13" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+  <text x="7" y="29" font-size="32" font-weight="bold" fill="#003366" stroke-width="1">CONNECT-ABILITY</text>
+</svg>
+
+<div class="content">
   <div class="login-container">
     <h2>ConnectAbility Sign In</h2>
     <!-- Add error message div -->
@@ -123,14 +134,103 @@
   </div>
 </div>
 
-<!-- Firebase SDK -->
-<script
-        type="module"
-        src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"
-></script>
+<!-- SVG Animation Script -->
+<script>
+  const body = document.querySelector('body');
+  const label1 = document.querySelector('#label1');
+  const label2 = document.querySelector('#label2');
 
-<!-- Your Firebase configuration and login script -->
-<script type="module" src="firebase-config.js"></script>
-<script type="module" src="login.js"></script>
+  let colors = ['#26de81', '#fc5c65', '#fd9644', '#fed330', '#2bcbba', '#45aaf2', '#4b7bec', '#a55eea', '#ffc1f3', '#76ead7', '#ff9c71', '#32e0c4', '#d291bc', '#fa744f'];
+
+  let FPS = 60;
+  let width, height, velocityX1 = 1, velocityY1 = 1, velocityX2 = 0.5, velocityY2 = 0.5, pause = true, previousColor = 0;
+
+  setInterval(() => {
+    if (pause) return;
+
+    let rect1 = label1.getBoundingClientRect();
+    let rect2 = label2.getBoundingClientRect();
+
+    let left1 = rect1.x;
+    let top1 = rect1.y;
+    let left2 = rect2.x;
+    let top2 = rect2.y;
+
+    // Update position and color for label1
+    if (left1 + rect1.width >= width || left1 <= 0) {
+      velocityX1 = -velocityX1;
+      let randomColor = getRandomColor();
+      label1.style.fill = randomColor;
+    }
+    if (top1 + rect1.height >= height || top1 <= 0) {
+      velocityY1 = -velocityY1;
+      let randomColor = getRandomColor();
+      label1.style.fill = randomColor;
+    }
+
+    // Update position and color for label2
+    if (left2 + rect2.width >= width || left2 <= 0) {
+      velocityX2 = -velocityX2;
+      let randomColor = getRandomColor();
+      label2.style.fill = randomColor;
+    }
+    if (top2 + rect2.height >= height || top2 <= 0) {
+      velocityY2 = -velocityY2;
+      let randomColor = getRandomColor();
+      label2.style.fill = randomColor;
+    }
+
+    label1.style.left = rect1.x + velocityX1 + 'px';
+    label1.style.top = rect1.y + velocityY1 + 'px';
+
+    label2.style.left = rect2.x + velocityX2 + 'px';
+    label2.style.top = rect2.y + velocityY2 + 'px';
+  });
+
+  const reset = () => {
+    width =
+            window.innerWidth ||
+            document.documentElement.clientWidth ||
+            document.body.clientWidth
+    ;
+
+    height =
+            window.innerHeight ||
+            document.documentElement.clientHeight ||
+            document.body.clientHeight
+    ;
+
+    pause =
+            width <= label1.getBoundingClientRect().width ||
+            height <= label1.getBoundingClientRect().height ||
+            width <= label2.getBoundingClientRect().width ||
+            height <= label2.getBoundingClientRect().height
+    ;
+
+    label1.style.left = 'calc(50vw - 150px)';
+    label1.style.top = 'calc(50vh - 28px)';
+    label1.style.fill = colors[0];
+
+    label2.style.left = 'calc(50vw - 150px)';
+    label2.style.top = 'calc(50vh - 28px)';
+    label2.style.fill = colors[0];
+  };
+
+  const getRandomColor = () => {
+    let currentColor = -1;
+
+    do {
+      currentColor = Math.floor(Math.random() * colors.length);
+    } while (previousColor == currentColor);
+
+    previousColor = currentColor;
+
+    return colors[currentColor];
+  };
+
+  reset();
+
+  window.addEventListener('resize', reset, true);
+</script>
 </body>
 </html>
