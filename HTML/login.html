@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ConnectAbility Sign In</title>
   <style>
     body {
@@ -133,7 +133,12 @@
     </div>
   </div>
 </div>
-
+<script
+        type="module"
+        src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"
+></script>
+<script type="module" src="firebase-config.js"></script>
+<script type="module" src="login.js"></script>
 <!-- SVG Animation Script -->
 <script>
   const body = document.querySelector('body');
@@ -143,7 +148,8 @@
   let colors = ['#26de81', '#fc5c65', '#fd9644', '#fed330', '#2bcbba', '#45aaf2', '#4b7bec', '#a55eea', '#ffc1f3', '#76ead7', '#ff9c71', '#32e0c4', '#d291bc', '#fa744f'];
 
   let FPS = 60;
-  let width, height, velocityX1 = 1, velocityY1 = 1, velocityX2 = 0.5, velocityY2 = 0.5, pause = true, previousColor = 0;
+  let width, height, velocityX1 = 1, velocityY1 = 1, velocityX2 = 0.5, velocityY2 = 0.5, pause = true,
+          previousColor = 0;
 
   setInterval(() => {
     if (pause) return;
@@ -229,8 +235,10 @@
   };
 
   reset();
+  <!-- Your Firebase configuration and login script -->
 
   window.addEventListener('resize', reset, true);
+
 </script>
 </body>
 </html>
