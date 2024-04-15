@@ -18,6 +18,7 @@
         updateDoc,
         addDoc,
         collection,
+              deleteDoc
       } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
       // Firebase configuration
@@ -300,6 +301,36 @@
           console.error("Error submitting flag: ", error);
         }
       }
+
+      // Inside the <script> tag after other JavaScript code
+      // Inside the event listener for the delete profile button
+      document.addEventListener("click", async function (event) {
+        if (event.target && event.target.id === "delete-profile-btn") {
+          // Ask for confirmation
+          const confirmDelete = confirm("Are you sure you want to delete your profile? This action cannot be undone.");
+
+          if (confirmDelete) {
+            // Delete profile data from Firestore
+            const user = auth.currentUser;
+            const userRef = doc(db, "USER", user.uid);
+
+            try {
+              await deleteDoc(userRef);
+              console.log("User profile deleted successfully");
+
+              // Remove the user card from the UI
+              document.querySelector(".profile-container").remove();
+
+              // Redirect to login page after deletion
+              window.location.href = "login.html";
+            } catch (error) {
+              console.error("Error deleting user profile:", error);
+            }
+          }
+        }
+      });
+
+
     </script>
     <style>
       body {
@@ -468,10 +499,10 @@
       <div class="profile-container">
         <div class="profile-header">
           <img
-            id="profile-photo"
-            src="https://via.placeholder.com/100"
-            alt="Profile Photo"
-            class="profile-photo"
+                  id="profile-photo"
+                  src="https://via.placeholder.com/100"
+                  alt="Profile Photo"
+                  class="profile-photo"
           />
           <div class="profile-info">
             <h2 id="profile-name">Loading...</h2>
@@ -491,16 +522,20 @@
           </p>
           <h3>About Me:</h3>
           <p id="profile-about" contenteditable="true">Loading...</p>
+
+          <!-- Button for deleting profile -->
+          <button id="delete-profile-btn" class="delete-profile-btn">Delete Profile</button>
         </div>
 
         <h3>Friends:</h3>
         <div id="flag-message-container"></div>
         <div id="friends-list"></div>
       </div>
-    </div>
+    <!-- Inside the profile-details section -->
+
 
     <script>
       // You can add any additional JavaScript code here if needed
     </script>
-  </body>
+    </div></body>
 </html>
