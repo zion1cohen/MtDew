@@ -1,419 +1,506 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Profile - ConnectAbility</title>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-    import { getFirestore, doc, getDoc, arrayRemove, updateDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Profile - ConnectAbility</title>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+      import {
+        getFirestore,
+        doc,
+        getDoc,
+        arrayRemove,
+        updateDoc,
+        addDoc,
+        collection,
+      } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
-      authDomain: "connectability-6ee02.firebaseapp.com",
-      projectId: "connectability-6ee02",
-      storageBucket: "connectability-6ee02.appspot.com",
-      messagingSenderId: "908801065257",
-      appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
-      measurementId: "G-N8HMEMRV16",
-    };
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+        authDomain: "connectability-6ee02.firebaseapp.com",
+        projectId: "connectability-6ee02",
+        storageBucket: "connectability-6ee02.appspot.com",
+        messagingSenderId: "908801065257",
+        appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+        measurementId: "G-N8HMEMRV16",
+      };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth();
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth();
 
-    // Define the removeFriend function
-    async function removeFriend(userId, friendId) {
-      console.log("Removing friend:", friendId);
-      const userRef = doc(db, "USER", userId);
-      const friendRef = doc(db, "USER", friendId);
+      // Define the removeFriend function
+      async function removeFriend(userId, friendId) {
+        console.log("Removing friend:", friendId);
+        const userRef = doc(db, "USER", userId);
+        const friendRef = doc(db, "USER", friendId);
 
-      try {
-        // Remove friendId from user's friends array
-        await updateDoc(userRef, {
-          friends: arrayRemove(friendId)
-        });
-
-        // Remove userId from friend's friends array
-        await updateDoc(friendRef, {
-          friends: arrayRemove(userId)
-        });
-
-        console.log("Friend removed successfully");
-
-        // Remove the friend card from the DOM
-        document.querySelector(`.friend-card[data-friend-id="${friendId}"]`).remove();
-
-        // Display success message
-        displaySuccessMessage(friendId);
-      } catch (error) {
-        console.error("Error removing friend: ", error);
-      }
-
-    }
-
-    // Function to display a success message
-    function displaySuccessMessage(friendId) {
-      const messageContainer = document.getElementById('flag-message-container');
-      const message = document.createElement('div');
-      message.textContent = `Friend successfully removed.`;
-      message.style.color = 'green'; // Styling example, customize as needed
-      messageContainer.appendChild(message);
-
-      // Optionally, remove the message after a few seconds
-      setTimeout(() => {
-        message.remove();
-      }, 3000); // Adjust time as needed
-    }
-
-    // Function to get current user and display profile information
-    function getCurrentUser() {
-      onAuthStateChanged(auth, async (user) => {
         try {
-          if (user) {
-            console.log("User is logged in:", user.email);
-            // Fetch user profile data from Firestore
-            const userRef = doc(db, "USER", user.uid);
-            const userSnapshot = await getDoc(userRef);
-            if (userSnapshot.exists()) {
-              const userData = userSnapshot.data();
-              document.getElementById('profile-name').innerText = userData.Name || 'Unknown';
-              document.getElementById('profile-email').innerText = user.email;
-              document.getElementById('profile-about').innerText = userData.About || 'No information available';
-              document.getElementById('profile-phone').innerText = userData.Phone || 'No information available';
-              document.getElementById('profile-address').innerText = userData.Address || 'No information available';
-              document.getElementById('profile-photo').src = userData.Photo || 'https://via.placeholder.com/100'; // Use placeholder if photo URL not available
+          // Remove friendId from user's friends array
+          await updateDoc(userRef, {
+            friends: arrayRemove(friendId),
+          });
 
-              // Display user's friends
-              displayFriendsWithFlags(user.uid);
-            } else {
-              console.error("User data not found in Firestore");
-            }
-          } else {
-            console.log("No user is logged in.");
-          }
+          // Remove userId from friend's friends array
+          await updateDoc(friendRef, {
+            friends: arrayRemove(userId),
+          });
+
+          console.log("Friend removed successfully");
+
+          // Remove the friend card from the DOM
+          document
+            .querySelector(`.friend-card[data-friend-id="${friendId}"]`)
+            .remove();
+
+          // Display success message
+          displaySuccessMessage(friendId);
         } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      });
-    }
-
-    // Call getCurrentUser() to fetch current user information
-    getCurrentUser();
-
-    // Event delegation for remove friend button
-    document.addEventListener('click', function(event) {
-      if (event.target && event.target.classList.contains('remove-friend-btn')) {
-        // Get the current user ID
-        const userId = auth.currentUser.uid;
-
-        // Find the parent element of the button (friend card) and extract friend ID from it
-        const friendCard = event.target.closest('.friend-card');
-        if (friendCard) {
-          const friendId = friendCard.dataset.friendId;
-          removeFriend(userId, friendId);
+          console.error("Error removing friend: ", error);
         }
       }
-    });
 
-    // Function to create flag dropdown for a friend
-    // Function to create flag dropdown for a friend
-    function createFlagDropdown(friendId) {
-      // Dropdown options
-      const flagOptions = [
-        'Harassment/Bullying',
-        'Hate Speech',
-        'Violent Content',
-        'Graphic or Disturbing Content',
-        'Spam or Scam',
-        'Other'
-      ];
+      // Function to display a success message
+      function displaySuccessMessage(friendId) {
+        const messageContainer = document.getElementById(
+          "flag-message-container"
+        );
+        const message = document.createElement("div");
+        message.textContent = `Friend successfully removed.`;
+        message.style.color = "green"; // Styling example, customize as needed
+        messageContainer.appendChild(message);
 
-      // Create dropdown element
-      const dropdown = document.createElement('select');
-      dropdown.classList.add('flag-dropdown');
+        // Optionally, remove the message after a few seconds
+        setTimeout(() => {
+          message.remove();
+        }, 3000); // Adjust time as needed
+      }
 
-      // Add options to the dropdown
-      flagOptions.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.textContent = option;
-        dropdown.appendChild(optionElement);
+      // Function to get current user and display profile information
+      // Function to get current user and display profile information
+      async function getCurrentUser() {
+        onAuthStateChanged(auth, async (user) => {
+          try {
+            if (user) {
+              console.log("User is logged in:", user.email);
+              // Fetch user profile data from Firestore
+              const userRef = doc(db, "USER", user.uid);
+              const userSnapshot = await getDoc(userRef);
+              if (userSnapshot.exists()) {
+                const userData = userSnapshot.data();
+                document.getElementById("profile-name").innerText =
+                  userData.Name || "Unknown";
+                document.getElementById("profile-email").innerText = user.email;
+
+                // Update contact information
+                const phoneElement = document.getElementById("profile-phone");
+                const addressElement =
+                  document.getElementById("profile-address");
+                phoneElement.innerText =
+                  userData.Phone || "No information available";
+                addressElement.innerText =
+                  userData.Address || "No information available";
+
+                // Update about me section
+                document.getElementById("profile-about").innerText =
+                  userData.About || "No information available";
+
+                document.getElementById("profile-photo").src =
+                  userData.Photo || "https://via.placeholder.com/100"; // Use placeholder if photo URL not available
+
+                // Listen for changes in contact information and about me section
+                phoneElement.addEventListener("input", () =>
+                  updateUserData(userRef, { Phone: phoneElement.innerText })
+                );
+                addressElement.addEventListener("input", () =>
+                  updateUserData(userRef, { Address: addressElement.innerText })
+                );
+                document
+                  .getElementById("profile-about")
+                  .addEventListener("input", () =>
+                    updateUserData(userRef, {
+                      About: document.getElementById("profile-about").innerText,
+                    })
+                  );
+
+                // Display user's friends
+                displayFriendsWithFlags(user.uid);
+              } else {
+                console.error("User data not found in Firestore");
+              }
+            } else {
+              console.log("No user is logged in.");
+            }
+          } catch (error) {
+            console.error("Error fetching user data:", error);
+          }
+        });
+      }
+
+      // Function to update user data in Firestore
+      async function updateUserData(userRef, newData) {
+        try {
+          await updateDoc(userRef, newData);
+          console.log("User data updated successfully");
+        } catch (error) {
+          console.error("Error updating user data:", error);
+        }
+      }
+
+      // Call getCurrentUser() to fetch current user information
+      getCurrentUser();
+
+      // Event delegation for remove friend button
+      document.addEventListener("click", function (event) {
+        if (
+          event.target &&
+          event.target.classList.contains("remove-friend-btn")
+        ) {
+          // Get the current user ID
+          const userId = auth.currentUser.uid;
+
+          // Find the parent element of the button (friend card) and extract friend ID from it
+          const friendCard = event.target.closest(".friend-card");
+          if (friendCard) {
+            const friendId = friendCard.dataset.friendId;
+            removeFriend(userId, friendId);
+          }
+        }
       });
 
-      // Create button for flag submission
-      const submitButton = document.createElement('button');
-      submitButton.textContent = 'Submit Flag';
-      submitButton.classList.add('submit-flag-btn'); // Add the class for styling
-      submitButton.addEventListener('click', () => submitFlag(friendId, dropdown.value));
+      // Function to create flag dropdown for a friend
+      // Function to create flag dropdown for a friend
+      function createFlagDropdown(friendId) {
+        // Dropdown options
+        const flagOptions = [
+          "Harassment/Bullying",
+          "Hate Speech",
+          "Violent Content",
+          "Graphic or Disturbing Content",
+          "Spam or Scam",
+          "Other",
+        ];
 
-      // Create container for dropdown and button
-      const container = document.createElement('div');
-      container.classList.add('flag-container'); // Add a class for styling
-      container.appendChild(dropdown);
+        // Create dropdown element
+        const dropdown = document.createElement("select");
+        dropdown.classList.add("flag-dropdown");
 
-      // Create a wrapper for the submit button to add spacing
-      const buttonWrapper = document.createElement('div');
-      buttonWrapper.classList.add('button-wrapper');
-      buttonWrapper.appendChild(submitButton);
+        // Add options to the dropdown
+        flagOptions.forEach((option) => {
+          const optionElement = document.createElement("option");
+          optionElement.textContent = option;
+          dropdown.appendChild(optionElement);
+        });
 
-      container.appendChild(buttonWrapper); // Append the button wrapper to the container
+        // Create button for flag submission
+        const submitButton = document.createElement("button");
+        submitButton.textContent = "Submit Flag";
+        submitButton.classList.add("submit-flag-btn"); // Add the class for styling
+        submitButton.addEventListener("click", () =>
+          submitFlag(friendId, dropdown.value)
+        );
 
-      return container;
-    }
+        // Create container for dropdown and button
+        const container = document.createElement("div");
+        container.classList.add("flag-container"); // Add a class for styling
+        container.appendChild(dropdown);
 
-    // Function to display user's friends with flag dropdowns
-    async function displayFriendsWithFlags(userId) {
-      try {
-        const userRef = doc(db, 'USER', userId);
-        const userSnapshot = await getDoc(userRef);
-        if (userSnapshot.exists()) {
-          const userData = userSnapshot.data();
-          const friendsList = document.getElementById('friends-list');
-          friendsList.innerHTML = ''; // Clear previous list
+        // Create a wrapper for the submit button to add spacing
+        const buttonWrapper = document.createElement("div");
+        buttonWrapper.classList.add("button-wrapper");
+        buttonWrapper.appendChild(submitButton);
 
-          if (userData.friends && userData.friends.length > 0) {
-            userData.friends.forEach(async (friendId) => {
-              const friendRef = doc(db, 'USER', friendId);
-              const friendSnapshot = await getDoc(friendRef);
-              if (friendSnapshot.exists()) {
-                const friendData = friendSnapshot.data();
-                const friendCard = document.createElement('div');
-                friendCard.classList.add('friend-card');
-                friendCard.dataset.friendId = friendId; // Set the friend ID as a data attribute
-                friendCard.innerHTML = `
-                  <img src="${friendData.Photo || 'https://via.placeholder.com/50'}" alt="Friend Photo" class="friend-photo">
+        container.appendChild(buttonWrapper); // Append the button wrapper to the container
+
+        return container;
+      }
+
+      // Function to display user's friends with flag dropdowns
+      async function displayFriendsWithFlags(userId) {
+        try {
+          const userRef = doc(db, "USER", userId);
+          const userSnapshot = await getDoc(userRef);
+          if (userSnapshot.exists()) {
+            const userData = userSnapshot.data();
+            const friendsList = document.getElementById("friends-list");
+            friendsList.innerHTML = ""; // Clear previous list
+
+            if (userData.friends && userData.friends.length > 0) {
+              userData.friends.forEach(async (friendId) => {
+                const friendRef = doc(db, "USER", friendId);
+                const friendSnapshot = await getDoc(friendRef);
+                if (friendSnapshot.exists()) {
+                  const friendData = friendSnapshot.data();
+                  const friendCard = document.createElement("div");
+                  friendCard.classList.add("friend-card");
+                  friendCard.dataset.friendId = friendId; // Set the friend ID as a data attribute
+                  friendCard.innerHTML = `
+                  <img src="${
+                    friendData.Photo || "https://via.placeholder.com/50"
+                  }" alt="Friend Photo" class="friend-photo">
                   <p class="friend-name">${friendData.Name}</p>
                  <button class="remove-friend-btn">Remove</button>
                 `;
-                // Add flag dropdown for each friend
-                const flagDropdown = createFlagDropdown(friendId);
-                friendCard.appendChild(flagDropdown); // Append the dropdown to the friend card
-                friendsList.appendChild(friendCard);
-              }
-            });
+                  // Add flag dropdown for each friend
+                  const flagDropdown = createFlagDropdown(friendId);
+                  friendCard.appendChild(flagDropdown); // Append the dropdown to the friend card
+                  friendsList.appendChild(friendCard);
+                }
+              });
+            } else {
+              friendsList.innerHTML = "<p>No friends found.</p>";
+            }
           } else {
-            friendsList.innerHTML = '<p>No friends found.</p>';
+            console.error("User data not found in Firestore");
           }
-        } else {
-          console.error('User data not found in Firestore');
+        } catch (error) {
+          console.error("Error fetching friends:", error);
         }
-      } catch (error) {
-        console.error('Error fetching friends:', error);
       }
-    }
 
-    // Function to submit flag
-    // Function to submit flag
-    // Function to submit flag
-    async function submitFlag(friendId, flagValue) {
-      try {
-        // Get the current user's ID
-        const userId = auth.currentUser.uid;
+      // Function to submit flag
+      // Function to submit flag
+      // Function to submit flag
+      async function submitFlag(friendId, flagValue) {
+        try {
+          // Get the current user's ID
+          const userId = auth.currentUser.uid;
 
-        // Construct a new flag object
-        const flagData = {
-          userId: userId,
-          friendId: friendId,
-          flagValue: flagValue,
-          timestamp: new Date()
-        };
+          // Construct a new flag object
+          const flagData = {
+            userId: userId,
+            friendId: friendId,
+            flagValue: flagValue,
+            timestamp: new Date(),
+          };
 
-        // Add the flag to the "FLAG" collection in Firestore
-        const flagDocRef = await addDoc(collection(db, "FLAG"), flagData);
-        console.log("Flag submitted successfully with ID: ", flagDocRef.id);
+          // Add the flag to the "FLAG" collection in Firestore
+          const flagDocRef = await addDoc(collection(db, "FLAG"), flagData);
+          console.log("Flag submitted successfully with ID: ", flagDocRef.id);
 
-        // Display a message indicating that the flag was submitted for the user
-        const friendName = document.querySelector(`.friend-card[data-friend-id="${friendId}"] .friend-name`).textContent;
-        const flagMessageContainer = document.getElementById("flag-message-container");
-        const message = document.createElement("div");
-        message.classList.add("flag-message");
-        message.textContent = `Flag submitted successfully for ${friendName}.`;
-        flagMessageContainer.appendChild(message);
-      } catch (error) {
-        console.error("Error submitting flag: ", error);
+          // Display a message indicating that the flag was submitted for the user
+          const friendName = document.querySelector(
+            `.friend-card[data-friend-id="${friendId}"] .friend-name`
+          ).textContent;
+          const flagMessageContainer = document.getElementById(
+            "flag-message-container"
+          );
+          const message = document.createElement("div");
+          message.classList.add("flag-message");
+          message.textContent = `Flag submitted successfully for ${friendName}.`;
+          flagMessageContainer.appendChild(message);
+        } catch (error) {
+          console.error("Error submitting flag: ", error);
+        }
       }
-    }
+    </script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f2f5;
+        margin: 0;
+        padding: 0;
+      }
+      .main-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: flex-start;
+      }
+      .header {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        color: white;
+        padding: 15px 20px;
+        text-align: center;
+      }
+      .sidebar {
+        background: linear-gradient(180deg, #0056b3, #003366);
+        color: white;
+        padding: 10px;
+        position: fixed;
+        width: 200px;
+        height: 100%;
+        overflow: auto;
+      }
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 10px 0;
+      }
+      .profile-container {
+        width: 80%;
+        max-width: 900px;
+        margin: 20px auto;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .profile-header {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+      }
+      .profile-photo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin-right: 20px;
+      }
+      .profile-info h2 {
+        margin: 0;
+        padding: 0;
+        color: #333;
+      }
+      .profile-info p {
+        color: #666;
+        margin: 5px 0;
+      }
+      .profile-details {
+        margin-top: 20px; /* Adjust the top margin as needed */
+      }
+      .friend-card {
+        display: flex;
+        justify-content: space-between; /* Align items with space between */
+        align-items: center; /* Align items vertically */
+      }
+      .friend-photo {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+      .friend-name {
+        font-weight: bold;
+        margin: 0;
+      }
+      .remove-friend-btn,
+      .submit-flag-btn {
+        background-color: #dc3545; /* Red color */
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .remove-friend-btn:hover,
+      .submit-flag-btn:hover {
+        background-color: #c82333; /* Darker red color on hover */
+      }
+      /* Adjusted CSS styles */
+      .flag-container {
+        display: flex;
+        justify-content: space-between; /* Align items with space between */
+      }
 
+      .flag-dropdown {
+        margin-right: 10px;
+      }
 
-  </script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
-      margin: 0;
-      padding: 0;
-    }
-    .main-container {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      align-items: flex-start;
-    }
-    .header {
-      background: linear-gradient(45deg, #007bff, #0056b3);
-      color: white;
-      padding: 15px 20px;
-      text-align: center;
-    }
-    .sidebar {
-      background: linear-gradient(180deg, #0056b3, #003366);
-      color: white;
-      padding: 10px;
-      position: fixed;
-      width: 200px;
-      height: 100%;
-      overflow: auto;
-    }
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      display: block;
-      padding: 10px 0;
-    }
-    .profile-container {
-      width: 80%;
-      max-width: 900px;
-      margin: 20px auto;
-      background-color: white;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      padding: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .profile-header {
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 20px;
-      margin-bottom: 20px;
-    }
-    .profile-photo {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      margin-right: 20px;
-    }
-    .profile-info h2 {
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
-    .profile-info p {
-      color: #666;
-      margin: 5px 0;
-    }
-    .profile-details {
-      margin-top: 20px; /* Adjust the top margin as needed */
-    }
-    .friend-card {
-      display: flex;
-      justify-content: space-between; /* Align items with space between */
-      align-items: center; /* Align items vertically */
-    }
-    .friend-photo {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      margin-right: 10px;
-    }
-    .friend-name {
-      font-weight: bold;
-      margin: 0;
-    }
-    .remove-friend-btn, .submit-flag-btn {
-      background-color: #dc3545; /* Red color */
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    .remove-friend-btn:hover, .submit-flag-btn:hover {
-      background-color: #c82333; /* Darker red color on hover */
-    }
-    /* Adjusted CSS styles */
-    .flag-container {
-      display: flex;
-      justify-content: space-between; /* Align items with space between */
-    }
+      .button-wrapper {
+        margin-top: 10px;
+      }
 
-    .flag-dropdown {
-      margin-right: 10px;
-    }
+      .flag-container button {
+        cursor: pointer;
+      }
+      .background-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-radial-gradient(
+            circle at 0 0,
+            transparent 0,
+            #e5e5f7 10px
+          ),
+          repeating-linear-gradient(#444cf755, #444cf7);
+        z-index: -1; /* Set a lower z-index to keep it behind the content */
+        opacity: 0.4; /* Adjust opacity as needed */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header d-flex justify-content-between align-items-center">
+      <h1>ConnectAbility</h1>
+      <a
+        href="login.html"
+        class="btn btn-light"
+        style="
+          background-color: #fff;
+          border: 1px solid #ccc;
+          padding: 8px 16px;
+          border-radius: 4px;
+          text-decoration: none;
+          color: #007bff;
+        "
+        >Logout</a
+      >
+    </div>
 
-    .button-wrapper {
-      margin-top: 10px;
-    }
+    <div class="main-container">
+      <div class="sidebar">
+        <a href="home.html">Home</a>
+        <a href="profile(USER).html">Profile</a>
+        <a href="Messages(USER).html">Messages</a>
+        <a href="match.html">Matches</a>
+        <a href="Announcements(USER).html">Announcements</a>
+        <a href="Resources(USER).html">Resources</a>
+        <a href="Feedback(USER).html">Feedback</a>
+        <a href="settings.html">Settings</a>
+      </div>
 
-    .flag-container button {
-      cursor: pointer;
-    }
-    .background-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: repeating-radial-gradient(circle at 0 0, transparent 0, #e5e5f7 10px), repeating-linear-gradient(#444cf755, #444cf7);
-      z-index: -1; /* Set a lower z-index to keep it behind the content */
-      opacity: 0.4; /* Adjust opacity as needed */
-    }
+      <div class="background-overlay"></div>
 
-  </style>
-</head>
-<body>
+      <div class="profile-container">
+        <div class="profile-header">
+          <img
+            id="profile-photo"
+            src="https://via.placeholder.com/100"
+            alt="Profile Photo"
+            class="profile-photo"
+          />
+          <div class="profile-info">
+            <h2 id="profile-name">Loading...</h2>
+            <p id="profile-email"></p>
+          </div>
+        </div>
+        <!-- Inside the profile-details section -->
+        <div class="profile-details">
+          <h3>Contact Information:</h3>
+          <p>
+            Phone:
+            <span id="profile-phone" contenteditable="true">Loading...</span>
+          </p>
+          <p>
+            Address:
+            <span id="profile-address" contenteditable="true">Loading...</span>
+          </p>
+          <h3>About Me:</h3>
+          <p id="profile-about" contenteditable="true">Loading...</p>
+        </div>
 
-<div class="header d-flex justify-content-between align-items-center">
-  <h1>ConnectAbility</h1>
-  <a href="login.html" class="btn btn-light" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">Logout</a>
-</div>
-
-
-<div class="main-container">
-  <div class="sidebar">
-    <a href="home.html">Home</a>
-    <a href="profile(USER).html">Profile</a>
-    <a href="Messages(USER).html">Messages</a>
-    <a href="match.html">Matches</a>
-    <a href="Announcements(USER).html">Announcements</a>
-    <a href="Resources(USER).html">Resources</a>
-    <a href="Feedback(USER).html">Feedback</a>
-    <a href="settings.html">Settings</a>
-  </div>
-
-  <div class="background-overlay"></div>
-
-
-  <div class="profile-container">
-    <div class="profile-header">
-      <img id="profile-photo" src="https://via.placeholder.com/100" alt="Profile Photo" class="profile-photo">
-      <div class="profile-info">
-        <h2 id="profile-name">Loading...</h2>
-        <p id="profile-email"></p>
+        <h3>Friends:</h3>
+        <div id="flag-message-container"></div>
+        <div id="friends-list"></div>
       </div>
     </div>
-    <div class="profile-details">
-      <h3>About Me:</h3>
-      <p id="profile-about"></p>
-      <h3>Contact Information:</h3>
-      <p id="profile-phone"></p>
-      <p id="profile-address"></p>
-    </div>
-    <h3>Friends:</h3>
-    <div id="flag-message-container"></div>
-    <div id="friends-list"></div>
 
-  </div>
-
-
-</div>
-
-<script>
-  // You can add any additional JavaScript code here if needed
-</script>
-</body>
+    <script>
+      // You can add any additional JavaScript code here if needed
+    </script>
+  </body>
 </html>
