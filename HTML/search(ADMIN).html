@@ -16,6 +16,7 @@
         doc,
         updateDoc,
         deleteDoc,
+              addDoc
       } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
       // Your web app's Firebase configuration
@@ -124,7 +125,7 @@
 
       function showAgeOptions() {
         const ageOptions = prompt(
-          "Enter age range (e.g., 18-22, 22-30, 31-40, 40-55, 55+):"
+                "Enter age range (e.g., 18-22, 22-30, 31-40, 40-55, 55+):"
         );
         if (ageOptions) {
           filterByAge(ageOptions);
@@ -133,7 +134,7 @@
 
       function showMaritalStatusOptions() {
         const statusOptions = prompt(
-          "Enter marital status (single, married, divorced):"
+                "Enter marital status (single, married, divorced):"
         );
         if (statusOptions) {
           filterByMaritalStatus(statusOptions);
@@ -154,7 +155,7 @@
         }
       }
 
-      async function openModal(userId, status) {
+      async function openModal(userId, userName, status) {
         const modal = document.getElementById("myModal");
         modal.style.display = "block";
 
@@ -177,11 +178,35 @@
           await deleteDoc(doc(db, "USER", userId));
           closeModal();
         };
+
+        const sendMessageBtn = document.getElementById("sendMessage");
+        sendMessageBtn.onclick = function () {
+          sendMessage(userId, userName); // Pass the userName parameter
+        };
       }
+
 
       function closeModal() {
         const modal = document.getElementById("myModal");
         modal.style.display = "none";
+      }
+
+      async function sendMessage(userId, userName) {
+        const message = prompt("Enter your message:");
+        if (message) {
+          // Add the message to the database
+          const messagesRef = collection(db, "messages");
+          await addDoc(messagesRef, {
+            userId: userId,
+            userName: userName,
+            message: message
+          });
+          console.log("Message sent successfully!");
+          alert("Message sent successfully!");
+        } else {
+          console.log("Message cannot be empty.");
+          alert("Message cannot be empty.");
+        }
       }
 
       window.searchUser = searchUser;
@@ -405,19 +430,18 @@
     </div>
 
     <!-- The Modal -->
-    <div id="myModal" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2>Manage User</h2>
-        <p>Do you want to suspend, unsuspend, or deactivate this user?</p>
-        <button id="suspendUser">Suspend User</button>
-        <button id="unsuspendUser">Unsuspend User</button>
-        <button id="deactivateUser">Deactivate User</button>
-      </div>
+  <div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Manage User</h2>
+      <button id="suspendUser">Suspend User</button>
+      <button id="unsuspendUser">Unsuspend User</button>
+      <button id="deactivateUser">Deactivate User</button>
+      <button id="sendMessage">Send Message</button>
     </div>
-    <footer>
-      <p>© 2024 ConnectAbility</p>
-    </footer>
+  </div>
+
     <script src="navigation.js"></script>
   </body>
 </html>
