@@ -382,29 +382,18 @@
 
     try {
       // Query the conversation document where the current user is user1 and the friend is user2
-      const conversationQuerySnapshot1 = await getDocs(
+      const conversationQuerySnapshot = await getDocs(
               query(
                       collection(db, 'conversations'),
-                      where('user1Id', '==', userId),
-                      where('user2Id', '==', friendId)
-              )
-      );
-
-      // Query the conversation document where the current user is user2 and the friend is user1
-      const conversationQuerySnapshot2 = await getDocs(
-              query(
-                      collection(db, 'conversations'),
-                      where('user1Id', '==', friendId),
-                      where('user2Id', '==', userId)
+                      where('participants', 'array-contains', userId),
+                      where('participants', 'array-contains', friendId)
               )
       );
 
       let conversationId;
 
-      if (!conversationQuerySnapshot1.empty) {
-        conversationId = conversationQuerySnapshot1.docs[0].id;
-      } else if (!conversationQuerySnapshot2.empty) {
-        conversationId = conversationQuerySnapshot2.docs[0].id;
+      if (!conversationQuerySnapshot.empty) {
+        conversationId = conversationQuerySnapshot.docs[0].id;
       } else {
         console.log("No conversation found between the current user and the friend.");
         return;
@@ -431,6 +420,7 @@
       console.error('Error opening message thread:', error);
     }
   }
+
 
 
 
@@ -465,8 +455,8 @@
       const conversationQuerySnapshot = await getDocs(
               query(
                       collection(db, 'conversations'),
-                      where('user1Id', '==', auth.currentUser.uid),
-                      where('user2Id', '==', window.currentFriendId)
+                      where('participants', 'array-contains', auth.currentUser.uid),
+                      where('participants', 'array-contains', window.currentFriendId)
               )
       );
 
@@ -475,23 +465,23 @@
       if (!conversationQuerySnapshot.empty) {
         conversationId = conversationQuerySnapshot.docs[0].id;
       } else {
+        // Create a new conversation if it doesn't exist
         const newConversationRef = await addDoc(collection(db, 'conversations'), {
-          user1Id: auth.currentUser.uid,
-          user2Id: window.currentFriendId
+          participants: [auth.currentUser.uid, window.currentFriendId]
         });
         conversationId = newConversationRef.id;
       }
 
+      // Add the message to the conversation
       await addDoc(collection(db, 'conversations', conversationId, 'messages'), {
         senderId: auth.currentUser.uid,
-        receiverId: window.currentFriendId,
         content: messageContent,
         timestamp: new Date()
       });
 
       messageInput.value = '';
 
-      const messageThread = document.getElementById('messageContainer');
+      const messageThread = document.getElementById('messageThread');
       messageThread.scrollTop = messageThread.scrollHeight;
     } catch (error) {
       console.error('Error sending message:', error);
