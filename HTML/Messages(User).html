@@ -420,7 +420,9 @@
         const messageData = doc.data();
         console.log("Message:", messageData.content); // Log the message content
         // Create a message element based on whether it's sent or received
-        const messageElement = createMessageElement(messageData.content, userId === messageData.senderId ? 'sent-message' : 'received-message');
+        // Inside the openMessageThread function
+        const messageElement = createMessageElement(messageData.content, messageData.senderName, userId === messageData.senderId);
+
         // Append the message element to the message thread
         messageThread.appendChild(messageElement);
       });
@@ -441,13 +443,24 @@
 
 
   // Helper function to create a message element
-  function createMessageElement(messageText, messageClass) {
+  function createMessageElement(messageText, senderName, isSentByCurrentUser) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('message');
     messageElement.textContent = messageText;
-    messageElement.classList.add(messageClass);
+    // Add appropriate styling based on whether the message was sent or received
+    if (isSentByCurrentUser) {
+      messageElement.classList.add('sent-message');
+    } else {
+      messageElement.classList.add('received-message');
+    }
+    // Add sender's name to the message element
+    const senderElement = document.createElement('span');
+    senderElement.textContent = senderName;
+    senderElement.classList.add('sender-name');
+    messageElement.appendChild(senderElement);
     return messageElement;
   }
+
 
 
 
