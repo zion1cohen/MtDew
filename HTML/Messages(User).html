@@ -115,6 +115,29 @@
     #sendMessageButton:hover {
       background-color: #0056b3; /* Darker shade of blue on hover */
     }
+    .message {
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      position: relative; /* Position the timestamp relative to the message */
+    }
+
+    .sent-message {
+      background-color: #007bff; /* Style for messages sent by the current user */
+      color: white;
+    }
+
+    .received-message {
+      background-color: #f0f0f0; /* Style for messages received from others */
+    }
+
+    .timestamp {
+      font-size: 12px;
+      position: absolute;
+      top: 0;
+      right: 0; /* Position the timestamp to the top right corner */
+    }
+
   </style>
 </head>
 <body>
@@ -413,17 +436,18 @@
         return;
       }
 
-      // Query messages for the conversation
+      // Query messages for the conversation and sort them by timestamp
       const messagesQuerySnapshot = await getDocs(collection(db, 'conversations', conversationId, 'messages'));
+      const sortedMessages = messagesQuerySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+              .sort((a, b) => a.timestamp - b.timestamp);
 
-      messagesQuerySnapshot.forEach(doc => {
-        const messageData = doc.data();
-        console.log("Message:", messageData.content); // Log the message content
-        // Create a message element based on whether it's sent or received
-        // Inside the openMessageThread function
-        const messageElement = createMessageElement(messageData.content, messageData.senderName, userId === messageData.senderId);
-
-        // Append the message element to the message thread
+      sortedMessages.forEach(message => {
+        const messageElement = createMessageElement(
+                message.content,
+                message.senderName,
+                message.timestamp.toMillis(), // Convert Firestore timestamp to milliseconds
+                userId === message.senderId
+        );
         messageThread.appendChild(messageElement);
       });
 
@@ -442,31 +466,39 @@
 
 
 
+
   // Helper function to create a message element
-  function createMessageElement(messageText, senderName, isSentByCurrentUser) {
+  // Update the function createMessageElement to add appropriate styling based on message sender
+  function createMessageElement(messageText, senderName, timestamp, isSentByCurrentUser) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('message');
     messageElement.textContent = messageText;
+
+    // Add timestamp to the message element
+    const timestampElement = document.createElement('span');
+    const timestampDate = new Date(timestamp);
+    const timestampString = `${timestampDate.toLocaleDateString()} ${timestampDate.toLocaleTimeString()}`;
+    timestampElement.textContent = timestampString;
+    timestampElement.classList.add('timestamp');
+    messageElement.appendChild(timestampElement);
+
     // Add appropriate styling based on whether the message was sent or received
     if (isSentByCurrentUser) {
       messageElement.classList.add('sent-message');
     } else {
       messageElement.classList.add('received-message');
     }
+
     // Add sender's name to the message element
     const senderElement = document.createElement('span');
     senderElement.textContent = senderName;
     senderElement.classList.add('sender-name');
     messageElement.appendChild(senderElement);
+
     return messageElement;
   }
 
 
-
-
-
-  // Function to send a message
-  // Function to send a message
   // Function to send a message
   async function sendMessage() {
     const messageInput = document.getElementById('messageInput');
