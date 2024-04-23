@@ -286,7 +286,8 @@
         const userProfile = userDoc.data();
 
         // Get the timestamp of the last displayed post
-        const lastPostTimestamp = postFeed.lastChild ? new Date(postFeed.lastChild.querySelector(".post-time").textContent).getTime() : null;
+        const lastPost = postFeed.lastElementChild;
+        const lastPostTimestamp = lastPost ? new Date(lastPost.querySelector(".post-time").textContent).getTime() : null;
 
         // Query posts collection
         const querySnapshot = await getDocs(collection(db, "POST"));
@@ -322,7 +323,6 @@
       console.error("Error displaying posts: ", error);
     }
   };
-
 
 
   document.getElementById("post-form").addEventListener("submit", async (e) => {
