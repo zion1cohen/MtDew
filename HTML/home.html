@@ -270,23 +270,10 @@
         postFeed.innerHTML = ""; // Clear the feed before adding new posts
 
         try {
-          // Get the authenticated user
           const user = auth.currentUser;
-
-          // Check if user is authenticated
           if (user) {
-            // Fetch the user's document
             const userDoc = await getDoc(doc(db, "USER", user.uid));
             const userProfile = userDoc.data();
-
-            // Get the timestamp of the last displayed post
-            const lastPostTimestamp = postFeed.lastChild
-              ? new Date(
-                  postFeed.lastChild.querySelector(".post-time").textContent
-                ).getTime()
-              : null;
-
-            // Query posts collection
             const querySnapshot = await getDocs(collection(db, "POST"));
 
             querySnapshot.forEach((doc) => {
@@ -328,7 +315,6 @@
         .getElementById("post-form")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
-          console.log("Form submitted!");
           const content = document.getElementById("post-content").value;
           const mediaFile = document.getElementById("media-upload").files[0];
 
