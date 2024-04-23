@@ -259,12 +259,14 @@
           const userProfileSnap = await getDoc(userProfileRef);
           const userProfileData = userProfileSnap.data();
           const userPhoto = userProfileData.Photo; // Assuming Photo is the field name for the profile picture
+          const userName = userProfileData.Name; // Assuming Name is the field name for the user's name
 
           const postData = {
             content: content,
             photo: imageData,
             timestamp: serverTimestamp(),
             userId: user.uid, // Adding the user's ID to the post data
+            userName: userName, // Adding the user's name to the post data
             userPhoto: userPhoto // Adding the user's profile picture URL to the post data
           };
 
@@ -289,7 +291,7 @@
         <div class="post" id="post-${doc.id}">
           <div class="post-header">
             <img src="${post.userPhoto}" alt="Profile picture" width="50" class="rounded-circle" />
-            <h3>${post.userId === user.uid ? "You" : post.userName}</h3>
+            <h3>${post.userName}</h3>
           </div>
           <div class="post-content">${post.content}</div>
           ${
