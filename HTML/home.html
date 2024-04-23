@@ -283,30 +283,35 @@
         try {
           const user = auth.currentUser;
           if (user) {
+            // Get the current user's friends
+            const userDoc = await getDoc(doc(db, "USER", user.uid));
+            const userFriends = userDoc.data().friends || []; // Assuming friends are stored in an array called 'friends'
+
             const querySnapshot = await getDocs(collection(db, "POST"));
 
             querySnapshot.forEach((doc) => {
               const post = doc.data();
-              const postElement = `
-        <div class="post" id="post-${doc.id}">
-          <div class="post-header">
-            <img src="${post.userPhoto}" alt="Profile picture" width="50" class="rounded-circle" />
-            <h3>${post.userName}</h3>
-          </div>
-          <div class="post-content">${post.content}</div>
-          ${
-                      post.photo
-                              ? `<img src="${post.photo}" alt="Media" class="img-fluid rounded" />`
-                              : ""
-              }
-          <div class="post-time">${
-                      post.timestamp
-                              ? post.timestamp.toDate().toLocaleString()
-                              : "No timestamp"
-              }</div>
-        </div>
-      `;
-              if (!document.getElementById(`post-${doc.id}`)) {
+              // Check if the author of the post is in the user's friends list or if it's the current user's own post
+              if (userFriends.includes(post.userId) || post.userId === user.uid) {
+                const postElement = `
+            <div class="post" id="post-${doc.id}">
+              <div class="post-header">
+                <img src="${post.userPhoto}" alt="Profile picture" width="50" class="rounded-circle" />
+                <h3>${post.userName}</h3>
+              </div>
+              <div class="post-content">${post.content}</div>
+              ${
+                        post.photo
+                                ? `<img src="${post.photo}" alt="Media" class="img-fluid rounded" />`
+                                : ""
+                }
+              <div class="post-time">${
+                        post.timestamp
+                                ? post.timestamp.toDate().toLocaleString()
+                                : "No timestamp"
+                }</div>
+            </div>
+          `;
                 postFeed.insertAdjacentHTML("beforeend", postElement);
               }
             });
@@ -317,6 +322,8 @@
           console.error("Error displaying posts: ", error);
         }
       };
+
+
 
       document
         .getElementById("post-form")
