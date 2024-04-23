@@ -176,8 +176,9 @@
 
     <div class="media-upload-container">
       <label class="media-upload-label" for="media-upload">Upload Media</label>
-      <input type="file" id="media-upload" accept="image/*, video/*">
+      <input type="file" id="media-upload" accept="image/*">
     </div>
+
 
     <!-- Post input form -->
     <form id="post-form">
@@ -243,13 +244,23 @@
   checkAuthState();
 
   // Function to create a new post
+  // Function to create a new post
+  // Function to create a new post
   const createPost = async (content, mediaUrl) => {
     try {
+      const user = auth.currentUser;
+      if (!user) {
+        console.error("User not authenticated.");
+        return;
+      }
+
       const postData = {
         content: content,
-        mediaUrl: mediaUrl,
+        photo: mediaUrl, // Store the data URL as the photo URL
         timestamp: serverTimestamp()
       };
+
+      // Add the post to the POST collection
       await addDoc(collection(db, "POST"), postData);
     } catch (error) {
       console.error("Error creating post: ", error);
@@ -257,6 +268,9 @@
   };
 
 
+
+
+  // Function to display posts
   // Function to display posts
   const displayPosts = async () => {
     const postFeed = document.getElementById("post-feed");
@@ -277,20 +291,20 @@
         querySnapshot.forEach((doc) => {
           const post = doc.data();
           const postElement = `
-            <div class="post">
-              <div class="post-header">
-                <img src="${userProfile.Photo}" alt="Profile picture" width="50" class="rounded-circle" />
-                <h3>${userProfile.Name}</h3>
-              </div>
-              <div class="post-content">${post.content}</div>
-              ${
-                  post.mediaUrl ?
-                          `<img src="${post.mediaUrl}" alt="Media" class="img-fluid rounded" />` :
+          <div class="post">
+            <div class="post-header">
+              <img src="${userProfile.Photo}" alt="Profile picture" width="50" class="rounded-circle" />
+              <h3>${userProfile.Name}</h3>
+            </div>
+            <div class="post-content">${post.content}</div>
+            ${
+                  post.photo ?
+                          `<img src="${post.photo}" alt="Media" class="img-fluid rounded" />` :
                           ''
           }
-              <div class="post-time">${post.timestamp ? post.timestamp.toDate().toLocaleString() : 'No timestamp'}</div>
-            </div>
-          `;
+            <div class="post-time">${post.timestamp ? post.timestamp.toDate().toLocaleString() : 'No timestamp'}</div>
+          </div>
+        `;
           postFeed.innerHTML += postElement;
         });
       } else {
@@ -301,6 +315,8 @@
     }
   };
 
+
+  // Event listener for post form submission
   // Event listener for post form submission
   // Event listener for post form submission
   // Event listener for post form submission
@@ -312,17 +328,15 @@
 
     if (mediaFile) {
       try {
-        // Upload media file to storage
-        const mediaRef = ref(storage, `media/${mediaFile.name}`); // Use ref directly
-        await uploadBytes(mediaRef, mediaFile);
-        const mediaUrl = await getDownloadURL(mediaRef); // Add this line if you're using getDownloadURL()
+        // Generate a temporary URL for the media file
+        const mediaUrl = URL.createObjectURL(mediaFile);
 
-        console.log("Media uploaded:", mediaUrl);
+        console.log("Media URL generated:", mediaUrl);
 
         // Create post with media URL
         createPost(content, mediaUrl);
       } catch (error) {
-        console.error("Error uploading media:", error);
+        console.error("Error generating media URL:", error);
       }
     } else {
       console.log("Creating post without media...");
@@ -335,6 +349,7 @@
     // Refresh posts
     await displayPosts();
   });
+
 
 
 
