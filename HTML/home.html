@@ -244,9 +244,7 @@
   checkAuthState();
 
   // Function to create a new post
-  // Function to create a new post
-  // Function to create a new post
-  const createPost = async (content, mediaUrl) => {
+  const createPost = async (content, imageData) => {
     try {
       const user = auth.currentUser;
       if (!user) {
@@ -256,7 +254,7 @@
 
       const postData = {
         content: content,
-        photo: mediaUrl, // Store the data URL as the photo URL
+        photo: imageData, // Store the image data directly
         timestamp: serverTimestamp()
       };
 
@@ -267,14 +265,15 @@
     }
   };
 
+  // Event listener for post form submission
 
 
-
+  // Function to display posts
+  // Function to display posts
   // Function to display posts
   // Function to display posts
   const displayPosts = async () => {
     const postFeed = document.getElementById("post-feed");
-    postFeed.innerHTML = "";
 
     try {
       // Get the authenticated user
@@ -286,26 +285,35 @@
         const userDoc = await getDoc(doc(db, "USER", user.uid));
         const userProfile = userDoc.data();
 
+        // Get the timestamp of the last displayed post
+        const lastPostTimestamp = postFeed.lastChild ? new Date(postFeed.lastChild.querySelector(".post-time").textContent).getTime() : null;
+
         // Query posts collection
         const querySnapshot = await getDocs(collection(db, "POST"));
+
         querySnapshot.forEach((doc) => {
           const post = doc.data();
-          const postElement = `
-          <div class="post">
-            <div class="post-header">
-              <img src="${userProfile.Photo}" alt="Profile picture" width="50" class="rounded-circle" />
-              <h3>${userProfile.Name}</h3>
+          const postTimestamp = post.timestamp.toMillis();
+
+          // Check if the post is newer than the last displayed post
+          if (!lastPostTimestamp || postTimestamp > lastPostTimestamp) {
+            const postElement = `
+            <div class="post">
+              <div class="post-header">
+                <img src="${userProfile.Photo}" alt="Profile picture" width="50" class="rounded-circle" />
+                <h3>${userProfile.Name}</h3>
+              </div>
+              <div class="post-content">${post.content}</div>
+              ${
+                    post.photo ?
+                            `<img src="${post.photo}" alt="Media" class="img-fluid rounded" />` :
+                            ''
+            }
+              <div class="post-time">${post.timestamp ? post.timestamp.toDate().toLocaleString() : 'No timestamp'}</div>
             </div>
-            <div class="post-content">${post.content}</div>
-            ${
-                  post.photo ?
-                          `<img src="${post.photo}" alt="Media" class="img-fluid rounded" />` :
-                          ''
+          `;
+            postFeed.insertAdjacentHTML('beforeend', postElement); // Insert instead of append
           }
-            <div class="post-time">${post.timestamp ? post.timestamp.toDate().toLocaleString() : 'No timestamp'}</div>
-          </div>
-        `;
-          postFeed.innerHTML += postElement;
         });
       } else {
         console.log("User not authenticated.");
@@ -316,10 +324,7 @@
   };
 
 
-  // Event listener for post form submission
-  // Event listener for post form submission
-  // Event listener for post form submission
-  // Event listener for post form submission
+
   document.getElementById("post-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     console.log("Form submitted!");
@@ -328,30 +333,36 @@
 
     if (mediaFile) {
       try {
-        // Generate a temporary URL for the media file
-        const mediaUrl = URL.createObjectURL(mediaFile);
-
-        console.log("Media URL generated:", mediaUrl);
-
-        // Create post with media URL
-        createPost(content, mediaUrl);
+        // Convert the image file to base64 data URL
+        const reader = new FileReader();
+        reader.readAsDataURL(mediaFile);
+        reader.onload = function () {
+          const imageData = reader.result;
+          // Create post with image data
+          createPost(content, imageData).then(() => {
+            // Clear form content
+            document.getElementById("post-content").value = "";
+            // Refresh posts
+            displayPosts();
+          });
+        };
       } catch (error) {
-        console.error("Error generating media URL:", error);
+        console.error("Error converting media to data URL:", error);
       }
     } else {
       console.log("Creating post without media...");
-      createPost(content, null);
+      createPost(content, null).then(() => {
+        // Clear form content
+        document.getElementById("post-content").value = "";
+        // Refresh posts
+        displayPosts();
+      });
     }
-
-    // Clear form content
-    document.getElementById("post-content").value = "";
-
-    // Refresh posts
-    await displayPosts();
   });
 
 
-
+  // Check authentication state on page load
+  checkAuthState();
 
 </script>
 
