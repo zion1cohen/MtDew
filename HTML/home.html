@@ -254,11 +254,20 @@
             console.error("User not authenticated.");
             return;
           }
+
+          const userProfileRef = doc(db, "USER", user.uid);
+          const userProfileSnap = await getDoc(userProfileRef);
+          const userProfileData = userProfileSnap.data();
+          const userPhoto = userProfileData.Photo; // Assuming Photo is the field name for the profile picture
+
           const postData = {
             content: content,
             photo: imageData,
             timestamp: serverTimestamp(),
+            userId: user.uid, // Adding the user's ID to the post data
+            userPhoto: userPhoto // Adding the user's profile picture URL to the post data
           };
+
           await addDoc(collection(db, "POST"), postData);
         } catch (error) {
           console.error("Error creating post: ", error);
@@ -272,33 +281,29 @@
         try {
           const user = auth.currentUser;
           if (user) {
-            const userDoc = await getDoc(doc(db, "USER", user.uid));
-            const userProfile = userDoc.data();
             const querySnapshot = await getDocs(collection(db, "POST"));
 
             querySnapshot.forEach((doc) => {
               const post = doc.data();
               const postElement = `
-            <div class="post" id="post-${doc.id}">
-              <div class="post-header">
-                <img src="${
-                  userProfile.Photo
-                }" alt="Profile picture" width="50" class="rounded-circle" />
-                <h3>${userProfile.Name}</h3>
-              </div>
-              <div class="post-content">${post.content}</div>
-              ${
-                post.photo
-                  ? `<img src="${post.photo}" alt="Media" class="img-fluid rounded" />`
-                  : ""
+        <div class="post" id="post-${doc.id}">
+          <div class="post-header">
+            <img src="${post.userPhoto}" alt="Profile picture" width="50" class="rounded-circle" />
+            <h3>${post.userId === user.uid ? "You" : post.userName}</h3>
+          </div>
+          <div class="post-content">${post.content}</div>
+          ${
+                      post.photo
+                              ? `<img src="${post.photo}" alt="Media" class="img-fluid rounded" />`
+                              : ""
               }
-              <div class="post-time">${
-                post.timestamp
-                  ? post.timestamp.toDate().toLocaleString()
-                  : "No timestamp"
+          <div class="post-time">${
+                      post.timestamp
+                              ? post.timestamp.toDate().toLocaleString()
+                              : "No timestamp"
               }</div>
-            </div>
-          `;
+        </div>
+      `;
               if (!document.getElementById(`post-${doc.id}`)) {
                 postFeed.insertAdjacentHTML("beforeend", postElement);
               }
