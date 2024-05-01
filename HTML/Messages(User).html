@@ -267,27 +267,37 @@
       if (querySnapshot.empty) {
         friendRequestsList.innerHTML = '<p>No friend requests at the moment.</p>';
       } else {
-        querySnapshot.forEach((doc) => {
+        querySnapshot.forEach(async (doc) => {
           const request = doc.data();
-          const listItem = document.createElement('li');
-          listItem.textContent = `From: ${request.senderId}`;
-          listItem.id = doc.id; // Set the id attribute to the document ID
-          const acceptButton = document.createElement('button');
-          acceptButton.textContent = 'Accept';
-          acceptButton.onclick = () => acceptFriendRequest(doc.id, request.senderId, userId);
-          const declineButton = document.createElement('button');
-          declineButton.textContent = 'Decline';
-          declineButton.onclick = () => declineFriendRequest(doc.id);
-          listItem.appendChild(acceptButton);
-          listItem.appendChild(declineButton);
-          friendRequestsList.appendChild(listItem);
+          const senderId = request.senderId;
+          // Fetch user data using the senderId
+          const senderDocRef = doc(db, 'USER', senderId);
+          const senderDocSnapshot = await getDoc(senderDocRef);
+          if (senderDocSnapshot.exists()) {
+            const senderData = senderDocSnapshot.data();
+            // Display sender's name instead of ID
+            const listItem = document.createElement('li');
+            listItem.textContent = `From: ${senderData.Name}`;
+            listItem.id = doc.id; // Set the id attribute to the document ID
+            const acceptButton = document.createElement('button');
+            acceptButton.textContent = 'Accept';
+            acceptButton.onclick = () => acceptFriendRequest(doc.id, senderId, userId);
+            const declineButton = document.createElement('button');
+            declineButton.textContent = 'Decline';
+            declineButton.onclick = () => declineFriendRequest(doc.id);
+            listItem.appendChild(acceptButton);
+            listItem.appendChild(declineButton);
+            friendRequestsList.appendChild(listItem);
+          } else {
+            console.log("Sender document does not exist.");
+          }
         });
-
       }
     } catch (error) {
       console.error("Error fetching friend requests:", error);
     }
   }
+
 
   async function acceptFriendRequest(requestId, senderId, receiverId) {
     try {
