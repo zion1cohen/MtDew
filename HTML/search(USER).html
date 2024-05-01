@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
     <title>User Dashboard - ConnectAbility</title>
+
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
@@ -29,34 +30,6 @@
         const db = getFirestore(app);
         const auth = getAuth();
 
-        async function sendFriendRequest(userId) {
-            const currentUser = auth.currentUser;
-            const friendRequestRef = collection(db, "FRIENDREQUEST");
-
-            try {
-                await addDoc(friendRequestRef, {
-                    senderId: currentUser.uid,
-                    receiverId: userId,
-                    status: "pending" // Initial status of the friend request
-                });
-                console.log("Friend request sent successfully!");
-                showFriendRequestSentMessage(userId); // Update UI to notify the user
-            } catch (error) {
-                console.error("Error sending friend request:", error);
-            }
-        }
-
-        function showFriendRequestSentMessage(userId) {
-            const userCard = document.querySelector(`[data-user-id="${userId}"]`);
-            if (userCard) {
-                const message = document.createElement('p');
-                message.textContent = 'Friend request sent';
-                userCard.appendChild(message);
-            }
-        }
-
-
-
         function getCurrentUser() {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
@@ -68,8 +41,11 @@
             });
         }
 
-        // Call getCurrentUser() to log information about the current user
-        getCurrentUser();
+
+
+
+
+
 
         async function searchUser(filterParams = {}) {
             const searchInput = document.getElementById("searchInput").value.trim();
@@ -115,13 +91,13 @@
                         const userCard = document.createElement("div");
                         userCard.classList.add("user-card");
                         userCard.innerHTML = `
-                    <h3>${userData.Name}</h3>
-                    <img src="${userData.Photo}" alt="User Photo" /> <!-- Add this line for the photo -->
-                    <p>Age: ${userData.Age}</p>
-                    <p>Gender: ${userData.Gender}</p>
-                    <p>Marital Status: ${userData.MaritalStatus}</p>
-                    <p>Disability: ${userData.Disability}</p>
-                    <button class="send-friend-request" data-user-id="${userData.userId}">Send Friend Request</button>
+                <h3>${userData.Name}</h3>
+                <img src="${userData.Photo}" alt="User Photo" /> <!-- Add this line for the photo -->
+                <p>Age: ${userData.Age}</p>
+                <p>Gender: ${userData.Gender}</p>
+                <p>Marital Status: ${userData.MaritalStatus}</p>
+                <p>Disability: ${userData.Disability}</p>
+                <button class="send-friend-request" data-user-id="${userData.userId}">Send Friend Request</button>
                 `;
                         userList.appendChild(userCard);
                     }
@@ -129,60 +105,126 @@
             }
         }
 
-            document.addEventListener('DOMContentLoaded', function() {
-                // Select the user list container
-                const userList = document.getElementById('userList');
+        async function sendFriendRequest(userId) {
+            const currentUser = auth.currentUser;
+            const friendRequestRef = collection(db, "FRIENDREQUEST");
 
-                // Add event listener to the user list container
-                userList.addEventListener('click', function(event) {
-                    // Check if the clicked element is a button with the class 'send-friend-request'
-                    if (event.target.classList.contains('send-friend-request')) {
-                        // Extract the userId from the data-user-id attribute of the button
-                        const userId = event.target.getAttribute('data-user-id');
-                        // Call the sendFriendRequest function with the userId
-                        sendFriendRequest(userId);
-                    }
+            try {
+                await addDoc(friendRequestRef, {
+                    senderId: currentUser.uid,
+                    receiverId: userId,
+                    status: "pending" // Initial status of the friend request
                 });
+                console.log("Friend request sent successfully!");
+                showFriendRequestSentMessage(userId); // Update UI to notify the user
+            } catch (error) {
+                console.error("Error sending friend request:", error);
+            }
+        }
 
-                // Call searchUser function when the window loads
-                window.onload = function() {
-                    searchUser();
-                };
+        function showFriendRequestSentMessage(userId) {
+            const userCard = document.querySelector(`[data-user-id="${userId}"]`);
+            if (userCard) {
+                const message = document.createElement('p');
+                message.textContent = 'Friend request sent';
+                userCard.appendChild(message);
+            }
+        }
+
+        // Function to attach event listeners
+        function parseAgeRange(ageRange) {
+            const [start, end] = ageRange.split("-").map(Number);
+            return { start, end };
+        }
+
+        function filterByAge(ageRange) {
+            console.log("Filtering users by age range:", ageRange);
+            searchUser({ ageRange: parseAgeRange(ageRange) });
+        }
+
+        function filterByGender(gender) {
+            console.log("Filtering users by gender:", gender);
+            searchUser({ gender });
+        }
+
+        function filterByMaritalStatus(status) {
+            console.log("Filtering users by marital status:", status);
+            searchUser({ maritalStatus: status });
+        }
+
+        function filterByDisability(disability) {
+            console.log("Filtering users by disability type:", disability);
+            searchUser({ disability });
+        }
+
+        function toggleFilterOptions() {
+            const filterOptions = document.getElementById("filterOptions");
+            filterOptions.classList.toggle("show");
+        }
+
+        function showAgeOptions() {
+            const filterOptions = document.getElementById("filterOptions");
+            const ageDropdown = document.createElement("select"); // Create a dropdown element
+            ageDropdown.id = "ageFilter";
+
+            // Add options for different age ranges
+            const options = ["18-22", "22-30", "31-40", "40-55", "55+"];
+            options.forEach(option => {
+                const ageOption = document.createElement("option");
+                ageOption.value = option;
+                ageOption.text = option;
+                ageDropdown.appendChild(ageOption);
             });
 
-            // Rest of your code...
+            // Add the dropdown to the filter options
+            filterOptions.appendChild(ageDropdown);
 
+            // Add event listener for dropdown selection change
+            ageDropdown.addEventListener("change", function() {
+                const selectedAgeRange = this.value;
+                filterByAge(selectedAgeRange);
+                // Remove the dropdown after selection (optional)
+                filterOptions.removeChild(ageDropdown);
+            });
+        }
 
-            function parseAgeRange(ageRange) {
-                const [start, end] = ageRange.split("-").map(Number);
-                return { start, end };
+        function showMaritalStatusOptions() {
+            const statusOptions = prompt(
+                "Enter marital status (single, married, divorced):"
+            );
+            if (statusOptions) {
+                filterByMaritalStatus(statusOptions);
             }
+        }
 
-
-            function filterByAge(ageRange) {
-                console.log("Filtering users by age range:", ageRange);
-                searchUser({ ageRange: parseAgeRange(ageRange) });
+        function showGenderOptions() {
+            const genderOptions = prompt("Enter gender (Male or Female):");
+            if (genderOptions) {
+                filterByGender(genderOptions);
             }
+        }
 
-
-            function filterByGender(gender) {
-                console.log("Filtering users by gender:", gender);
-                searchUser({ gender });
+        function showDisabilityOptions() {
+            const disabilityOptions = prompt("Enter disability type:");
+            if (disabilityOptions) {
+                filterByDisability(disabilityOptions);
             }
+        }
 
-
-            function filterByMaritalStatus(status) {
-                console.log("Filtering users by marital status:", status);
-                searchUser({ maritalStatus: status });
-            }
-
-
-            function filterByDisability(disability) {
-                console.log("Filtering users by disability type:", disability);
-                searchUser({ disability });
-            }
-
+        // Call getCurrentUser() when the page loads
+        window.onload = function () {
+            getCurrentUser();
+            searchUser();
+            window.searchUser = searchUser;
+            window.toggleFilterOptions = toggleFilterOptions;
+            window.showAgeOptions = showAgeOptions;
+            window.showMaritalStatusOptions = showMaritalStatusOptions;
+            window.showGenderOptions = showGenderOptions;
+            window.showDisabilityOptions = showDisabilityOptions;
+        };
     </script>
+
+
     <style>
         body {
             font-family: "Arial", sans-serif;
@@ -331,7 +373,6 @@
         <!-- User list will be displayed here -->
     </div>
 </div>
-
 <script src="navigation.js"></script>
 </body>
 </html>
