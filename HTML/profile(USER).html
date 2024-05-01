@@ -60,8 +60,8 @@
 
           // Remove the friend card from the DOM
           document
-            .querySelector(`.friend-card[data-friend-id="${friendId}"]`)
-            .remove();
+                  .querySelector(`.friend-card[data-friend-id="${friendId}"]`)
+                  .remove();
 
           // Display success message
           displaySuccessMessage(friendId);
@@ -73,7 +73,7 @@
       // Function to display a success message
       function displaySuccessMessage(friendId) {
         const messageContainer = document.getElementById(
-          "flag-message-container"
+                "flag-message-container"
         );
         const message = document.createElement("div");
         message.textContent = `Friend successfully removed.`;
@@ -87,7 +87,6 @@
       }
 
       // Function to get current user and display profile information
-      // Function to get current user and display profile information
       async function getCurrentUser() {
         onAuthStateChanged(auth, async (user) => {
           try {
@@ -99,39 +98,42 @@
               if (userSnapshot.exists()) {
                 const userData = userSnapshot.data();
                 document.getElementById("profile-name").innerText =
-                  userData.Name || "Unknown";
+                        userData.Name || "Unknown";
                 document.getElementById("profile-email").innerText = user.email;
 
                 // Update contact information
                 const phoneElement = document.getElementById("profile-phone");
                 const addressElement =
-                  document.getElementById("profile-address");
+                        document.getElementById("profile-address");
                 phoneElement.innerText =
-                  userData.Phone || "No information available";
+                        userData.Phone || "No information available";
                 addressElement.innerText =
-                  userData.Address || "No information available";
-
+                        userData.Address || "No information available";
+                const nameElement = document.getElementById("profile-name");
+                nameElement.addEventListener("input", () =>
+                        updateUserData(userRef, { Name: nameElement.innerText })
+                );
                 // Update about me section
                 document.getElementById("profile-about").innerText =
-                  userData.About || "No information available";
+                        userData.About || "No information available";
 
                 document.getElementById("profile-photo").src =
-                  userData.Photo || "https://via.placeholder.com/100"; // Use placeholder if photo URL not available
+                        userData.Photo || "https://via.placeholder.com/100"; // Use placeholder if photo URL not available
 
                 // Listen for changes in contact information and about me section
                 phoneElement.addEventListener("input", () =>
-                  updateUserData(userRef, { Phone: phoneElement.innerText })
+                        updateUserData(userRef, { Phone: phoneElement.innerText })
                 );
                 addressElement.addEventListener("input", () =>
-                  updateUserData(userRef, { Address: addressElement.innerText })
+                        updateUserData(userRef, { Address: addressElement.innerText })
                 );
                 document
-                  .getElementById("profile-about")
-                  .addEventListener("input", () =>
-                    updateUserData(userRef, {
-                      About: document.getElementById("profile-about").innerText,
-                    })
-                  );
+                        .getElementById("profile-about")
+                        .addEventListener("input", () =>
+                                updateUserData(userRef, {
+                                  About: document.getElementById("profile-about").innerText,
+                                })
+                        );
 
                 // Display user's friends
                 displayFriendsWithFlags(user.uid);
@@ -163,8 +165,8 @@
       // Event delegation for remove friend button
       document.addEventListener("click", function (event) {
         if (
-          event.target &&
-          event.target.classList.contains("remove-friend-btn")
+                event.target &&
+                event.target.classList.contains("remove-friend-btn")
         ) {
           // Get the current user ID
           const userId = auth.currentUser.uid;
@@ -178,7 +180,6 @@
         }
       });
 
-      // Function to create flag dropdown for a friend
       // Function to create flag dropdown for a friend
       function createFlagDropdown(friendId) {
         // Dropdown options
@@ -207,7 +208,7 @@
         submitButton.textContent = "Submit Flag";
         submitButton.classList.add("submit-flag-btn"); // Add the class for styling
         submitButton.addEventListener("click", () =>
-          submitFlag(friendId, dropdown.value)
+                submitFlag(friendId, dropdown.value)
         );
 
         // Create container for dropdown and button
@@ -245,12 +246,12 @@
                   friendCard.classList.add("friend-card");
                   friendCard.dataset.friendId = friendId; // Set the friend ID as a data attribute
                   friendCard.innerHTML = `
-                  <img src="${
-                    friendData.Photo || "https://via.placeholder.com/50"
+              <img src="${
+                          friendData.Photo || "https://via.placeholder.com/50"
                   }" alt="Friend Photo" class="friend-photo">
-                  <p class="friend-name">${friendData.Name}</p>
-                 <button class="remove-friend-btn">Remove</button>
-                `;
+              <p class="friend-name">${friendData.Name}</p>
+             <button class="remove-friend-btn">Remove</button>
+            `;
                   // Add flag dropdown for each friend
                   const flagDropdown = createFlagDropdown(friendId);
                   friendCard.appendChild(flagDropdown); // Append the dropdown to the friend card
@@ -268,8 +269,6 @@
         }
       }
 
-      // Function to submit flag
-      // Function to submit flag
       // Function to submit flag
       async function submitFlag(friendId, flagValue) {
         try {
@@ -290,10 +289,10 @@
 
           // Display a message indicating that the flag was submitted for the user
           const friendName = document.querySelector(
-            `.friend-card[data-friend-id="${friendId}"] .friend-name`
+                  `.friend-card[data-friend-id="${friendId}"] .friend-name`
           ).textContent;
           const flagMessageContainer = document.getElementById(
-            "flag-message-container"
+                  "flag-message-container"
           );
           const message = document.createElement("div");
           message.classList.add("flag-message");
@@ -304,7 +303,6 @@
         }
       }
 
-      // Inside the <script> tag after other JavaScript code
       // Inside the event listener for the delete profile button
       document.addEventListener("click", async function (event) {
         if (event.target && event.target.id === "delete-profile-btn") {
@@ -331,8 +329,6 @@
           }
         }
       });
-
-
     </script>
     <style>
       body {
@@ -497,7 +493,8 @@
                   class="profile-photo"
           />
           <div class="profile-info">
-            <h2 id="profile-name">Loading...</h2>
+            <h2 id="profile-name" contenteditable="true">Loading...</h2>
+
             <p id="profile-email"></p>
           </div>
         </div>
