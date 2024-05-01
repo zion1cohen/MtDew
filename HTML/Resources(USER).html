@@ -32,107 +32,111 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
+      let resourceCounter = 0; // Initialize resource counter
+
       function fetchResources() {
-        onSnapshot(
-          query(collection(db, "RESOURCE"), orderBy("timestamp")),
-          (snapshot) => {
-            const resourcesList = document.querySelector(".resource-list");
-            resourcesList.innerHTML = ""; // Clear existing list
-            snapshot.forEach((doc) => {
-              const resource = doc.data();
-              const listItem = document.createElement("li");
-              listItem.innerHTML = `
+          onSnapshot(
+              query(collection(db, "RESOURCE"), orderBy("timestamp")),
+              (snapshot) => {
+                  const resourcesList = document.querySelector(".resource-list");
+                  resourcesList.innerHTML = ""; // Clear existing list
+                  snapshot.forEach((doc) => {
+                      const resource = doc.data();
+                      const listItem = document.createElement("li");
+                      listItem.innerHTML = `
               <b>${resource.title || "Resource"}</b><br>
               <a href="${resource.link}" target="_blank">${resource.name}</a>
               - ${resource.description || ""}
             `;
-              resourcesList.appendChild(listItem);
-            });
-          }
-        );
+                      resourceCounter++; // Increment resource counter
+                      listItem.setAttribute("data-counter", resourceCounter); // Set counter attribute
+                      resourcesList.appendChild(listItem);
+                  });
+              }
+          );
       }
 
       fetchResources();
     </script>
-    <style>
-      body {
-        font-family: "Arial", sans-serif;
-        margin: 0;
-        padding: 0;
-        background: #f0f2f5;
-      }
-      .header {
-          background: linear-gradient(45deg, #007bff, #0056b3);
-          color: white;
-          padding: 15px 20px;
-          text-align: center;
-      }
-      .sidebar {
-          background: linear-gradient(180deg, #0056b3, #003366);
-        color: white;
-        padding: 10px;
-        position: fixed;
-        width: 200px;
-        height: 100%;
-        overflow: auto;
-      }
-      .sidebar a {
-        color: white;
-        text-decoration: none;
-        padding: 10px 15px;
-        display: block;
-        border-radius: 4px;
-        transition: background-color 0.3s;
-      }
-      .sidebar a:hover {
-        background-color: #0056b3;
-      }
-      .main-content {
-        margin-left: 200px;
-        padding: 20px;
-      }
-      .resource-container {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-      .resource-header {
-        color: #003366;
-        font-size: 24px;
-        margin-bottom: 20px;
-        text-align: center;
-      }
-      .resource-list {
-        list-style: none;
-        padding-left: 0;
-      }
-      .resource-list li {
-        padding: 10px 0;
-        border-bottom: 1px solid #ccc;
-      }
-      .resource-list li:before {
-        content: counter(resource-counter) ". ";
-        font-weight: bold;
-      }
-      .resource-list a {
-        text-decoration: none;
-        color: #007bff;
-      }
-      .resource-list a:hover {
-        text-decoration: underline;
-      }
-      .background-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: repeating-radial-gradient(circle at 0 0, transparent 0, #e5e5f7 10px), repeating-linear-gradient(#444cf755, #444cf7);
-          z-index: -1; /* Set a lower z-index to keep it behind the content */
-          opacity: 0.4; /* Adjust opacity as needed */
-      }
-    </style>
+      <style>
+          body {
+              font-family: "Arial", sans-serif;
+              margin: 0;
+              padding: 0;
+              background: #f0f2f5;
+          }
+          .header {
+              background: linear-gradient(45deg, #007bff, #0056b3);
+              color: white;
+              padding: 15px 20px;
+              text-align: center;
+          }
+          .sidebar {
+              background: linear-gradient(180deg, #0056b3, #003366);
+              color: white;
+              padding: 10px;
+              position: fixed;
+              width: 200px;
+              height: 100%;
+              overflow: auto;
+          }
+          .sidebar a {
+              color: white;
+              text-decoration: none;
+              padding: 10px 15px;
+              display: block;
+              border-radius: 4px;
+              transition: background-color 0.3s;
+          }
+          .sidebar a:hover {
+              background-color: #0056b3;
+          }
+          .main-content {
+              margin-left: 200px;
+              padding: 20px;
+          }
+          .resource-container {
+              background-color: #ffffff;
+              padding: 20px;
+              border-radius: 5px;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          }
+          .resource-header {
+              color: #003366;
+              font-size: 24px;
+              margin-bottom: 20px;
+              text-align: center;
+          }
+          .resource-list {
+              list-style: none;
+              padding-left: 0;
+          }
+          .resource-list li {
+              padding: 10px 0;
+              border-bottom: 1px solid #ccc;
+          }
+          .resource-list li:before {
+              content: attr(data-counter) ". "; /* Use the counter attribute as content */
+              font-weight: bold;
+          }
+          .resource-list a {
+              text-decoration: none;
+              color: #007bff;
+          }
+          .resource-list a:hover {
+              text-decoration: underline;
+          }
+          .background-overlay {
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: repeating-radial-gradient(circle at 0 0, transparent 0, #e5e5f7 10px), repeating-linear-gradient(#444cf755, #444cf7);
+              z-index: -1; /* Set a lower z-index to keep it behind the content */
+              opacity: 0.4; /* Adjust opacity as needed */
+          }
+      </style>
   </head>
   <body>
   <div class="header d-flex justify-content-between align-items-center">
