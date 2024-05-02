@@ -209,7 +209,8 @@
     setDoc,
     arrayUnion,
     orderBy,
-    onSnapshot
+    onSnapshot,
+          deleteDoc
   } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
@@ -268,10 +269,19 @@
       if (querySnapshot.empty) {
         friendRequestsList.innerHTML = '<p>No friend requests at the moment.</p>';
       } else {
-        querySnapshot.forEach((doc) => {
+        // Fetch all user data at once
+        const usersRef = collection(db, 'USER');
+        const usersSnapshot = await getDocs(usersRef);
+        const usersData = {};
+        usersSnapshot.forEach(doc => {
+          usersData[doc.id] = doc.data();
+        });
+
+        querySnapshot.forEach(doc => {
           const request = doc.data();
+          const senderName = usersData[request.senderId].Name; // Assuming 'Name' is the field containing the user's name
           const listItem = document.createElement('li');
-          listItem.textContent = `From: ${request.senderId}`;
+          listItem.textContent = `From: ${senderName}`;
           listItem.id = doc.id; // Set the id attribute to the document ID
           const acceptButton = document.createElement('button');
           acceptButton.textContent = 'Accept';
@@ -283,7 +293,6 @@
           listItem.appendChild(declineButton);
           friendRequestsList.appendChild(listItem);
         });
-
       }
     } catch (error) {
       console.error("Error fetching friend requests:", error);
