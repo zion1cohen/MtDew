@@ -452,14 +452,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: repeating-radial-gradient(
-            circle at 0 0,
-            transparent 0,
-            #e5e5f7 10px
-          ),
-          repeating-linear-gradient(#444cf755, #444cf7);
-        z-index: -1; /* Set a lower z-index to keep it behind the content */
-        opacity: 0.4; /* Adjust opacity as needed */
+
       }
     </style>
   </head>
@@ -479,8 +472,10 @@
         <a href="Resources(USER).html">Resources</a>
         <a href="Feedback(USER).html">Feedback</a>
         <a href="settings.html">Settings</a>
-        <a href="login.html" class="btn btn-light" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">Logout <span class="glyphicon">&#xe163;</span></a>
-
+        <a href="login.html" class="btn btn-light btn-with-icon" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">
+          <span class="btn-text">Logout</span>
+          <span class="glyphicon">&#xe163;</span>
+        </a>
       </div>
 
       <div class="background-overlay"></div>

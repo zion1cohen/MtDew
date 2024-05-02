@@ -8,34 +8,7 @@
 
   <title>Admin Dashboard - Connection Reports</title>
   <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      font-family: 'Arial', sans-serif;
-      background-color: #ececec;
-      color: #333;
-    }
-    .header{
-      background-color: #007bff;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    .sidebar {
-      background-color: #003366;
-      color: white;
-      padding: 10px;
-      position: fixed;
-      height: 100%;
-      width: 200px;
-      overflow-y: auto;
-    }
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      padding: 10px;
-      display: block;
-    }
+
 
     .navbar {
       background-color: #00457c;
@@ -62,7 +35,9 @@
       padding: 20px;
       background: #fff;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-left: 300px; /* Adjust this value as needed */
     }
+
 
     h2 {
       color: #00457c;
@@ -265,8 +240,10 @@
   <a href="Announcements(ADMIN).html">Admin Announcements</a>
   <a href="DisabilityReport(ADMIN).html">Disability Report</a>
   <a href="MatchReport(ADMIN).html">Match Report</a>
-  <a href="login.html" class="btn btn-light" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">Logout <span class="glyphicon">&#xe163;</span></a>
-
+  <a href="login.html" class="btn btn-light btn-with-icon" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">
+    <span class="btn-text">Logout</span>
+    <span class="glyphicon">&#xe163;</span>
+  </a>
 </div>
 
 <div class="container" id="reports">

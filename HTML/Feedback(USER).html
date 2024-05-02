@@ -8,38 +8,7 @@
 
   <title>Feedback - ConnectAbility</title>
   <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f0f2f5;
-    }
-    .header {
-      background: linear-gradient(45deg, #007bff, #0056b3);
-      color: white;
-      padding: 10px 20px;
-      text-align: center;
-    }
-    .sidebar {
-      background: linear-gradient(180deg, #0056b3, #003366);
-      color: white;
-      padding: 10px;
-      position: fixed;
-      width: 200px;
-      height: 100%;
-      overflow: auto;
-    }
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      padding: 10px 15px;
-      display: block;
-      border-radius: 4px;
-      transition: background-color 0.3s;
-    }
-    .sidebar a:hover {
-      background-color: #0056b3;
-    }
+
     .main-content {
       margin-left: 200px;
       padding: 20px;
@@ -109,7 +78,6 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: repeating-radial-gradient(circle at 0 0, transparent 0, #e5e5f7 10px), repeating-linear-gradient(#444cf755, #444cf7);
       z-index: -1; /* Set a lower z-index to keep it behind the content */
       opacity: 0.4; /* Adjust opacity as needed */
     }
@@ -120,7 +88,6 @@
 
 <div class="header d-flex justify-content-between align-items-center">
   <h1>ConnectAbility</h1>
-  <a href="login.html" class="btn btn-light" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">Logout <span class="glyphicon">&#xe163;</span></a>
 </div>
 
 
@@ -133,6 +100,10 @@
   <a href="Resources(USER).html">Resources</a>
   <a href="Feedback(USER).html">Feedback</a>
   <a href="settings.html">Settings</a>
+  <a href="login.html" class="btn btn-light btn-with-icon" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">
+    <span class="btn-text">Logout</span>
+    <span class="glyphicon">&#xe163;</span>
+  </a>
 </div>
 <div class="background-overlay"></div>
 
