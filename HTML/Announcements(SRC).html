@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
 
     <title>Announcements - ConnectAbility</title>
 
@@ -94,34 +95,39 @@
        
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: "Roboto", sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f2f5;
+            background-color: #e5e5f7;
         }
         .header {
-            background-color: #007bff;
+            background: linear-gradient(45deg, #007bff, #0056b3);
             color: white;
-            padding: 10px 20px;
+            padding: 15px 20px;
             text-align: center;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
+
         .sidebar {
-            background-color: #003366;
+            background: linear-gradient(180deg, #0056b3, #003366);
             color: white;
             padding: 10px;
             position: fixed;
-            height: 100%;
             width: 200px;
-            overflow-y: auto;
+            height: 100%;
+            overflow: auto;
         }
         .sidebar a {
             color: white;
             text-decoration: none;
-            padding: 10px;
-            display: block;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            margin-bottom: 8px;
+        }
+        .sidebar a:hover {
+            background-color: #0056b3;
         }
         .main-content {
             margin-left: 200px;

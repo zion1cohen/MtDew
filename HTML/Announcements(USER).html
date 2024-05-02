@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+      <link rel="stylesheet" type="text/css" href="styles.css">
     <title>Announcements - ConnectAbility</title>
     <script type="module">
 
@@ -65,42 +66,41 @@
     </script>
 
     <style>
-      body {
-        font-family: "Arial", sans-serif;
-        margin: 0;
-        padding: 0;
-        background: #f0f2f5;
-      }
-      .header {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .sidebar {
-        background: linear-gradient(180deg, #0056b3, #003366);
-        color: white;
-        padding: 10px;
-        position: fixed;
-        width: 200px;
-        height: 100%;
-        overflow: auto;
-      }
-      .sidebar a {
-        color: white;
-        text-decoration: none;
-        padding: 10px 15px;
-        display: block;
-        border-radius: 4px;
-        transition: background-color 0.3s;
-      }
-      .sidebar a:hover {
-        background-color: #0056b3;
-      }
-      .main-content {
+        body {
+            font-family: "Arial", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e5e5f7;
+        }
+        .header {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, #0056b3, #003366);
+            color: white;
+            padding: 10px;
+            position: fixed;
+            width: 200px;
+            height: 100%;
+            overflow: auto;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            margin-bottom: 8px;
+        }
+        .sidebar a:hover {
+            background-color: #0056b3;
+        }.main-content {
         margin-left: 200px;
         padding: 20px;
       }
@@ -164,7 +164,7 @@
       <a href="Resources(USER).html">Resources</a>
       <a href="Feedback(USER).html">Feedback</a>
       <a href="settings.html">Settings</a>
-      <a href="login.html" class="btn btn-light" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">Logout <span class="glyphicon">&#xe163;</span></a>
+      <a href="login.html" class="btn btn-light" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;"> Logout <span class="glyphicon">&#xe163;</span></a>
 
   </div>
   <div class="background-overlay"></div>
