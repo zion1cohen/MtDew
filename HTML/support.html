@@ -1,346 +1,261 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <title>Support Role Announcements - ConnectAbility</title>
-    <script type="module">
-      // Import the functions you need from the SDKs you need
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-      import { serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-      import { addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-      import {
-        getFirestore,
-        collection,
-        where, // Add this import statement
-        query,
-        getDocs,
-              orderBy,
-              onSnapshot
-      } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="styles.css">
 
-      // Your web app's Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
-        authDomain: "connectability-6ee02.firebaseapp.com",
-        projectId: "connectability-6ee02",
-        storageBucket: "connectability-6ee02.appspot.com",
-        messagingSenderId: "908801065257",
-        appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
-        measurementId: "G-N8HMEMRV16",
-      };
+  <title>User Dashboard - ConnectAbility</title>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import { getFirestore, collection, where, query, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIuoGDwaVQ6kdfhZp9ZkFgE5yVR9u1JKk",
+      authDomain: "connectability-6ee02.firebaseapp.com",
+      projectId: "connectability-6ee02",
+      storageBucket: "connectability-6ee02.appspot.com",
+      messagingSenderId: "908801065257",
+      appId: "1:908801065257:web:bd93fbe7049ad8c6867738",
+      measurementId: "G-N8HMEMRV16",
+    };
 
-      async function searchUser() {
-        const searchInput = document.getElementById("searchInput").value.trim();
-        const userList = document.getElementById("userList");
-        userList.innerHTML = ""; // Clear previous search results
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        // Query to search for the user based on the input
-        const usersRef = collection(db, "USER"); // Adjust "USER" if your collection name is different
-        const q = query(usersRef, where("Name", "==", searchInput)); // Filter users by name
+    async function searchUser(filterParams = {}) {
+      const searchInput = document.getElementById("searchInput").value.trim();
+      const userList = document.getElementById("userList");
+      userList.innerHTML = ""; // Clear previous search results
 
-        const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) {
-          console.log("No matching user found.");
-          userList.innerHTML = "<p>No matching user found.</p>"; // Show a message if no user is found
-        } else {
-          querySnapshot.forEach((doc) => {
-            const userData = doc.data();
-            console.log(`Document found: `, userData); // Log each document's data
-            // Add your UI update logic here
-            const userCard = document.createElement("div");
-            userCard.classList.add("user-card");
-            userCard.innerHTML = `<h3>${userData.Name}</h3>`; // Example of UI update
-            userList.appendChild(userCard);
-          });
-        }
-      }
-      function createAnnouncementElement(announcement) {
-        const announcementElement = document.createElement("div");
-        announcementElement.classList.add("announcement");
-
-        const titleElement = document.createElement("h2");
-        titleElement.textContent = announcement.title || "Announcement";
-
-        const contentElement = document.createElement("p");
-        contentElement.textContent = announcement.Content;
-
-        const timeElement = document.createElement("time");
-        timeElement.textContent = announcement.Timestamp ? announcement.Timestamp.toDate().toLocaleString() : "Unknown time";
-
-        announcementElement.appendChild(titleElement);
-        announcementElement.appendChild(contentElement);
-        announcementElement.appendChild(timeElement);
-
-        return announcementElement;
+      let usersRef = collection(db, "USER");
+      let queries = [];
+      if (searchInput) {
+        queries.push(where("Name", "==", searchInput));
       }
 
-      function fetchAnnouncements() {
-        const announcementsContainer = document.querySelector('.main-content'); // Targeting the main-content for announcements
+      // Adding filters based on function parameters
+      if (filterParams.ageRange) {
+        queries.push(where("Age", ">=", filterParams.ageRange.start));
+        queries.push(where("Age", "<=", filterParams.ageRange.end));
+      }
+      if (filterParams.gender) {
+        queries.push(where("Gender", "==", filterParams.gender));
+      }
+      if (filterParams.maritalStatus) {
+        queries.push(
+                where("MaritalStatus", "==", filterParams.maritalStatus)
+        );
+      }
+      if (filterParams.disability) {
+        queries.push(where("Disability", "==", filterParams.disability));
+      }
 
-        const q = query(collection(db, "ANNOUNCEMENT"), orderBy("Timestamp"));
-        onSnapshot(q, (snapshot) => {
-          snapshot.docChanges().forEach((change) => {
-            if (change.type === "added") {
-              const doc = change.doc;
-              const announcement = doc.data();
-              const announcementElement = createAnnouncementElement(announcement);
-              announcementsContainer.appendChild(announcementElement); // Append each announcement to the main-content div
-            }
-          });
+      const q = query(usersRef, ...queries);
+
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        console.log("No matching user found.");
+        userList.innerHTML = "<p>No matching user found.</p>";
+      } else {
+        querySnapshot.forEach((doc) => {
+          const userData = doc.data();
+          console.log(`Document found: `, userData);
+          const userCard = document.createElement("div");
+          userCard.classList.add("user-card");
+          userCard.innerHTML = `
+                        <h3>${userData.Name}</h3>
+                        <p>Age: ${userData.Age}</p>
+                        <p>Gender: ${userData.Gender}</p>
+                        <p>Marital Status: ${userData.MaritalStatus}</p>
+                        <p>Disability: ${userData.Disability}</p>
+                    `;
+          userList.appendChild(userCard);
         });
       }
+    }
 
-      window.addEventListener('DOMContentLoaded', () => {
-        fetchAnnouncements(); // Fetch announcements on page load
+    // Call searchUser() function when the page loads to display all users
+    window.onload = function () {
+      searchUser();
+    };
 
-        document.getElementById('addAnnouncementBtn').addEventListener('click', async () => {
-          // Get input values
-          const titleInput = document.getElementById('announcementTitleInput');
-          const announcementInput = document.getElementById('announcementInput');
-          const title = titleInput.value.trim();
-          const content = announcementInput.value.trim();
+    function parseAgeRange(ageRange) {
+      const [start, end] = ageRange.split("-").map(Number);
+      return { start, end };
+    }
 
-          // Check if both title and content are provided
-          if (title && content) {
-            try {
-              // Add announcement to Firestore with server timestamp
-              await addDoc(collection(db, "ANNOUNCEMENT"), {
-                title: title,
-                Content: content,
-                Timestamp: serverTimestamp()
-              });
-              // Clear input fields
-              titleInput.value = '';
-              announcementInput.value = '';
-              alert('Announcement added successfully.');
-            } catch (error) {
-              // Log error if there's an issue adding announcement
-              console.error("Error adding document: ", error);
-              alert('Error adding announcement. Please try again.');
-            }
-          } else {
-            // Alert user if either title or content is missing
-            alert('Please fill in both title and content.');
-          }
-        });
-      });
-      window.searchUser = searchUser;
-    </script>
-    <style>
+    function filterByAge(ageRange) {
+      console.log("Filtering users by age range:", ageRange);
+      searchUser({ ageRange: parseAgeRange(ageRange) });
+    }
 
+    function filterByGender(gender) {
+      console.log("Filtering users by gender:", gender);
+      searchUser({ gender });
+    }
 
-      .main-content {
-        margin-left: 200px;
-        padding: 20px;
-      }
-      .announcement {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-      }
-      .announcement h2 {
-        color: #003366;
-        border-left: 4px solid #007bff;
-        padding-left: 10px;
-      }
-      .search-box {
-        padding: 10px 0;
-      }
-      .search-box input[type="text"] {
-        padding: 10px;
-        width: calc(100% - 40px);
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        margin-right: 10px;
-      }
-      .search-box button {
-        padding: 10px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-      }
-      .add-btn {
-        background-color: #28a745;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-        display: block;
-        width: 200px;
-        margin: 20px auto;
-        border-radius: 5px;
-        text-decoration: none;
-      }
-      .announcement-form {
-        margin-top: 20px;
-      }
-      .announcement-form input[type="text"],
-      .announcement-form textarea {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-      }
-      .announcement-form button {
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-      .user-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-      }
-      .user-card {
-        background-color: white;
-        border-radius: 10px;
-        overflow: hidden;
-        text-align: center;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        width: calc(100% / 3 - 20px);
-      }
-      .user-card h3 {
-        margin: 0;
-        padding: 15px;
-      }
-    </style>
-  </head>
-  <body>
-  <div class="header d-flex justify-content-between align-items-center">
-    <h1>ConnectAbility</h1>
-  </div>
+    function filterByMaritalStatus(status) {
+      console.log("Filtering users by marital status:", status);
+      searchUser({ maritalStatus: status });
+    }
 
-  <div class="sidebar">
-      <a href="support.html">Home</a><br />
-      <a href="Resources(SRC).html">Resources</a><br />
-      <a href="Announcements(SRC).html">Announcement Support</a><br />
-      <a href="Settings(SRC).html">Settings</a><br />
-      <a href="UserReports(SRC).html">User Reports</a><br />
-      <a href="Feedback(SRC).html">Feedback</a><br />
-    <a href="login.html" class="btn btn-light btn-with-icon" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">
-      <span class="btn-text">Logout</span>
-      <span class="glyphicon">&#xe163;</span>
-    </a>
-  </div>
-    <div class="main-content">
-      <div class="search-box">
-        <input type="text" placeholder="Search..." id="searchInput" />
-        <button onclick="searchUser()">Search</button>
+    function filterByDisability(disability) {
+      console.log("Filtering users by disability type:", disability);
+      searchUser({ disability });
+    }
+
+    function toggleFilterOptions() {
+      const filterOptions = document.getElementById("filterOptions");
+      filterOptions.classList.toggle("show");
+    }
+
+    function showAgeOptions() {
+      const ageOptions = prompt(
+              "Enter age range (e.g., 18-22, 22-30, 31-40, 40-55, 55+):"
+      );
+      if (ageOptions) {
+        filterByAge(ageOptions);
+      }
+    }
+
+    function showMaritalStatusOptions() {
+      const statusOptions = prompt(
+              "Enter marital status (single, married, divorced):"
+      );
+      if (statusOptions) {
+        filterByMaritalStatus(statusOptions);
+      }
+    }
+
+    function showGenderOptions() {
+      const genderOptions = prompt("Enter gender (Male or Female):");
+      if (genderOptions) {
+        filterByGender(genderOptions);
+      }
+    }
+
+    function showDisabilityOptions() {
+      const disabilityOptions = prompt("Enter disability type:");
+      if (disabilityOptions) {
+        filterByDisability(disabilityOptions);
+      }
+    }
+  </script>
+  <style>
+    .content {
+      margin-left: 250px;
+      padding: 20px;
+    }
+    .search-box {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 20px;
+      background-color: white;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    .search-box input[type="text"] {
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 70%;
+      border-radius: 5px;
+    }
+    .search-btn,
+    .filter-btn {
+      padding: 10px 20px;
+      border: none;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .filter-btn {
+      margin-left: 10px;
+    }
+    .filter-dropdown {
+      position: relative;
+    }
+    .filter-dropdown button {
+      display: block;
+    }
+    .filter-dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+      z-index: 1;
+    }
+    .filter-dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+    .filter-dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+    .show {
+      display: block;
+    }
+    .user-card {
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      width: 300px; /* Adjust the width as needed */
+    }
+    .user-card h3 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+<div class="header d-flex justify-content-between align-items-center">
+  <h1>ConnectAbility</h1>
+</div>
+
+<div class="sidebar">
+  <a href="support.html">Home</a>
+  <a href="Resources(SRC).html">Resources</a>
+  <a href="Announcements(SRC).html">Announcement Support</a>
+  <a href="Settings(SRC).html">Settings</a>
+  <a href="UserReports(SRC).html">User Reports</a>
+  <a href="Feedback(SRC).html">Feedback</a>
+  <a href="login.html" class="btn btn-light btn-with-icon" style="background-color: #fff; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; text-decoration: none; color: #007bff;">
+    <span class="btn-text">Logout</span>
+    <span class="glyphicon">&#xe163;</span>
+  </a>    </div>
+<div class="content">
+  <div class="search-box">
+    <input type="text" placeholder="Search for a User" id="searchInput" />
+    <div class="filter-dropdown">
+      <button class="filter-btn" onclick="toggleFilterOptions()">
+        Filters
+      </button>
+      <div class="filter-dropdown-content" id="filterOptions">
+        <a href="#" onclick="showAgeOptions()">Age Range</a>
+        <a href="#" onclick="showGenderOptions()">Gender</a>
+        <a href="#" onclick="showMaritalStatusOptions()">Marital Status</a>
+        <a href="#" onclick="showDisabilityOptions()">Disability Type</a>
       </div>
-
-
-
-      <!-- Announcement Form -->
-      <div class="main-content">
-        <div class="announcement-section">
-          <h2>Support Role Announcements</h2>
-          <div class="announcement-form">
-            <input type="text" id="announcementTitleInput" placeholder="Enter announcement title">
-            <textarea id="announcementInput" rows="4" placeholder="Enter your announcement"></textarea>
-            <button id="addAnnouncementBtn" class="add-announcement">Add Announcement</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Announcements Container -->
-      <div class="announcement" id="announcementContainer">
-        <h2>Support Role Announcements</h2>
-        <p><strong>Scheduled Maintenance - System Upgrade</strong></p>
-        <p>Date: 2/6/2024</p>
-        <p>
-          Attention Admins! ConnectAbility will undergo scheduled maintenance on
-          2/15/24 for a system upgrade. The platform will be temporarily
-          inaccessible during this time. We appreciate your understanding as we
-          work to enhance your user experience.
-        </p>
-        <!-- More announcements here -->
-      </div>
-
-      <!-- User Search Results -->
-      <div class="user-list" id="userList"></div>
     </div>
+    <button class="search-btn" onclick="searchUser()">Search</button>
+  </div>
+  <div class="user-list" id="userList">
+    <!-- User list will be displayed here -->
+  </div>
+</div>
 
-
-    <script>
-      function toggleAnnouncementForm() {
-        const form = document.querySelector(".announcement-form");
-        form.style.display = form.style.display === "none" ? "block" : "none";
-      }
-
-      function addAnnouncement() {
-        const announcementTitle = document
-          .getElementById("announcementTitle")
-          .value.trim();
-        const announcementContent = document
-          .getElementById("announcementContent")
-          .value.trim();
-
-        if (announcementTitle && announcementContent) {
-          const announcementContainer = document.getElementById(
-            "announcementContainer"
-          );
-          const newAnnouncement = document.createElement("div");
-          newAnnouncement.classList.add("announcement");
-          newAnnouncement.innerHTML = `
-          <h2>${announcementTitle}</h2>
-          <p>${announcementContent}</p>
-        `;
-          announcementContainer.appendChild(newAnnouncement);
-          // Clear input fields after submission
-          document.getElementById("announcementTitle").value = "";
-          document.getElementById("announcementContent").value = "";
-          // Hide the form after submission
-          toggleAnnouncementForm();
-        } else {
-          console.error(
-            "Please enter both title and content for the announcement."
-          );
-        }
-      }
-
-      async function searchUser() {
-        const searchInput = document.getElementById("searchInput").value.trim();
-        const userList = document.getElementById("userList");
-        userList.innerHTML = ""; // Clear previous search results
-
-        if (searchInput) {
-          const q = firebase
-            .firestore()
-            .collection("USER")
-            .where("Name", "==", searchInput);
-
-          const querySnapshot = await q.get();
-          if (querySnapshot.empty) {
-            console.log("No matching user found.");
-            userList.innerHTML = "<p>No matching user found.</p>"; // Show a message if no user is found
-          } else {
-            querySnapshot.forEach((doc) => {
-              const userData = doc.data();
-              console.log(`Document found: `, userData); // Log each document's data
-              // Add your UI update logic here
-              const userCard = document.createElement("div");
-              userCard.classList.add("user-card");
-              userCard.innerHTML = `<h3>${userData.Name}</h3>`; // Example of UI update
-              userList.appendChild(userCard);
-            });
-          }
-        } else {
-          console.log("Please enter a name to search.");
-          userList.innerHTML = "<p>Please enter a name to search.</p>"; // Prompt user to enter a search term
-        }
-      }
-    </script>
-  </body>
+<script src="navigation.js"></script>
+</body>
 </html>
