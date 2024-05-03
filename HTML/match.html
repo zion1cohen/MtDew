@@ -132,20 +132,19 @@
     .match-card .buttons button.skip:hover {
       background-color: #c82333;
     }
-    .background-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: -1; /* Set a lower z-index to keep it behind the content */
-      opacity: 0.4; /* Adjust opacity as needed */
+    .sidebar.collapsed {
+      width: 0;
+      overflow: hidden;
     }
+
+
   </style>
 </head>
 <body>
 <div class="header d-flex justify-content-between align-items-center">
   <h1>ConnectAbility</h1>
+  <button id="sidebarToggle">Toggle Sidebar</button>
+
 </div>
 
 
@@ -396,6 +395,25 @@
       }
     });
   };
+  window.onload = function() {
+    const sidebarToggleBtn = document.getElementById('sidebarToggle');
+    const sidebar = document.querySelector('.sidebar');
+
+    sidebarToggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("User is logged in:", user.uid);
+        populateMatchCards(user.uid); // Pass the user's UID to populateMatchCards
+      } else {
+        console.log("No user logged in.");
+        // Redirect to login page or handle no user scenario
+      }
+    });
+  };
+
 </script>
 </body>
 </html>
