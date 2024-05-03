@@ -85,7 +85,8 @@
             <p>Marital Status: ${userData.MaritalStatus}</p>
             <p>Disability: ${userData.Disability}</p>
             <p>Status: ${userData.Status}</p>
-            <button onclick="openModal('${doc.id}', '${userData.Status}')">Manage User</button>
+            <button onclick="openModal('${doc.id}', '${userData.Name}', '${userData.Status}')">Manage User</button>
+
           `;
           userList.appendChild(userCard);
         });
@@ -188,6 +189,7 @@
         sendMessage(userId, userName); // Pass the userName parameter
       };
     }
+
 
 
     function closeModal() {
