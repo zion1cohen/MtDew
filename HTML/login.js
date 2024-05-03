@@ -21,8 +21,6 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 // Function to get user's role from Firestore
-// Function to get user's role from Firestore
-// Function to get user's role from Firestore
 async function getUserRole(userId) {
     try {
         let userRole = null;
@@ -58,9 +56,6 @@ async function getUserRole(userId) {
     }
 }
 
-
-// Login form submission
-// Login form submission
 // Login form submission
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -74,13 +69,21 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Get user's role from Firestore
+        // Get user's role and status from Firestore
         const { userRole, roleType } = await getUserRole(user.uid);
-        console.log("User role:", userRole);
-        console.log("Selected role:", role);
-        console.log("Role type:", roleType);
 
+        // Check if the user's role matches the selected role
         if (userRole && role.toLowerCase() === roleType.toLowerCase()) {
+            if (userRole === "USER") {
+                // Check if the user is suspended
+                const userQuery = query(collection(db, 'USER'), where("userId", "==", user.uid));
+                const userSnapshot = await getDocs(userQuery);
+                const userData = userSnapshot.docs[0].data();
+
+                if (userData && userData.Status && userData.Status.toLowerCase() === "suspended") {
+                    throw new Error("User is suspended.");
+                }
+            }
             // Redirect based on user role
             switch (userRole) {
                 case "USER":
@@ -101,5 +104,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     } catch (error) {
         console.error("Login error:", error.message);
         // Handle login errors (e.g., display error message to user)
+        document.getElementById('errorMessage').textContent = error.message;
     }
 });
